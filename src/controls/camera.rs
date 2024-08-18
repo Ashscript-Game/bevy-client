@@ -1,4 +1,5 @@
-use bevy::{app::{App, Plugin, Update}, input::mouse::MouseWheel, prelude::*};
+use bevy::{app::{App, Plugin, Update}, input::mouse::MouseWheel, prelude::*, render::camera};
+use bevy_magic_light_2d::SpriteCamera;
 
 use crate::constants::{self, control_keys, ResultCode};
 
@@ -11,26 +12,27 @@ impl Plugin for CameraControlsPlugin {
 }
 
 fn control_camera_zoom(
-    mut cameras: Query<&mut OrthographicProjection, With<Camera>>,
+    mut cameras: Query<&mut OrthographicProjection, With<SpriteCamera>>,
     time: Res<Time>,
     mut scroll_event_reader: EventReader<MouseWheel>,
 ) {
-    let mut projection = cameras.single_mut();
 
-    for event in scroll_event_reader.read() {
-        let projection_delta = event.y * 3.;
-
-        projection.scale = (projection.scale - projection_delta * time.delta_seconds()).clamp(constants::camera::MIN_SCALE, constants::camera::MAX_SCALE);
+    for mut camera in cameras.iter_mut() {
+        for event in scroll_event_reader.read() {
+            let projection_delta = event.y * 3.;
+    
+            camera.scale = (camera.scale - projection_delta * time.delta_seconds()).clamp(constants::camera::MIN_SCALE, constants::camera::MAX_SCALE);
+        }
     }
 }
 
 fn control_camera_movement(
-    mut camera_query: Query<(&Camera, &mut Transform)>,
+    mut camera_query: Query<&mut Transform, With<SpriteCamera>>,
     input: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
 ) {
 
-    let Ok((_, mut camera_transform)) = camera_query.get_single_mut() else {
+    let Ok(mut camera_transform) = camera_query.get_single_mut() else {
         return;
     };
 

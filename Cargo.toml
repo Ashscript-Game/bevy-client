@@ -1,19 +1,28 @@
 [package]
 name = "hex-game"
-version = "0.0.0"
+version = "0.1.0"
 edition = "2021"
 license = "GPL-3"
 
 [dependencies]
-bevy = "0.13.0"
+bevy = { version = "0.13.0", default-features = true, features = [
+    "bevy_render",
+    "bevy_core_pipeline",
+    "bevy_winit",
+    "bevy_asset",
+    "bevy_sprite",
+    "bevy_pbr",
+    "embedded_watcher",
+] }
 rand = "0.8.5"
 # winit = "0.29.10"
 # image = "0.24"
-bevy-inspector-egui = "0.22.1"
-bevy_rapier2d = "0.25.0"
+bevy-inspector-egui = "0.23.0"
+log = "0.4.20"
+# bevy_rapier2d = "0.25.0"
 lazy_static = "1.5.0"
 hexx = "0.17.0"
-bevy_magic_light_2d = "0.7.0"
+bevy_magic_light_2d = { git = "https://github.com/zaycev/bevy-magic-light-2d.git" } # "0.7.0"
 
 [workspace]
 resolver = "2"

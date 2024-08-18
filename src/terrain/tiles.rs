@@ -3,9 +3,10 @@ use bevy::{
     prelude::*,
     render::{
         mesh::{Indices, PrimitiveTopology},
-        render_asset::RenderAssetUsages,
+        render_asset::RenderAssetUsages, view::RenderLayers,
     },
 };
+use bevy_magic_light_2d::prelude::CAMERA_LAYER_FLOOR;
 use hexx::{hex, shapes, HexLayout, HexOrientation, MeshInfo, PlaneMeshBuilder};
 
 pub struct TilePlugin;
@@ -72,12 +73,14 @@ fn generate_tiles(
 
         // let handle = materials.add(ColorMaterial::from(COLORS[0]));
 
-        commands.spawn(ColorMesh2dBundle {
-            transform: Transform::from_xyz(pos.x, pos.y, 0.0),
-            mesh: mesh_handle.clone().into(),
-            material: handle,
-            ..default()
-        });
+        commands
+            .spawn(ColorMesh2dBundle {
+                transform: Transform::from_xyz(pos.x, pos.y, 0.0),
+                mesh: mesh_handle.clone().into(),
+                material: handle,
+                ..default()
+            })
+            /* .insert(RenderLayers::from_layers(CAMERA_LAYER_FLOOR)).id() */;
     }
 }
 

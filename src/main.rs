@@ -1,15 +1,56 @@
-use bevy::{app::App, DefaultPlugins};
-use controls::camera::CameraControlsPlugin;
+use bevy::{
+    app::{App, Startup},
+    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
+    prelude::*,
+    DefaultPlugins,
+};
+use bevy_magic_light_2d::{gi::BevyMagicLight2DPlugin, prelude::*};
 use game::GamePlugin;
-use terrain::tiles::TilePlugin;
 
-pub mod game;
-pub mod terrain;
-pub mod controls;
-pub mod constants;
 pub mod components;
+pub mod constants;
+pub mod controls;
+pub mod game;
+pub mod lighting;
+pub mod terrain;
 
 fn main() {
-    App::new().add_plugins((DefaultPlugins, GamePlugin))
-    .run();
+    App::new()
+        .insert_resource(ClearColor(Color::rgba_u8(0, 0, 0, 0)))
+        .add_plugins((
+            DefaultPlugins
+                .set(AssetPlugin {
+                    watch_for_changes_override: Some(true),
+                    ..default()
+                })
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        resolution: (512., 512.).into(),
+                        title: "Scripter".into(),
+                        ..default()
+                    }),
+                    ..default()
+                }),
+            GamePlugin,
+            BevyMagicLight2DPlugin,
+            FrameTimeDiagnosticsPlugin,
+            LogDiagnosticsPlugin::default(),
+        ))
+        .insert_resource(BevyMagicLight2DSettings {
+            light_pass_params: LightPassParams {
+                reservoir_size: 16,
+                smooth_kernel_size: (2, 1),
+                direct_light_contrib: 0.2,
+                indirect_light_contrib: 0.8,
+                ..default()
+            },
+            ..default()
+        })
+        .register_type::<LightOccluder2D>()
+        .register_type::<OmniLightSource2D>()
+        .register_type::<SkylightMask2D>()
+        .register_type::<SkylightLight2D>()
+        .register_type::<BevyMagicLight2DSettings>()
+        .register_type::<LightPassParams>()
+        .run();
 }
