@@ -10,13 +10,26 @@ pub mod control_keys {
 }
 
 pub mod camera {
-    pub const SPEED: f32 = 150.;
-    pub const BOOST_SPEED: f32 = 220.;
+    pub const SPEED: f32 = 200.;
+    pub const BOOST_SPEED: f32 = 500.;
     pub const Z_POS: f32 = 1000.;
+    pub const MAX_SCALE: f32 = 1.;
+    pub const MIN_SCALE: f32 = 0.1;
 }
 
 pub enum ResultCode {
     Success,
     Failure,
     NoAction,
+}
+
+pub mod scrap {
+    pub const ASSET_PATH: &str = "scout_factory.png";
+    pub const LIFETIME_PER_METAL: u32 = 3;
+    pub const LIFETIME_OFFSET: u32 = 50;
+}
+
+pub mod resource_node {
+    pub const ASSET_PATH: &str = "grass.png";
+    pub const Z_POS: f32 = 900.;
 }

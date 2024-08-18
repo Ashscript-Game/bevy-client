@@ -20,7 +20,7 @@ fn control_camera_zoom(
     for event in scroll_event_reader.read() {
         let projection_delta = event.y * 3.;
 
-        projection.scale -= projection_delta * time.delta_seconds();
+        projection.scale = (projection.scale - projection_delta * time.delta_seconds()).clamp(constants::camera::MIN_SCALE, constants::camera::MAX_SCALE);
     }
 }
 
@@ -78,7 +78,8 @@ fn find_camera_translation(
 
 fn apply_camera_translation(translation: Vec2, camera_transform: &mut Transform) {
     
-    camera_transform.translation = translation.extend(camera_transform.translation.z);
+    camera_transform.translation.x += translation.x;
+    camera_transform.translation.y += translation.y;
 }
 
 fn find_speed(input: &Res<ButtonInput<KeyCode>>) -> f32 {
