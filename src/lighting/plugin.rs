@@ -16,7 +16,7 @@ impl Plugin for LightingPlugin {
     }
 }
 
-fn generate_lights(mut commands: Commands, camera_targets: Res<CameraTargets>) {
+fn generate_lights(mut commands: Commands) {
     let mut occluders = vec![];
     let occluder_entity = commands
         .spawn((
