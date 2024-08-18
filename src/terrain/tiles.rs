@@ -65,11 +65,11 @@ fn generate_tiles(
         materials.add(ColorMaterial::from(COLORS[2])),
     ];
 
-    for hex in shapes::hexagon(hex(0, 0), 96) {
+    for hex in shapes::hexagon(hex(0, 0), 97) {
         let pos = HEX_LAYOUT.hex_to_world_pos(hex);
         let hex_mod = hex.to_lower_res(CHUNK_SIZE);
         let color_index = (hex_mod.x - hex_mod.y).rem_euclid(3);
-        let handle = handles[color_index as usize].clone();
+        let material_handle = handles[color_index as usize].clone();
 
         // let handle = materials.add(ColorMaterial::from(COLORS[0]));
 
@@ -77,14 +77,14 @@ fn generate_tiles(
             .spawn(ColorMesh2dBundle {
                 transform: Transform::from_xyz(pos.x, pos.y, 0.0),
                 mesh: mesh_handle.clone().into(),
-                material: handle,
+                material: material_handle,
                 ..default()
             })
             /* .insert(RenderLayers::from_layers(CAMERA_LAYER_FLOOR)).id() */;
     }
 }
 
-fn hexagonal_plane(hex_layout: &HexLayout) -> Mesh {
+pub fn hexagonal_plane(hex_layout: &HexLayout) -> Mesh {
     let mesh_info = PlaneMeshBuilder::new(hex_layout)
         .with_scale(Vec3::splat(0.9))
         .facing(Vec3::Z)

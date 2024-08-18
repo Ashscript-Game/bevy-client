@@ -30,6 +30,14 @@ pub mod scrap {
 }
 
 pub mod resource_node {
+    use bevy::prelude::*;
+
     pub const ASSET_PATH: &str = "grass.png";
-    pub const Z_POS: f32 = 900.;
+    pub const Z_POS: f32 = 1.;
+    pub const COLOR: Color = Color::Rgba {
+        red: 240. / 255.,
+        green: 240. / 255.,
+        blue: 60. / 255.,
+        alpha: 1.,
+    };
 }
