@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use bevy::{
     app::{App, Startup},
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
@@ -13,6 +15,9 @@ pub mod controls;
 pub mod game;
 pub mod lighting;
 pub mod terrain;
+pub mod structure;
+pub mod utils;
+pub mod debug;
 
 fn main() {
     App::new()
@@ -25,7 +30,6 @@ fn main() {
                 })
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        resolution: (512., 512.).into(),
                         title: "Scripter".into(),
                         ..default()
                     }),
@@ -34,7 +38,11 @@ fn main() {
             GamePlugin,
             BevyMagicLight2DPlugin,
             FrameTimeDiagnosticsPlugin,
-            LogDiagnosticsPlugin::default(),
+            LogDiagnosticsPlugin {
+                debug: false,
+                wait_duration: Duration::from_secs(1),
+                filter: None,
+            },
         ))
         .insert_resource(BevyMagicLight2DSettings {
             light_pass_params: LightPassParams {

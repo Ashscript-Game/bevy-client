@@ -3,7 +3,8 @@ use bevy::{
     prelude::*,
     render::{
         mesh::{Indices, PrimitiveTopology},
-        render_asset::RenderAssetUsages, view::RenderLayers,
+        render_asset::RenderAssetUsages,
+        view::RenderLayers,
     },
 };
 use bevy_magic_light_2d::prelude::CAMERA_LAYER_FLOOR;
@@ -17,8 +18,8 @@ impl Plugin for TilePlugin {
     }
 }
 
-const HEX_SIZE: Vec2 = Vec2::splat(16.0);
-const CHUNK_SIZE: u32 = 5;
+pub const HEX_SIZE: Vec2 = Vec2::splat(64.0);
+pub const CHUNK_SIZE: u32 = 5;
 const COLORS: [Color; 3] = [
     /* Color::BLUE, Color::WHITE, Color::RED, */
     Color::Rgba {
@@ -43,7 +44,7 @@ const COLORS: [Color; 3] = [
 
 pub const HEX_LAYOUT: HexLayout = HexLayout {
     hex_size: HEX_SIZE,
-    orientation: HexOrientation::Flat,
+    orientation: HexOrientation::Pointy,
     origin: Vec2::new(0., 0.),
     invert_x: false,
     invert_y: false,
@@ -74,19 +75,19 @@ fn generate_tiles(
         // let handle = materials.add(ColorMaterial::from(COLORS[0]));
 
         commands
-            .spawn(ColorMesh2dBundle {
+            .spawn((ColorMesh2dBundle {
                 transform: Transform::from_xyz(pos.x, pos.y, 0.0),
                 mesh: mesh_handle.clone().into(),
                 material: material_handle,
                 ..default()
-            })
-            /* .insert(RenderLayers::from_layers(CAMERA_LAYER_FLOOR)).id() */;
+            }, RenderLayers::from_layers(CAMERA_LAYER_FLOOR)));
     }
 }
 
 pub fn hexagonal_plane(hex_layout: &HexLayout) -> Mesh {
     let mesh_info = PlaneMeshBuilder::new(hex_layout)
-        .with_scale(Vec3::splat(0.9))
+        // < 1 creates borders around hexes
+        .with_scale(Vec3::splat(0.95))
         .facing(Vec3::Z)
         .center_aligned()
         .build();

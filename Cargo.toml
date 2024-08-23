@@ -24,6 +24,7 @@ lazy_static = "1.5.0"
 hexx = "0.17.0"
 bevy_magic_light_2d = { git = "https://github.com/zaycev/bevy-magic-light-2d.git" } # "0.7.0"
 libnoise = "1.1"
+enum-map = "2.7.3"
 
 [workspace]
 resolver = "2"

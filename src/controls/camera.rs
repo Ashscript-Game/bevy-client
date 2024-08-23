@@ -1,4 +1,9 @@
-use bevy::{app::{App, Plugin, Update}, input::mouse::MouseWheel, prelude::*, render::camera};
+use bevy::{
+    app::{App, Plugin, Update},
+    input::mouse::MouseWheel,
+    prelude::*,
+    render::camera,
+};
 use bevy_magic_light_2d::SpriteCamera;
 
 use crate::constants::{self, control_keys, ResultCode};
@@ -16,80 +21,50 @@ fn control_camera_zoom(
     time: Res<Time>,
     mut scroll_event_reader: EventReader<MouseWheel>,
 ) {
+    let mut projection_delta = 0.;
+
+    for event in scroll_event_reader.read() {
+        projection_delta += event.y * 3.;
+    }
+
+    if projection_delta == 0. {
+        return;
+    }
 
     for mut camera in cameras.iter_mut() {
-        for event in scroll_event_reader.read() {
-            let projection_delta = event.y * 3.;
-    
-            camera.scale = (camera.scale - projection_delta * time.delta_seconds()).clamp(constants::camera::MIN_SCALE, constants::camera::MAX_SCALE);
-        }
+        camera.scale = (camera.scale - projection_delta * time.delta_seconds())
+            .clamp(constants::camera::MIN_SCALE, constants::camera::MAX_SCALE);
     }
 }
 
 fn control_camera_movement(
-    mut camera_query: Query<&mut Transform, With<SpriteCamera>>,
-    input: Res<ButtonInput<KeyCode>>,
-    time: Res<Time>,
+    mut camera_current: Local<Vec2>,
+    mut camera_target: Local<Vec2>,
+    mut query_cameras: Query<&mut Transform, With<SpriteCamera>>,
+    keyboard: Res<ButtonInput<KeyCode>>,
 ) {
-
-    let Ok(mut camera_transform) = camera_query.get_single_mut() else {
-        return;
-    };
-
-    let translation = find_camera_translation(&input, &time);
-    let Ok(translation) = translation else { return };
-
-    apply_camera_translation(translation, &mut camera_transform);
-}
-
-fn find_camera_translation(
-    input: &Res<ButtonInput<KeyCode>>,
-    time: &Res<Time>,
-) -> Result<Vec2, ResultCode> {
-    let speed = find_speed(input);
-    let mut translation = Vec2::new(0., 0.);
-
-    // Replace this with a match expression later
-
-    if input.pressed(control_keys::MOVE_UP) {
-        translation.y += speed;
-    }
-
-    if input.pressed(control_keys::MOVE_DOWN) {
-        translation.y -= speed;
-    }
-
-    if input.pressed(control_keys::MOVE_LEFT) {
-        translation.x -= speed;
-    }
-
-    if input.pressed(control_keys::MOVE_RIGHT) {
-        translation.x += speed;
-    }
-
-    if translation.x == 0. && translation.y == 0. {
-        return Err(ResultCode::NoAction);
-    };
-
-    let delta_seconds = time.delta_seconds();
-    translation.x *= delta_seconds;
-    translation.y *= delta_seconds;
-
-    Ok(translation)
-}
-
-fn apply_camera_translation(translation: Vec2, camera_transform: &mut Transform) {
     
-    camera_transform.translation.x += translation.x;
-    camera_transform.translation.y += translation.y;
-}
-
-fn find_speed(input: &Res<ButtonInput<KeyCode>>) -> f32 {
-    if input.pressed(control_keys::BOOST) {
-        return constants::camera::BOOST_SPEED;
+    if keyboard.pressed(KeyCode::KeyW) {
+        camera_target.y += constants::camera::SPEED;
+    }
+    if keyboard.pressed(KeyCode::KeyS) {
+        camera_target.y -= constants::camera::SPEED;
+    }
+    if keyboard.pressed(KeyCode::KeyA) {
+        camera_target.x -= constants::camera::SPEED;
+    }
+    if keyboard.pressed(KeyCode::KeyD) {
+        camera_target.x += constants::camera::SPEED;
     }
 
-    // Otherwise we aren't boosting
+    // Smooth camera.
+    let blend_ratio = 0.2;
+    let movement = *camera_target - *camera_current;
+    *camera_current += movement * blend_ratio;
 
-    constants::camera::SPEED
+    // Update all sprite cameras.
+    for mut camera_transform in query_cameras.iter_mut() {
+        camera_transform.translation.x = camera_current.x;
+        camera_transform.translation.y = camera_current.y;
+    }
 }

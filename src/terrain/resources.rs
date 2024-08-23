@@ -1,7 +1,7 @@
 use crate::{
-    components::ResourceNode,
+    components::{OccupiesTile, ResourceNode, Scrap},
     constants::{self, resource_node, resource_noise_tresholds, SIMPLEX_GENERATOR},
-    terrain::tiles::{hexagonal_plane, HEX_LAYOUT},
+    terrain::tiles::{hexagonal_plane, HEX_LAYOUT, HEX_SIZE},
 };
 use bevy::{
     app::{App, Plugin, Startup, Update},
@@ -9,7 +9,7 @@ use bevy::{
     prelude::*,
     render::view::RenderLayers,
 };
-use bevy_magic_light_2d::prelude::OmniLightSource2D;
+use bevy_magic_light_2d::prelude::{LightOccluder2D, OmniLightSource2D, CAMERA_LAYER_OBJECTS, CAMERA_LAYER_WALLS};
 use hexx::{hex, shapes};
 use libnoise::Generator;
 
@@ -19,11 +19,11 @@ pub struct ResourcesPlugin;
 
 impl Plugin for ResourcesPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, (generate_nodes, generate_scrap));
+        app.add_systems(Startup, generate_resources);
     }
 }
 
-fn generate_nodes(
+fn generate_resources(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -38,13 +38,38 @@ fn generate_nodes(
         materials.add(ColorMaterial::from(constants::coal_node::COLOR)),
         materials.add(ColorMaterial::from(constants::mineral_node::COLOR)),
         materials.add(ColorMaterial::from(constants::scrap::COLOR)),
+        materials.add(ColorMaterial::from(constants::wall::COLOR)),
     ];
 
     for hex in shapes::hexagon(hex(0, 0), 97) {
         let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
-        let noise = SIMPLEX_GENERATOR.sample([world_pos.x as f64, world_pos.y as f64]);
+        let noise = SIMPLEX_GENERATOR.sample([
+            world_pos.x as f64 / 25.,
+            world_pos.y as f64 / 25., /* hex.x as f64, hex.y as f64 */
+        ]);
+        /* println!("noise: {}", noise); */
 
-        println!("noise: {}", noise);
+        if noise > resource_noise_tresholds::WALL.0 && noise < resource_noise_tresholds::WALL.1 {
+            commands.spawn((
+                ColorMesh2dBundle {
+                    transform: Transform::from_xyz(
+                        world_pos.x,
+                        world_pos.y,
+                        constants::resource_node::Z_POS,
+                    ),
+                    mesh: mesh_handle.clone().into(),
+                    material: material_handles[3].clone(),
+                    ..default()
+                },
+                OccupiesTile,
+                RenderLayers::from_layers(CAMERA_LAYER_WALLS),
+                LightOccluder2D {
+                    h_size: HEX_SIZE * 0.5,
+                },
+            ));
+
+            continue;
+        }
 
         if noise > resource_noise_tresholds::COAL.0 && noise < resource_noise_tresholds::COAL.1 {
             commands.spawn((
@@ -58,12 +83,14 @@ fn generate_nodes(
                     material: material_handles[0].clone(),
                     ..default()
                 },
+                OccupiesTile,
                 ResourceNode {
                     coal_percent: 50,
                     mineral_percent: 50,
                     ticks_to_regen: 0,
                     resource_remaining: 1000,
                 },
+                RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
             ));
 
             resource_node_light(world_pos, &mut commands, constants::coal_node::COLOR);
@@ -85,20 +112,20 @@ fn generate_nodes(
                     material: material_handles[1].clone(),
                     ..default()
                 },
+                OccupiesTile,
                 ResourceNode {
                     coal_percent: 50,
                     mineral_percent: 50,
                     ticks_to_regen: 0,
                     resource_remaining: 1000,
                 },
+                RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
             ));
             resource_node_light(world_pos, &mut commands, constants::mineral_node::COLOR);
             continue;
         }
 
-        if noise > resource_noise_tresholds::SCRAP.0
-            && noise < resource_noise_tresholds::SCRAP.1
-        {
+        if noise > resource_noise_tresholds::SCRAP.0 && noise < resource_noise_tresholds::SCRAP.1 {
             commands.spawn((
                 ColorMesh2dBundle {
                     transform: Transform::from_xyz(
@@ -110,12 +137,12 @@ fn generate_nodes(
                     material: material_handles[2].clone(),
                     ..default()
                 },
-                ResourceNode {
-                    coal_percent: 50,
-                    mineral_percent: 50,
-                    ticks_to_regen: 0,
-                    resource_remaining: 1000,
+                OccupiesTile,
+                Scrap {
+                    metal: 1000,
+                    ticks_to_decay: 100,
                 },
+                RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
             ));
             resource_node_light(world_pos, &mut commands, constants::scrap::COLOR);
             continue;
@@ -123,18 +150,14 @@ fn generate_nodes(
     }
 }
 
-fn generate_scrap() {}
-
-fn generate_mineral_nodes() {}
-
-fn generate_coal_nodes() {}
-
 fn resource_node_light(world_pos: Vec2, commands: &mut Commands, color: Color) {
     commands
         .spawn(OmniLightSource2D {
-            intensity: 0.8,
+            intensity: 0.5,
             color,
-            falloff: Vec3::new(1.5, 10.0, 0.005),
+            falloff: Vec3::new(20., 20., 0.005),
+            jitter_intensity: 0.1,
+            jitter_translation: 5.0,
             ..default()
         })
         .insert(SpatialBundle {
