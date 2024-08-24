@@ -3,7 +3,7 @@ use std::f32::consts::PI;
 use bevy::{prelude::*, render::view::RenderLayers, sprite::{MaterialMesh2dBundle, Mesh2dHandle}};
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 
-use crate::{components::{Assembler, Distributor, ResourceBlob}, constants::{self, z_order, RESOURCE_INPUTS}, structure::distributor::ReplenishDistributors, terrain::tiles::HEX_LAYOUT, utils::find_angle};
+use crate::{components::{Assembler, Distributor, ResourceBlob}, constants::{self, z_order, RESOURCE_INPUTS}, engine::distributor::ReplenishDistributors, terrain::tiles::HEX_LAYOUT, utils::find_angle};
 
 pub fn distributor_ai(
     mut distributors: Query<(&Transform, &mut Distributor)>,

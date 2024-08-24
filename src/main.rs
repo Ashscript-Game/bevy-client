@@ -19,6 +19,7 @@ pub mod structure;
 pub mod utils;
 pub mod debug;
 pub mod player_script;
+pub mod engine;
 
 fn main() {
     App::new()

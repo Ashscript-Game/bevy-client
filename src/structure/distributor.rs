@@ -30,7 +30,7 @@ pub struct DistributorPlugin;
 
 impl Plugin for DistributorPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, (generate_distributors, setup_distributor_replenishing));
+        app.add_systems(Startup, (generate_distributors));
     }
 }
 
@@ -110,11 +110,3 @@ fn distributor_light(world_pos: Vec2, commands: &mut Commands, color: Color) {
         })
         .insert(RenderLayers::all());
 }
-
-#[derive(Resource)]
-pub struct ReplenishDistributors(pub Timer);
-
-fn setup_distributor_replenishing(mut commands: Commands) {
-    commands.insert_resource(ReplenishDistributors(Timer::from_seconds(SECONDS_PER_TICK, TimerMode::Repeating)));
-}
-
