@@ -18,6 +18,7 @@ pub mod terrain;
 pub mod structure;
 pub mod utils;
 pub mod debug;
+pub mod player_script;
 
 fn main() {
     App::new()

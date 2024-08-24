@@ -6,7 +6,7 @@ use hexx::{hex, shapes, Hex};
 
 use crate::{
     components::{Assembler, OccupiesTile, Structure},
-    constants::{self, assembler},
+    constants::{self, assembler, RESOURCE_INPUTS},
     terrain::tiles::HEX_LAYOUT,
 };
 
@@ -14,7 +14,7 @@ pub struct AssemblerPlugin;
 
 impl Plugin for AssemblerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, generate_assemblers);
+        app.add_systems(Startup, generate_assemblers).add_systems(Update, assemblers_produce);
     }
 }
 
@@ -64,4 +64,31 @@ fn spawn_assembler(
         },
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS)
     ));
+}
+
+fn assemblers_produce(mut assemblers: Query<&mut Assembler>) {
+    for mut assembler in assemblers.iter_mut() {
+        let output_resource = assembler.output_resource;
+
+        // Ensure we have a positive amount of input resources
+
+        for input_resource in RESOURCE_INPUTS[output_resource].iter() {
+
+            let Some(input_amount) = assembler.store.get(input_resource) else {
+                continue;
+            };
+
+            if *input_amount == 0 {
+                continue;
+            }
+        }
+
+        // transform 1 of each input resource into output resource
+
+        for input_resource in RESOURCE_INPUTS[output_resource].iter() {
+            *assembler.store.get_mut(input_resource).unwrap() -= 1;
+        }
+
+        *assembler.store.get_mut(&output_resource).unwrap_or(&mut 0) += 1;
+    }
 }
