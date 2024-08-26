@@ -1,5 +1,6 @@
-use std::{cell::RefCell, collections::HashSet};
+use std::{cell::RefCell};
 
+use bevy::utils::hashbrown::HashSet;
 use enum_map::{enum_map, EnumMap};
 use lazy_static::lazy_static;
 use libnoise::prelude::*;
@@ -106,7 +107,7 @@ pub mod resource_noise_tresholds {
     pub const SCRAP: (f64, f64) = (-0.23, -0.25);
 }
 
-#[derive(enum_map::Enum, Hash, Eq, PartialEq, Clone, Copy)]
+#[derive(enum_map::Enum, Hash, Eq, PartialEq, Clone, Copy, Debug)]
 pub enum Resource {
     Coal,
     Minerals,
@@ -118,7 +119,7 @@ pub enum Resource {
 pub mod assembler {
     pub const ASSET_PATH: &str = "assembler.png";
     pub const STORE_CAPACITY: u32 = 1000;
-    pub const RANGE: u32 = 2;
+    pub const RANGE: u32 = 3;
 }
 
 pub mod distributor {
@@ -132,7 +133,7 @@ pub mod distributor {
         blue: 110. / 255.,
         alpha: 1.,
     };
-    pub const RANGE: u32 = 4;
+    pub const RANGE: u32 = 3;
 }
 
 pub mod wall {
@@ -146,6 +147,17 @@ pub mod wall {
     };
 }
 
+pub mod metal {
+    use bevy::prelude::*;
+
+    pub const COLOR: Color = Color::Rgba {
+        red: 200. / 255.,
+        green: 200. / 255.,
+        blue: 200. / 255.,
+        alpha: 1.,
+    };
+}
+
 pub mod z_order {
     pub const PROJECTILE: f32 = 100.;
 }
@@ -154,6 +166,12 @@ pub mod resource_blob {
 }
 
 pub const SECONDS_PER_TICK: f32 = 3.;
+
+#[derive(Eq, PartialEq, Clone, Debug)]
+pub enum GeneralResult {
+    Success,
+    Fail,
+}
 
 /* thread_local! {
     static SIMPLEX_GENERATOR: RefCell<Simplex<2>> = RefCell::new(Source::simplex(42));

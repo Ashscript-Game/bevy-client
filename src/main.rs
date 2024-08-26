@@ -40,11 +40,11 @@ fn main() {
             GamePlugin,
             BevyMagicLight2DPlugin,
             FrameTimeDiagnosticsPlugin,
-            LogDiagnosticsPlugin {
+            /* LogDiagnosticsPlugin {
                 debug: false,
                 wait_duration: Duration::from_secs(1),
                 filter: None,
-            },
+            }, */
         ))
         .insert_resource(BevyMagicLight2DSettings {
             light_pass_params: LightPassParams {

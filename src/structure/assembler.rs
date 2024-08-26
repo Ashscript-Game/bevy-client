@@ -5,8 +5,8 @@ use bevy_magic_light_2d::prelude::CAMERA_LAYER_OBJECTS;
 use hexx::{hex, shapes, Hex};
 
 use crate::{
-    components::{Assembler, OccupiesTile, Structure},
-    constants::{self, assembler, RESOURCE_INPUTS},
+    components::{Assembler, OccupiesTile, Store, Structure},
+    constants::{self, assembler, Resource, RESOURCE_INPUTS},
     terrain::tiles::HEX_LAYOUT,
 };
 
@@ -14,7 +14,7 @@ pub struct AssemblerPlugin;
 
 impl Plugin for AssemblerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, generate_assemblers).add_systems(Update, assemblers_produce);
+        app.add_systems(Startup, generate_assemblers);
     }
 }
 
@@ -59,36 +59,38 @@ fn spawn_assembler(
         Structure,
         Assembler {
             output_resource: constants::Resource::Metal,
-            store: HashMap::new(),
+            store: Store {
+                resources: HashMap::new(),
+                allowed_inputs: Some(RESOURCE_INPUTS[Resource::Metal].clone()),
+                capacity: 1000,
+            },
             transferring: None
         },
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS)
     ));
 }
 
-fn assemblers_produce(mut assemblers: Query<&mut Assembler>) {
-    for mut assembler in assemblers.iter_mut() {
-        let output_resource = assembler.output_resource;
+pub fn assembler_produce(assembler: &mut Assembler) {
+    let output_resource = assembler.output_resource;
 
-        // Ensure we have a positive amount of input resources
+    // Ensure we have a positive amount of input resources
 
-        for input_resource in RESOURCE_INPUTS[output_resource].iter() {
+    for input_resource in RESOURCE_INPUTS[output_resource].iter() {
 
-            let Some(input_amount) = assembler.store.get(input_resource) else {
-                continue;
-            };
+        let Some(input_amount) = assembler.store.resources.get(input_resource) else {
+            return;
+        };
 
-            if *input_amount == 0 {
-                continue;
-            }
+        if *input_amount == 0 {
+            return;
         }
-
-        // transform 1 of each input resource into output resource
-
-        for input_resource in RESOURCE_INPUTS[output_resource].iter() {
-            *assembler.store.get_mut(input_resource).unwrap() -= 1;
-        }
-
-        *assembler.store.get_mut(&output_resource).unwrap_or(&mut 0) += 1;
     }
+
+    // transform 1 of each input resource into output resource
+
+    for input_resource in RESOURCE_INPUTS[output_resource].iter() {
+        *assembler.store.resources.entry(*input_resource).or_insert(0) -= 1;
+    }
+
+    *assembler.store.resources.entry(output_resource).or_insert(0) += 1;
 }

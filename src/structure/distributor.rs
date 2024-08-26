@@ -11,14 +11,14 @@ use bevy::{
         view::RenderLayers,
     },
     sprite::{MaterialMesh2dBundle, Mesh2dHandle},
-    utils::hashbrown::HashMap,
+    utils::{hashbrown::HashMap, HashSet},
 };
 use bevy_inspector_egui::bevy_egui::systems::InputResources;
 use bevy_magic_light_2d::prelude::{LightOccluder2D, OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use hexx::{hex, shapes, Hex};
 
 use crate::{
-    components::{Assembler, Distributor, OccupiesTile, ResourceBlob, Structure},
+    components::{Assembler, Distributor, OccupiesTile, ResourceBlob, Store, Structure},
     constants::{self, distributor, z_order, Resource, RESOURCE_INPUTS, SECONDS_PER_TICK},
     terrain::tiles::HEX_LAYOUT,
     utils::{self, find_angle},
@@ -30,7 +30,7 @@ pub struct DistributorPlugin;
 
 impl Plugin for DistributorPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, (generate_distributors));
+        app.add_systems(Startup, generate_distributors);
     }
 }
 
@@ -39,7 +39,7 @@ fn generate_distributors(
     asset_server: Res<AssetServer>,
     query: Query<&Transform, With<OccupiesTile>>,
 ) {
-    for hex in shapes::hexagon(hex(15, -12), 2) {
+    for hex in shapes::hexagon(hex(13, -10), 2) {
         spawn_distributor(hex, &mut commands, &asset_server, &query);
     }
 }
@@ -48,18 +48,21 @@ fn spawn_distributor(
     hex: hexx::Hex,
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
-    query: &Query<&Transform, With<OccupiesTile>>,
+    occupiers: &Query<&Transform, With<OccupiesTile>>,
 ) {
     let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
 
     // not very efficient
-    for transform in query.iter() {
+    for transform in occupiers.iter() {
         if transform.translation.truncate() == world_pos {
             return;
         }
     }
 
     println!("spawning distributor");
+
+    let resource_options = vec![Resource::Coal, Resource::Minerals, Resource::Metal];
+    let resource = utils::pick(&resource_options);
 
     commands.spawn((
         SpriteBundle {
@@ -74,16 +77,30 @@ fn spawn_distributor(
         OccupiesTile,
         Structure,
         Distributor {
-            resource: constants::Resource::Metal,
-            store: HashMap::new(),
+            resource: *resource,
+            store: Store {
+                resources: {
+                    let mut map = HashMap::new();
+                    map.insert(*resource, 1000);
+                    map
+                },
+                allowed_inputs: Some(HashSet::from([*resource])),
+                capacity: 1000,
+            },
+        },
+        OmniLightSource2D {
+            intensity: 0.2,
+            color: constants::distributor::COLOR,
+            falloff: Vec3::new(1.5, 10., 0.005),
+            ..default()
         },
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
 
-    distributor_light(world_pos, commands, constants::distributor::COLOR);
+    /* distributor_light(world_pos, commands, constants::distributor::COLOR); */
 }
 
-fn distributor_light(world_pos: Vec2, commands: &mut Commands, color: Color) {
+/* fn distributor_light(world_pos: Vec2, commands: &mut Commands, color: Color) {
     commands
         .spawn((
             OmniLightSource2D {
@@ -110,3 +127,4 @@ fn distributor_light(world_pos: Vec2, commands: &mut Commands, color: Color) {
         })
         .insert(RenderLayers::all());
 }
+ */

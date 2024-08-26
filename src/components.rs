@@ -1,4 +1,4 @@
-use bevy::{prelude::*, utils::HashMap};
+use bevy::{prelude::*, utils::{HashMap, HashSet}};
 
 use crate::constants::{self, Resource};
 
@@ -35,7 +35,13 @@ pub struct Distributor {
     pub store: Store,
 }
 
-pub type Store = HashMap<constants::Resource, u32>;
+#[derive(Component, Default)]
+pub struct Store {
+    pub resources: HashMap<constants::Resource, u32>,
+    /// resources that are allowed to be inserted into the structure. If none, accept all resources
+    pub allowed_inputs: Option<HashSet<constants::Resource>>,
+    pub capacity: u32,
+}
 
 #[derive(Component)]
 pub struct FpsText;
