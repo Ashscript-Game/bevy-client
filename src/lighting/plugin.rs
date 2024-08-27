@@ -6,7 +6,7 @@ use bevy::{
 use bevy_magic_light_2d::{prelude::*, FloorCamera, SpriteCamera};
 use hexx::hex;
 
-use crate::terrain::tiles::HEX_LAYOUT;
+use crate::engine::terrain::HEX_LAYOUT;
 
 pub struct LightingPlugin;
 

@@ -1,7 +1,6 @@
 use crate::{
     components::{OccupiesTile, ResourceNode, Scrap},
-    constants::{self, resource_node, resource_noise_tresholds, SIMPLEX_GENERATOR},
-    terrain::tiles::{hexagonal_plane, HEX_LAYOUT, HEX_SIZE},
+    constants::{self, resource_node, resource_noise_tresholds, SIMPLEX_GENERATOR}, engine::terrain::{hexagonal_plane, HEX_LAYOUT, HEX_SIZE},
 };
 use bevy::{
     app::{App, Plugin, Startup, Update},
@@ -12,8 +11,6 @@ use bevy::{
 use bevy_magic_light_2d::prelude::{LightOccluder2D, OmniLightSource2D, CAMERA_LAYER_OBJECTS, CAMERA_LAYER_WALLS};
 use hexx::{hex, shapes};
 use libnoise::Generator;
-
-use super::tiles::TilePlugin;
 
 pub struct ResourcesPlugin;
 

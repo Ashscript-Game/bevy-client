@@ -42,6 +42,7 @@ fn control_camera_movement(
     mut camera_target: Local<Vec2>,
     mut query_cameras: Query<&mut Transform, With<SpriteCamera>>,
     keyboard: Res<ButtonInput<KeyCode>>,
+    time: Res<Time>,
 ) {
     
     if keyboard.pressed(KeyCode::KeyW) {

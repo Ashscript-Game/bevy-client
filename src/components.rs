@@ -1,6 +1,7 @@
 use bevy::{prelude::*, utils::{HashMap, HashSet}};
+use enum_map::EnumMap;
 
-use crate::constants::{self, Resource};
+use crate::constants::{self, Resource, UnitPart};
 
 #[derive(Component)]
 pub struct ResourceNode {
@@ -35,7 +36,7 @@ pub struct Distributor {
     pub store: Store,
 }
 
-#[derive(Component, Default)]
+#[derive(Default, Debug, Clone)]
 pub struct Store {
     pub resources: HashMap<constants::Resource, u32>,
     /// resources that are allowed to be inserted into the structure. If none, accept all resources
@@ -51,4 +52,26 @@ pub struct ResourceBlob {
     pub target_pos: Vec3,
     pub start_pos: Vec3,
     pub resource: Resource,
+}
+
+#[derive(Component, Default, Clone)]
+pub struct Unit {
+    pub body: UnitBody,
+    pub health: u32,
+    pub age: u32,
+    pub energy: u32,
+    pub energy_capacity: u32,
+    pub store: Store,
+    pub name: String,
+    pub weight: u32,
+}
+
+pub type UnitBody = EnumMap<UnitPart, u32>;
+
+#[derive(Component)]
+pub struct Laser {
+    pub target_pos: Vec3,
+    pub start_pos: Vec3,
+    /// Used to determine the intensity of the projectile's visuals
+    pub damage: u32,
 }

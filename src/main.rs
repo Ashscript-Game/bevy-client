@@ -14,12 +14,13 @@ pub mod constants;
 pub mod controls;
 pub mod game;
 pub mod lighting;
-pub mod terrain;
 pub mod structure;
 pub mod utils;
 pub mod debug;
 pub mod player_script;
 pub mod engine;
+pub mod unit;
+pub mod projectile;
 
 fn main() {
     App::new()

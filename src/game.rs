@@ -9,16 +9,7 @@ use bevy_magic_light_2d::{
 };
 
 use crate::{
-    components::ResourceBlob,
-    constants::{self, resource_blob, SECONDS_PER_TICK},
-    controls::{camera::CameraControlsPlugin, plugin::ControlsPlugin},
-    debug::plugin::DebugPlugin,
-    engine::plugin::EnginePlugin,
-    lighting::plugin::LightingPlugin,
-    player_script::plugin::PlayerScriptPlugin,
-    structure::plugin::StructuresPlugin,
-    terrain::{plugin::TerrainPlugin, tiles::TilePlugin},
-    utils::signed_distance,
+    components::ResourceBlob, constants::{self, resource_blob, SECONDS_PER_TICK}, controls::{camera::CameraControlsPlugin, plugin::ControlsPlugin}, debug::plugin::DebugPlugin, engine::plugin::EnginePlugin, lighting::plugin::LightingPlugin, player_script::plugin::PlayerScriptPlugin, projectile::plugin::ProjectilePlugin, structure::plugin::StructuresPlugin, unit::plugin::UnitPlugin, utils::signed_distance
 };
 
 pub struct GamePlugin;
@@ -26,13 +17,14 @@ pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
-            TerrainPlugin,
             ControlsPlugin,
             LightingPlugin,
             StructuresPlugin,
             DebugPlugin,
             PlayerScriptPlugin,
             EnginePlugin,
+            ProjectilePlugin,
+            UnitPlugin,
         ))
         .add_systems(Startup, game_init);
     }

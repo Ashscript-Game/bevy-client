@@ -7,43 +7,24 @@ use hexx::{hex, shapes, Hex};
 use crate::{
     components::{Assembler, OccupiesTile, Store, Structure},
     constants::{self, assembler, Resource, RESOURCE_INPUTS},
-    terrain::tiles::HEX_LAYOUT,
+    engine::terrain::HEX_LAYOUT,
 };
 
 pub struct AssemblerPlugin;
 
 impl Plugin for AssemblerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, generate_assemblers);
+        app;
     }
 }
 
-fn generate_assemblers(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    query: Query<&Transform, With<OccupiesTile>>,
-) {
-
-    for hex in shapes::hexagon(hex(8, -6), 2) {
-
-        spawn_assembler(hex, &mut commands, &asset_server, &query);
-    }
-}
-
-fn spawn_assembler(
+pub fn spawn_assembler(
     hex: hexx::Hex,
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
-    query: &Query<&Transform, With<OccupiesTile>>,
 ) {
-    let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
 
-    // not very efficient
-    for transform in query.iter() {
-        if transform.translation.truncate() == world_pos {
-            return;
-        }
-    }
+    let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
 
     commands.spawn((
         SpriteBundle {

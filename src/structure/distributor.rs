@@ -20,7 +20,7 @@ use hexx::{hex, shapes, Hex};
 use crate::{
     components::{Assembler, Distributor, OccupiesTile, ResourceBlob, Store, Structure},
     constants::{self, distributor, z_order, Resource, RESOURCE_INPUTS, SECONDS_PER_TICK},
-    terrain::tiles::HEX_LAYOUT,
+    engine::terrain::HEX_LAYOUT,
     utils::{self, find_angle},
 };
 
@@ -30,36 +30,16 @@ pub struct DistributorPlugin;
 
 impl Plugin for DistributorPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, generate_distributors);
+        app;
     }
 }
 
-fn generate_distributors(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    query: Query<&Transform, With<OccupiesTile>>,
-) {
-    for hex in shapes::hexagon(hex(13, -10), 2) {
-        spawn_distributor(hex, &mut commands, &asset_server, &query);
-    }
-}
-
-fn spawn_distributor(
+pub fn spawn_distributor(
     hex: hexx::Hex,
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
-    occupiers: &Query<&Transform, With<OccupiesTile>>,
 ) {
     let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
-
-    // not very efficient
-    for transform in occupiers.iter() {
-        if transform.translation.truncate() == world_pos {
-            return;
-        }
-    }
-
-    println!("spawning distributor");
 
     let resource_options = vec![Resource::Coal, Resource::Minerals, Resource::Metal];
     let resource = utils::pick(&resource_options);
@@ -91,7 +71,7 @@ fn spawn_distributor(
         OmniLightSource2D {
             intensity: 0.2,
             color: constants::distributor::COLOR,
-            falloff: Vec3::new(1.5, 10., 0.005),
+            falloff: Vec3::new(4., 4., 0.005),
             ..default()
         },
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),

@@ -98,6 +98,13 @@ lazy_static! {
         Resource::Scrap => HashSet::new(),
         Resource::Minerals => HashSet::new(),
     };
+    pub static ref UnitPartWeights: EnumMap<UnitPart, u32> = enum_map! {
+        UnitPart::Ranged => 5,
+        UnitPart::Generate => 2,
+        UnitPart::Battery => 4,
+        UnitPart::Harvest => 2,
+        _ => 1,
+    };
 }
 
 pub mod resource_noise_tresholds {
@@ -165,12 +172,52 @@ pub mod z_order {
 pub mod resource_blob {
 }
 
-pub const SECONDS_PER_TICK: f32 = 3.;
+pub const SECONDS_PER_TICK: f32 = 2.;
 
 #[derive(Eq, PartialEq, Clone, Debug)]
 pub enum GeneralResult {
     Success,
     Fail,
+}
+
+pub mod unit {
+    use bevy::prelude::*;
+
+    pub const MAX_PARTS: u32 = 100;
+    pub const MAX_HEALTH: u32 = 100;
+    pub const MAX_AGE: u32 = 100;
+    pub const COLOR: Color = Color::Rgba {
+        red: 150. / 255.,
+        green: 150. / 255.,
+        blue: 150. / 255.,
+        alpha: 1.,
+    };
+    pub const LIGHT_COLOR: Color = Color::Rgba {
+        red: 241. / 255.,
+        green: 240. / 255.,
+        blue: 110. / 255.,
+        alpha: 1.,
+    };
+}
+
+#[derive(enum_map::Enum)]
+pub enum UnitPart {
+    Ranged,
+    Harvest,
+    Generate,
+    Work,
+    Battery,
+}   
+
+pub mod laser {
+    use bevy::prelude::*;
+
+    pub const COLOR: Color = Color::Rgba {
+        red: 240. / 255.,
+        green: 0. / 255.,
+        blue: 0. / 255.,
+        alpha: 1.,
+    };
 }
 
 /* thread_local! {

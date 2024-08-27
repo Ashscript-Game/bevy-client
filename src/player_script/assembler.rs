@@ -3,14 +3,10 @@ use hexx::Hex;
 use rand::distributions::DistIter;
 
 use crate::{
-    components::{Assembler, Distributor},
-    constants::{self, GeneralResult},
-    engine::distributor::Tick,
-    structure::{
+    components::{Assembler, Distributor}, constants::{self, GeneralResult}, engine::{terrain::HEX_LAYOUT}, projectile::resource_blob::create_resource_blob, structure::{
         assembler::assembler_produce,
-        utils::{create_resource_blob, transfer},
-    },
-    terrain::tiles::HEX_LAYOUT,
+        utils::transfer,
+    }
 };
 
 pub fn assemblers_produce(

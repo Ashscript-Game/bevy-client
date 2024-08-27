@@ -1,11 +1,24 @@
-use bevy::app::{App, Plugin, Startup, Update};
+use std::time::Duration;
 
-use super::{assembler::setup_assembler_replenishing, distributor::setup_distributor_replenishing, resource_blob::update_resource_blobs};
+use bevy::{app::{App, Plugin, Startup, Update}, prelude::*, time::common_conditions::on_timer};
+
+use crate::constants;
+
+use super::{
+    resources::ResourcesPlugin,
+    terrain::TilePlugin,
+    unit::{age_units, energize_units, kill_units},
+};
 
 pub struct EnginePlugin;
 
 impl Plugin for EnginePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, (setup_distributor_replenishing, setup_assembler_replenishing)).add_systems(Update, update_resource_blobs);
+        app.add_plugins((TilePlugin, ResourcesPlugin)).add_systems(
+            Update,
+            (age_units, kill_units, energize_units).run_if(on_timer(Duration::from_secs_f32(
+                constants::SECONDS_PER_TICK,
+            ))),
+        );
     }
 }
