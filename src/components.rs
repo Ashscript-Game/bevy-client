@@ -81,4 +81,5 @@ pub struct Laser {
 pub struct Moving {
     pub target_pos: Vec3,
     pub start_pos: Vec3,
+    pub angle: f32,
 }

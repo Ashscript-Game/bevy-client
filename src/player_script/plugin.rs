@@ -10,7 +10,7 @@ use crate::constants;
 
 use super::{
     assembler::{assembler_ai, assemblers_produce},
-    distributor::distributor_ai, unit::unit_ai,
+    distributor::distributor_ai, unit::{units_move, units_attack},
 };
 
 pub struct PlayerScriptPlugin;
@@ -19,7 +19,7 @@ impl Plugin for PlayerScriptPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            (distributor_ai, (assemblers_produce, assembler_ai).chain(), unit_ai).run_if(on_timer(
+            (distributor_ai, (assemblers_produce, assembler_ai).chain(), (units_move, units_attack).chain()).run_if(on_timer(
                 Duration::from_secs_f32(constants::SECONDS_PER_TICK),
             )),
         );

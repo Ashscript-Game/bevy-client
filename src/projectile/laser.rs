@@ -39,20 +39,20 @@ pub fn update_lasers(
         // translate the position of the blob to move linearly (relative x to y) towards the target
         // this should move the blob at a constant time of SECONDS_PER_TICK, no matter the distance or tick rate, it should reach the destination at the speed of the tick rate
 
-        let direction = laser_transform.rotation * Vec3::Y;
+        /* let direction = laser_transform.rotation * Vec3::Y;
         let distance = signed_distance(laser.start_pos, laser.target_pos);
 
         let translation_delta = distance / SECONDS_PER_TICK * time.delta_seconds() * direction;
 
-        laser_transform.translation += translation_delta;
+        laser_transform.translation += translation_delta; */
 
         // use trig to apply evenly for diagonal vs straight movement
 
-        /* let x_delta = (blob.target_pos.x - blob.start_pos.x) / SECONDS_PER_TICK * time.delta_seconds() * direction.x;
-        let y_delta = (blob.target_pos.y - blob.start_pos.y) / SECONDS_PER_TICK * time.delta_seconds() * direction.y;
+        let x_delta = (laser.target_pos.x - laser.start_pos.x) / SECONDS_PER_TICK * time.delta_seconds() /* * direction.x */;
+        let y_delta = (laser.target_pos.y - laser.start_pos.y) / SECONDS_PER_TICK * time.delta_seconds() /* * direction.y */;
 
-        blob_transform.translation.x += x_delta;
-        blob_transform.translation.y += y_delta; */
+        laser_transform.translation.x += x_delta;
+        laser_transform.translation.y += y_delta;
     }
 }
 

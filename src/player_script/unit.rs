@@ -12,14 +12,11 @@ use crate::{
     utils::pick,
 };
 
-pub fn unit_ai(
+pub fn units_move(
     mut units: Query<(&mut Unit, &mut Transform)>,
     occupiers: Query<&Transform, (With<OccupiesTile>, Without<Unit>)>,
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    let unit_tiles: HashSet<Hex> = HashSet::from_iter(
+    let mut unit_tiles: HashSet<Hex> = HashSet::from_iter(
         units
             .iter()
             .map(|(_, transform)| HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()))
@@ -36,20 +33,13 @@ pub fn unit_ai(
     let q_offsets = [-1, 0, 1];
     let t_offsets = [-1, 0, 1];
 
-    // temporary solution, cloning probably voids ability to deal damage
-    let mut other_units = units
-        .iter_mut()
-        .map(|(u, t)| (u.clone(), *t))
-        .collect::<Vec<(Unit, Transform)>>();
-
     for (mut unit, mut unit_transform) in units.iter_mut() {
-        
         if let Some(moving) = &unit.moving {
             unit_transform.translation.x = moving.target_pos.x;
             unit_transform.translation.y = moving.target_pos.y;
             unit.moving = None;
         };
-        
+
         if unit_move_cost(&unit) > unit.energy {
             continue;
         }
@@ -81,9 +71,27 @@ pub fn unit_ai(
             }
 
             if unit_move(&mut unit, &mut unit_transform, &translation) == GeneralResult::Success {
+                unit_tiles.insert(translation_hex);
                 break;
             }
         }
+    }
+}
+
+pub fn units_attack(
+    mut units: Query<(&mut Unit, &mut Transform)>,
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    // temporary solution, cloning probably voids ability to deal damage
+    let mut other_units = units
+        .iter_mut()
+        .map(|(u, t)| (u.clone(), *t))
+        .collect::<Vec<(Unit, Transform)>>();
+
+    for (mut unit, mut unit_transform) in units.iter_mut() {
+        let unit_hex: Hex = HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate());
 
         if unit_attack_cost(&unit) > unit.energy {
             continue;
@@ -104,9 +112,17 @@ pub fn unit_ai(
                 continue;
             }
 
+            let laser_target_pos = {
+                if let Some(moving) = &other_unit.moving {
+                    moving.target_pos
+                } else {
+                    other_unit_transform.translation
+                }
+            };
+
             create_laser(
                 &unit_transform.translation,
-                &other_unit_transform.translation,
+                &laser_target_pos,
                 unit_damage(&unit),
                 &mut commands,
                 &mut meshes,

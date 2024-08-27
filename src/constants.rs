@@ -219,13 +219,3 @@ pub mod laser {
         alpha: 1.,
     };
 }
-
-/* thread_local! {
-    static SIMPLEX_GENERATOR: RefCell<Simplex<2>> = RefCell::new(Source::simplex(42));
-} */
-
-/* pub static ref simplex = Source::simplex(42).fbm(5, 0.013, 2.0, 0.5)                        // apply fractal brownian motion
-.blend(                                         // apply blending...
-    Source::worley(43).scale([0.05, 0.05]),     // ...with scaled worley noise
-    Source::worley(44).scale([0.02, 0.02]))     // ...controlled by other worley noise
-.lambda(|f| (f * 2.0).sin() * 0.3 + f * 0.7);   // apply a closure to the noise */

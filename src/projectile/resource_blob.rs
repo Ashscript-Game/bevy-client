@@ -32,20 +32,20 @@ pub fn update_resource_blobs(
         // translate the position of the blob to move linearly (relative x to y) towards the target
         // this should move the blob at a constant time of SECONDS_PER_TICK, no matter the distance or tick rate, it should reach the destination at the speed of the tick rate
 
-        let direction = blob_transform.rotation * Vec3::Y;
-        let distance = signed_distance(blob.start_pos, blob.target_pos);
+        /*let direction = blob_transform.rotation * Vec3::Y;
+         let distance = signed_distance(blob.start_pos, blob.target_pos);
 
         let translation_delta = distance / SECONDS_PER_TICK * time.delta_seconds() * direction;
 
-        blob_transform.translation += translation_delta;
+        blob_transform.translation += translation_delta; */
 
         // use trig to apply evenly for diagonal vs straight movement
 
-        /* let x_delta = (blob.target_pos.x - blob.start_pos.x) / SECONDS_PER_TICK * time.delta_seconds() * direction.x;
-        let y_delta = (blob.target_pos.y - blob.start_pos.y) / SECONDS_PER_TICK * time.delta_seconds() * direction.y;
+        let x_delta = (blob.target_pos.x - blob.start_pos.x) / SECONDS_PER_TICK * time.delta_seconds() /* * direction.x */;
+        let y_delta = (blob.target_pos.y - blob.start_pos.y) / SECONDS_PER_TICK * time.delta_seconds() /* * direction.y */;
 
         blob_transform.translation.x += x_delta;
-        blob_transform.translation.y += y_delta; */
+        blob_transform.translation.y += y_delta;
     }
 }
 

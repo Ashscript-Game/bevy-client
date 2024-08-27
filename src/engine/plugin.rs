@@ -24,7 +24,7 @@ impl Plugin for EnginePlugin {
             (
                 generate_tiles,
                 generate_resources,
-                assembler_distributor_benchmark,
+                /* assembler_distributor_benchmark, */
                 unit_benchmark,
             )
                 .chain(),

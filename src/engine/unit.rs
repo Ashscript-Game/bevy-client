@@ -4,7 +4,8 @@ use bevy::{prelude::*, transform::commands};
 
 use crate::{
     components::{Moving, Unit},
-    constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS}, utils::find_angle,
+    constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS},
+    utils::find_angle,
 };
 
 use super::terrain::HEX_LAYOUT;
@@ -91,18 +92,11 @@ pub fn unit_move(
     target_translation: &Vec3,
 ) -> GeneralResult {
     let hex_pos = HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate());
-    let new_hex_pos =
-        HEX_LAYOUT.world_pos_to_hex(target_translation.truncate());
+    let new_hex_pos = HEX_LAYOUT.world_pos_to_hex(target_translation.truncate());
 
     if hex_pos.unsigned_distance_to(new_hex_pos) != 1 {
         return GeneralResult::Fail;
     }
-
-    unit.moving = Some(Moving {
-        start_pos: unit_transform.translation,
-        target_pos: *target_translation,
-    });
-    unit.energy -= unit_move_cost(unit);
 
     let angle = find_angle(
         unit_transform.translation.x,
@@ -111,8 +105,14 @@ pub fn unit_move(
         target_translation.y,
     ) + PI / 2.;
 
+    unit.moving = Some(Moving {
+        start_pos: unit_transform.translation,
+        target_pos: *target_translation,
+        angle,
+    });
+    unit.energy -= unit_move_cost(unit);
+
     unit_transform.rotation = Quat::from_rotation_z(angle);
 
     GeneralResult::Success
 }
-
