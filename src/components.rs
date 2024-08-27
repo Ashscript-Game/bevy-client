@@ -64,6 +64,7 @@ pub struct Unit {
     pub store: Store,
     pub name: String,
     pub weight: u32,
+    pub moving: Option<Moving>,
 }
 
 pub type UnitBody = EnumMap<UnitPart, u32>;
@@ -74,4 +75,10 @@ pub struct Laser {
     pub start_pos: Vec3,
     /// Used to determine the intensity of the projectile's visuals
     pub damage: u32,
+}
+
+#[derive(Component, Default, Clone)]
+pub struct Moving {
+    pub target_pos: Vec3,
+    pub start_pos: Vec3,
 }

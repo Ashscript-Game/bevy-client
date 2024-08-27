@@ -57,7 +57,7 @@ pub fn spawn_unit(
             health: 100,
             body: enum_map! {
                 UnitPart::Ranged => 3,
-                UnitPart::Generate => 2,
+                UnitPart::Generate => 6,
                 _ => 1,
             },
             ..default()

@@ -1,8 +1,10 @@
+use std::f32::consts::PI;
+
 use bevy::{prelude::*, transform::commands};
 
 use crate::{
-    components::Unit,
-    constants::{self, GeneralResult, UnitPart},
+    components::{Moving, Unit},
+    constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS}, utils::find_angle,
 };
 
 use super::terrain::HEX_LAYOUT;
@@ -45,6 +47,20 @@ pub fn unit_attack_cost(unit: &Unit) -> u32 {
     unit.body[UnitPart::Ranged]
 }
 
+pub fn unit_weight(unit: &Unit) -> u32 {
+    let mut weight: u32 = 0;
+
+    for (body_part, part_amount) in unit.body.iter() {
+        weight += UNIT_PART_WEIGHTS[body_part] * part_amount;
+    }
+
+    weight
+}
+
+pub fn unit_move_cost(unit: &Unit) -> u32 {
+    unit.weight / 10
+}
+
 pub fn unit_attack(
     unit1: &mut Unit,
     unit1_transform: &Transform,
@@ -68,3 +84,35 @@ pub fn unit_attack(
 
     GeneralResult::Success
 }
+
+pub fn unit_move(
+    unit: &mut Unit,
+    unit_transform: &mut Transform,
+    target_translation: &Vec3,
+) -> GeneralResult {
+    let hex_pos = HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate());
+    let new_hex_pos =
+        HEX_LAYOUT.world_pos_to_hex(target_translation.truncate());
+
+    if hex_pos.unsigned_distance_to(new_hex_pos) != 1 {
+        return GeneralResult::Fail;
+    }
+
+    unit.moving = Some(Moving {
+        start_pos: unit_transform.translation,
+        target_pos: *target_translation,
+    });
+    unit.energy -= unit_move_cost(unit);
+
+    let angle = find_angle(
+        unit_transform.translation.x,
+        unit_transform.translation.y,
+        target_translation.x,
+        target_translation.y,
+    ) + PI / 2.;
+
+    unit_transform.rotation = Quat::from_rotation_z(angle);
+
+    GeneralResult::Success
+}
+
