@@ -9,7 +9,10 @@ use bevy::{
 use crate::{constants, structure, unit};
 
 use super::{
-    benchmarks::{assembler_distributor_benchmark, unit_benchmark}, resources::generate_resources, terrain::generate_tiles, unit::{age_units, energize_units, kill_units}
+    benchmarks::{assembler_distributor_benchmark, unit_benchmark},
+    resources::generate_resources,
+    terrain::generate_tiles,
+    unit::{age_units, energize_units, kill_units},
 };
 
 pub struct EnginePlugin;
@@ -21,10 +24,8 @@ impl Plugin for EnginePlugin {
             (
                 generate_tiles,
                 generate_resources,
-                (
-                    assembler_distributor_benchmark,
-                    unit_benchmark,
-                ),
+                assembler_distributor_benchmark,
+                unit_benchmark,
             )
                 .chain(),
         )

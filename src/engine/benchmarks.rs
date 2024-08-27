@@ -1,14 +1,18 @@
-
-
 use bevy::{
     app::{Plugin, Update},
     asset::AssetServer,
-    prelude::*, utils::hashbrown::HashSet,
+    prelude::*,
+    utils::hashbrown::HashSet,
 };
 use hexx::{hex, shapes, Hex};
 use rand::Rng;
 
-use crate::{components::OccupiesTile, engine::terrain::HEX_LAYOUT, structure::{assembler::spawn_assembler, distributor::spawn_distributor}, unit::plugin::spawn_unit};
+use crate::{
+    components::OccupiesTile,
+    engine::terrain::HEX_LAYOUT,
+    structure::{assembler::spawn_assembler, distributor::spawn_distributor},
+    unit::plugin::spawn_unit,
+};
 
 pub fn assembler_distributor_benchmark(
     mut commands: Commands,
@@ -52,7 +56,8 @@ pub fn unit_benchmark(
     let occupied_tiles: HashSet<Hex> = HashSet::from_iter(
         occupiers
             .iter()
-            .map(|transform| HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate())),
+            .map(|transform| HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()))
+            .collect::<Vec<Hex>>(),
     );
 
     let mut rng = rand::thread_rng();
