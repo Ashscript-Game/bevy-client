@@ -19,14 +19,12 @@ pub fn update_lasers(
     time: Res<Time>,
     mut commands: Commands,
 ) {
-
     for (mut laser_transform, laser, entity) in lasers.iter_mut() {
-
-        // the initial sign is important to detect which way we pass the target, negative or positive 
+/*         // the initial sign is important to detect which way we pass the target, negative or positive
 
         let horizontal_sign = (laser.target_pos.x - laser.start_pos.x).signum();
         let vertical_sign = (laser.target_pos.y - laser.start_pos.y).signum();
-        
+
         // if we have passed or reached the target, despawn the blob
         // && or || might not work as it might move along one axis vert / horiz
         // changed from >= to > to account for above
@@ -36,7 +34,7 @@ pub fn update_lasers(
             /* println!("despawning resource blob {:?}", blob.resource); */
             commands.entity(entity).despawn();
             continue;
-        }
+        } */
 
         // translate the position of the blob to move linearly (relative x to y) towards the target
         // this should move the blob at a constant time of SECONDS_PER_TICK, no matter the distance or tick rate, it should reach the destination at the speed of the tick rate
@@ -97,4 +95,10 @@ pub fn create_laser(
         },
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
+}
+
+pub fn kill_lasers(mut commands: Commands, mut lasers: Query<(&Laser, Entity)>) {
+    for (_, entity) in lasers.iter_mut() {
+        commands.entity(entity).despawn();
+    }
 }

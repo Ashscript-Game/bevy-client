@@ -13,7 +13,7 @@ pub fn update_resource_blobs(
 
     for (mut blob_transform, blob, entity) in resource_blobs.iter_mut() {
 
-        // the initial sign is important to detect which way we pass the target, negative or positive 
+/*         // the initial sign is important to detect which way we pass the target, negative or positive 
 
         let horizontal_sign = (blob.target_pos.x - blob.start_pos.x).signum();
         let vertical_sign = (blob.target_pos.y - blob.start_pos.y).signum();
@@ -27,7 +27,7 @@ pub fn update_resource_blobs(
             /* println!("despawning resource blob {:?}", blob.resource); */
             commands.entity(entity).despawn();
             continue;
-        }
+        } */
 
         // translate the position of the blob to move linearly (relative x to y) towards the target
         // this should move the blob at a constant time of SECONDS_PER_TICK, no matter the distance or tick rate, it should reach the destination at the speed of the tick rate
@@ -46,6 +46,12 @@ pub fn update_resource_blobs(
 
         blob_transform.translation.x += x_delta;
         blob_transform.translation.y += y_delta; */
+    }
+}
+
+pub fn kill_resource_blobs(mut commands: Commands, mut blobs: Query<(&ResourceBlob, Entity)>) {
+    for (_, entity) in blobs.iter_mut() {
+        commands.entity(entity).despawn();
     }
 }
 
