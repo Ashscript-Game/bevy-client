@@ -12,15 +12,7 @@ use bevy_magic_light_2d::prelude::{LightOccluder2D, OmniLightSource2D, CAMERA_LA
 use hexx::{hex, shapes};
 use libnoise::Generator;
 
-pub struct ResourcesPlugin;
-
-impl Plugin for ResourcesPlugin {
-    fn build(&self, app: &mut App) {
-        app.add_systems(Startup, generate_resources);
-    }
-}
-
-fn generate_resources(
+pub fn generate_resources(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut meshes: ResMut<Assets<Mesh>>,

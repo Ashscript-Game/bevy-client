@@ -19,12 +19,12 @@ impl Plugin for GamePlugin {
         app.add_plugins((
             ControlsPlugin,
             LightingPlugin,
-            StructuresPlugin,
             DebugPlugin,
             PlayerScriptPlugin,
             EnginePlugin,
             ProjectilePlugin,
             UnitPlugin,
+            StructuresPlugin,
         ))
         .add_systems(Startup, game_init);
     }

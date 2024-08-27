@@ -4,3 +4,4 @@ pub mod distributor;
 pub mod unit;
 pub mod terrain;
 pub mod resources;
+pub mod benchmarks;

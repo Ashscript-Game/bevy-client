@@ -5,13 +5,11 @@ use hexx::Hex;
 
 use crate::{components::{OccupiesTile, Unit}, constants::{unit, z_order, UnitPart}, engine::terrain::HEX_LAYOUT};
 
-use super::benchmarks::UnitBenchmarks;
-
 pub struct UnitPlugin;
 
 impl Plugin for UnitPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(UnitBenchmarks);
+        /* app.add_plugins(UnitBenchmarks); */
     }
 }
 
