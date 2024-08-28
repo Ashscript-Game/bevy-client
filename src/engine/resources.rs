@@ -8,7 +8,7 @@ use bevy::{
     prelude::*,
     render::view::RenderLayers,
 };
-use bevy_magic_light_2d::prelude::{LightOccluder2D, OmniLightSource2D, CAMERA_LAYER_OBJECTS, CAMERA_LAYER_WALLS};
+use bevy_magic_light_2d::{gi::render_layer::ALL_LAYERS, prelude::{LightOccluder2D, OmniLightSource2D, CAMERA_LAYER_OBJECTS, CAMERA_LAYER_WALLS}};
 use hexx::{hex, shapes};
 use libnoise::Generator;
 
@@ -156,5 +156,5 @@ fn resource_node_light(world_pos: Vec2, commands: &mut Commands, color: Color) {
             },
             ..default()
         })
-        .insert(RenderLayers::all());
+        .insert(RenderLayers::from_layers(ALL_LAYERS));
 }

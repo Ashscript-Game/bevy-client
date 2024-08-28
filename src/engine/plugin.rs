@@ -47,7 +47,7 @@ impl Plugin for EnginePlugin {
 fn tick_event(mut event_writer: EventWriter<TickEvent>, mut projectile_timer: ResMut<ProjectileMoveEndTimer>) {
     event_writer.send(TickEvent);
 
-    projectile_timer.0 = Timer::from_seconds(SECONDS_PER_TICK, TimerMode::Once);
+    projectile_timer.0 = Timer::from_seconds(SECONDS_PER_TICK * PROJECTILE_MOVE_END_TICK_PORTION, TimerMode::Once);
 }
 
 fn projectile_move_end_event(mut event_writer: EventWriter<ProjectileMoveEndEvent>, mut projectile_timer: ResMut<ProjectileMoveEndTimer>, time: Res<Time>) {

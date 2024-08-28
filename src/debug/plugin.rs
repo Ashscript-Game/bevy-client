@@ -4,6 +4,7 @@ use bevy::{
     prelude::*,
     render::view::RenderLayers,
 };
+use bevy_magic_light_2d::gi::render_layer::ALL_LAYERS;
 
 use crate::components::FpsText;
 
@@ -34,12 +35,12 @@ fn create_fps_text(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextStyle {
                     font: asset_server.load("fonts/outfit.ttf"),
                     font_size: 60.0,
-                    color: Color::GOLD,
+                    color: Color::WHITE,
                 },
             ),
         ]),
         FpsText,
-        RenderLayers::all(),
+        RenderLayers::from_layers(ALL_LAYERS),
     ));
 }
 

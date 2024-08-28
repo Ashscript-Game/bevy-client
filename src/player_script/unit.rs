@@ -12,6 +12,16 @@ use crate::{
     utils::pick,
 };
 
+pub fn units_stop_move(mut units: Query<(&mut Unit, &mut Transform)>) {
+    for (mut unit, mut unit_transform) in units.iter_mut() {
+        if let Some(moving) = &unit.moving {
+            unit_transform.translation.x = moving.target_pos.x;
+            unit_transform.translation.y = moving.target_pos.y;
+            unit.moving = None;
+        };
+    }
+}
+
 pub fn units_move(
     mut units: Query<(&mut Unit, &mut Transform)>,
     occupiers: Query<&Transform, (With<OccupiesTile>, Without<Unit>)>,
@@ -34,11 +44,11 @@ pub fn units_move(
     let t_offsets = [-1, 0, 1];
 
     for (mut unit, mut unit_transform) in units.iter_mut() {
-        if let Some(moving) = &unit.moving {
+        /* if let Some(moving) = &unit.moving {
             unit_transform.translation.x = moving.target_pos.x;
             unit_transform.translation.y = moving.target_pos.y;
             unit.moving = None;
-        };
+        }; */
 
         if unit_move_cost(&unit) > unit.energy {
             continue;

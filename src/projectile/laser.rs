@@ -11,7 +11,7 @@ use rand::{thread_rng, Rng};
 
 use crate::{
     components::{Laser, ResourceBlob},
-    constants::{self, coal_node, laser, z_order, Resource, SECONDS_PER_TICK},
+    constants::{self, coal_node, laser, z_order, Resource, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK},
     utils::{find_angle, find_angle_coords, signed_distance},
 };
 
@@ -68,8 +68,8 @@ pub fn update_lasers(
 
         // use trig to apply evenly for diagonal vs straight movement
 
-        let x_delta = (laser.target_pos.x - laser.start_pos.x) / SECONDS_PER_TICK * time.delta_seconds() /* * angle.cos().abs() */;
-        let y_delta = (laser.target_pos.y - laser.start_pos.y) / SECONDS_PER_TICK * time.delta_seconds() /* * angle.sin().abs() */;
+        let x_delta = (laser.target_pos.x - laser.start_pos.x) / SECONDS_PER_TICK / PROJECTILE_MOVE_END_TICK_PORTION * time.delta_seconds() /* * angle.cos().abs() */;
+        let y_delta = (laser.target_pos.y - laser.start_pos.y) / SECONDS_PER_TICK / PROJECTILE_MOVE_END_TICK_PORTION * time.delta_seconds() /* * angle.sin().abs() */;
 
         laser_transform.translation.x += x_delta;
         laser_transform.translation.y += y_delta;

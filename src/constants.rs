@@ -1,4 +1,4 @@
-use std::{cell::RefCell};
+use std::cell::RefCell;
 
 use bevy::utils::hashbrown::HashSet;
 use enum_map::{enum_map, EnumMap};
@@ -36,34 +36,19 @@ pub mod resource_node {
 
     pub const ASSET_PATH: &str = "grass.png";
     pub const Z_POS: f32 = 1.;
-    pub const COLOR: Color = Color::Rgba {
-        red: 240. / 255.,
-        green: 240. / 255.,
-        blue: 60. / 255.,
-        alpha: 1.,
-    };
+    pub const COLOR: Color = Color::srgba(240. / 255., 240. / 255., 60. / 255., 1.);
 }
 
 pub mod coal_node {
     use bevy::prelude::*;
 
-    pub const COLOR: Color = Color::Rgba {
-        red: 20. / 255.,
-        green: 20. / 255.,
-        blue: 20. / 255.,
-        alpha: 1.,
-    };
+    pub const COLOR: Color = Color::srgba(20. / 255., 20. / 255., 20. / 255., 1.);
 }
 
 pub mod mineral_node {
     use bevy::prelude::*;
 
-    pub const COLOR: Color = Color::Rgba {
-        red: 120. / 255.,
-        green: 240. / 255.,
-        blue: 120. / 255.,
-        alpha: 1.,
-    };
+    pub const COLOR: Color = Color::srgba(120. / 255., 240. / 255., 120. / 255., 1.);
 }
 
 pub mod scrap {
@@ -73,12 +58,7 @@ pub mod scrap {
     pub const LIFETIME_PER_METAL: u32 = 3;
     pub const LIFETIME_OFFSET: u32 = 50;
     pub const Z_POS: f32 = 1.;
-    pub const COLOR: Color = Color::Rgba {
-        red: 100. / 255.,
-        green: 100. / 255.,
-        blue: 100. / 255.,
-        alpha: 1.,
-    };
+    pub const COLOR: Color = Color::srgba(100. / 255., 100. / 255., 100. / 255., 1.);
 }
 
 /* pub const VAR: Simplex<2> = Source::simplex(42); */
@@ -134,43 +114,27 @@ pub mod distributor {
 
     pub const ASSET_PATH: &str = "dist.png";
     pub const STORE_CAPACITY: u32 = 1000;
-    pub const COLOR: Color = Color::Rgba {
-        red: 241. / 255.,
-        green: 240. / 255.,
-        blue: 110. / 255.,
-        alpha: 1.,
-    };
+    pub const COLOR: Color = Color::srgba(241. / 255., 240. / 255., 110. / 255., 1.);
     pub const RANGE: u32 = 3;
 }
 
 pub mod wall {
     use bevy::prelude::*;
 
-    pub const COLOR: Color = Color::Rgba {
-        red: 0. / 255.,
-        green: 0. / 255.,
-        blue: 0. / 255.,
-        alpha: 1.,
-    };
+    pub const COLOR: Color = Color::srgba(0. / 255., 0. / 255., 0. / 255., 1.);
 }
 
 pub mod metal {
     use bevy::prelude::*;
 
-    pub const COLOR: Color = Color::Rgba {
-        red: 200. / 255.,
-        green: 200. / 255.,
-        blue: 200. / 255.,
-        alpha: 1.,
-    };
+    pub const COLOR: Color = Color::srgba(200. / 255., 200. / 255., 200. / 255., 1.);
 }
 
 pub mod z_order {
     pub const PROJECTILE: f32 = 100.;
 }
 
-pub mod resource_blob {
-}
+pub mod resource_blob {}
 
 pub const SECONDS_PER_TICK: f32 = 2.;
 pub const PROJECTILE_MOVE_END_TICK_PORTION: f32 = 0.75;
@@ -187,18 +151,14 @@ pub mod unit {
     pub const MAX_PARTS: u32 = 100;
     pub const MAX_HEALTH: u32 = 100;
     pub const MAX_AGE: u32 = 100;
-    pub const COLOR: Color = Color::Rgba {
-        red: 150. / 255.,
-        green: 150. / 255.,
-        blue: 150. / 255.,
-        alpha: 1.,
-    };
-    pub const LIGHT_COLOR: Color = Color::Rgba {
-        red: 241. / 255.,
-        green: 240. / 255.,
-        blue: 110. / 255.,
-        alpha: 1.,
-    };
+    pub const COLOR: Color = /* Color::Srgba {
+            red: 150. / 255.,
+            green: 150. / 255.,
+            blue: 150. / 255.,
+            alpha: 1.,
+        }; */
+        Color::srgba(150. / 255., 150. / 255., 150. / 255., 1.);
+    pub const LIGHT_COLOR: Color = Color::srgba(241. / 255., 240. / 255., 110. / 255., 1.);
 }
 
 #[derive(enum_map::Enum)]
@@ -208,15 +168,10 @@ pub enum UnitPart {
     Generate,
     Work,
     Battery,
-}   
+}
 
 pub mod laser {
     use bevy::prelude::*;
 
-    pub const COLOR: Color = Color::Rgba {
-        red: 240. / 255.,
-        green: 0. / 255.,
-        blue: 0. / 255.,
-        alpha: 1.,
-    };
+    pub const COLOR: Color = Color::srgba(240. / 255., 0. / 255., 0. / 255., 1.);
 }
