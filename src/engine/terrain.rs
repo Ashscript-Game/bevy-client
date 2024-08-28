@@ -7,7 +7,6 @@ use bevy::{
         view::RenderLayers,
     },
 };
-use bevy_magic_light_2d::prelude::CAMERA_LAYER_FLOOR;
 use hexx::{hex, shapes, HexLayout, HexOrientation, MeshInfo, PlaneMeshBuilder};
 
 pub const HEX_SIZE: Vec2 = Vec2::splat(64.0);
@@ -57,14 +56,14 @@ pub fn generate_tiles(
                 mesh: mesh_handle.clone().into(),
                 material: material_handle,
                 ..default()
-            }, RenderLayers::from_layers(CAMERA_LAYER_FLOOR)));
+            }));
     }
 }
 
 pub fn hexagonal_plane(hex_layout: &HexLayout) -> Mesh {
     let mesh_info = PlaneMeshBuilder::new(hex_layout)
         // < 1 creates borders around hexes
-        .with_scale(Vec3::splat(0.95))
+        .with_scale(Vec3::splat(1./* 0.95 */))
         .facing(Vec3::Z)
         .center_aligned()
         .build();

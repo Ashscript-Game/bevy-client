@@ -1,5 +1,5 @@
 use bevy::{app::{App, Plugin}, prelude::*, render::view::RenderLayers, sprite::{MaterialMesh2dBundle, Mesh2dHandle}};
-use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
+use bevy_light_2d::light::PointLight2d;
 use enum_map::enum_map;
 use hexx::Hex;
 
@@ -46,10 +46,10 @@ pub fn spawn_unit(
             },
             ..default()
         },
-        OmniLightSource2D {
+        PointLight2d {
             intensity: 0.1,
             color: unit::LIGHT_COLOR,
-            falloff: Vec3::new(2., 2., 0.005),
+            falloff: 2.,
             ..Default::default()
         },
         OccupiesTile,
@@ -62,6 +62,5 @@ pub fn spawn_unit(
             },
             ..default()
         },
-        RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
 }

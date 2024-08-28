@@ -14,7 +14,7 @@ use bevy::{
     utils::{hashbrown::HashMap, HashSet},
 };
 use bevy_inspector_egui::bevy_egui::systems::InputResources;
-use bevy_magic_light_2d::prelude::{LightOccluder2D, OmniLightSource2D, CAMERA_LAYER_OBJECTS};
+use bevy_light_2d::light::PointLight2d;
 use hexx::{hex, shapes, Hex};
 
 use crate::{
@@ -68,13 +68,12 @@ pub fn spawn_distributor(
                 capacity: 1000,
             },
         },
-        OmniLightSource2D {
+        PointLight2d {
             intensity: 0.2,
             color: constants::distributor::COLOR,
-            falloff: Vec3::new(4., 4., 0.005),
+            falloff: 4.,
             ..default()
         },
-        RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
 
     /* distributor_light(world_pos, commands, constants::distributor::COLOR); */

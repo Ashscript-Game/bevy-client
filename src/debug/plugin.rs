@@ -4,7 +4,6 @@ use bevy::{
     prelude::*,
     render::view::RenderLayers,
 };
-use bevy_magic_light_2d::gi::render_layer::ALL_LAYERS;
 
 use crate::components::FpsText;
 
@@ -40,7 +39,6 @@ fn create_fps_text(mut commands: Commands, asset_server: Res<AssetServer>) {
             ),
         ]),
         FpsText,
-        RenderLayers::from_layers(ALL_LAYERS),
     ));
 }
 

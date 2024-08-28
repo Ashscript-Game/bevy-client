@@ -1,6 +1,7 @@
 use crate::{
     components::{OccupiesTile, ResourceNode, Scrap},
-    constants::{self, resource_node, resource_noise_tresholds, SIMPLEX_GENERATOR}, engine::terrain::{hexagonal_plane, HEX_LAYOUT, HEX_SIZE},
+    constants::{self, resource_node, resource_noise_tresholds, SIMPLEX_GENERATOR},
+    engine::terrain::{hexagonal_plane, HEX_LAYOUT, HEX_SIZE},
 };
 use bevy::{
     app::{App, Plugin, Startup, Update},
@@ -8,7 +9,10 @@ use bevy::{
     prelude::*,
     render::view::RenderLayers,
 };
-use bevy_magic_light_2d::{gi::render_layer::ALL_LAYERS, prelude::{LightOccluder2D, OmniLightSource2D, CAMERA_LAYER_OBJECTS, CAMERA_LAYER_WALLS}};
+use bevy_light_2d::{
+    light::{PointLight2d, PointLight2dBundle},
+    prelude::{LightOccluder2d, LightOccluder2dShape},
+};
 use hexx::{hex, shapes};
 use libnoise::Generator;
 
@@ -51,10 +55,11 @@ pub fn generate_resources(
                     ..default()
                 },
                 OccupiesTile,
-                RenderLayers::from_layers(CAMERA_LAYER_WALLS),
-                LightOccluder2D {
-                    h_size: HEX_SIZE * 0.5,
-                },
+                /* LightOccluder2d {
+                    shape: LightOccluder2dShape::Rectangle {
+                        half_size: HEX_SIZE * 0.5,
+                    },
+                }, */
             ));
 
             continue;
@@ -79,7 +84,6 @@ pub fn generate_resources(
                     ticks_to_regen: 0,
                     resource_remaining: 1000,
                 },
-                RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
             ));
 
             resource_node_light(world_pos, &mut commands, constants::coal_node::COLOR);
@@ -108,7 +112,6 @@ pub fn generate_resources(
                     ticks_to_regen: 0,
                     resource_remaining: 1000,
                 },
-                RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
             ));
             resource_node_light(world_pos, &mut commands, constants::mineral_node::COLOR);
             continue;
@@ -131,7 +134,6 @@ pub fn generate_resources(
                     metal: 1000,
                     ticks_to_decay: 100,
                 },
-                RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
             ));
             resource_node_light(world_pos, &mut commands, constants::scrap::COLOR);
             continue;
@@ -140,21 +142,17 @@ pub fn generate_resources(
 }
 
 fn resource_node_light(world_pos: Vec2, commands: &mut Commands, color: Color) {
-    commands
-        .spawn(OmniLightSource2D {
+    commands.spawn(PointLight2dBundle {
+        transform: Transform::from_xyz(world_pos.x, world_pos.y, 150.),
+        point_light: PointLight2d {
             intensity: 0.5,
             color,
-            falloff: Vec3::new(20., 20., 0.005),
-            jitter_intensity: 0.1,
-            jitter_translation: 5.0,
+            radius: 100.,
+            falloff: 1.,
+            /* jitter_intensity: 0.1,
+            jitter_translation: 5.0, */
             ..default()
-        })
-        .insert(SpatialBundle {
-            transform: Transform {
-                translation: Vec3::new(world_pos.x, world_pos.y, 0.0),
-                ..default()
-            },
-            ..default()
-        })
-        .insert(RenderLayers::from_layers(ALL_LAYERS));
+        },
+        ..default()
+    });
 }

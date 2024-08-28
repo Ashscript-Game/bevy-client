@@ -5,7 +5,6 @@ use bevy::{
     render::view::RenderLayers,
     sprite::{MaterialMesh2dBundle, Mesh2dHandle},
 };
-use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 
 use crate::{
     components::{Assembler, Distributor, ResourceBlob}, constants::{self, z_order, GeneralResult, RESOURCE_INPUTS}, engine::{terrain::HEX_LAYOUT}, projectile::resource_blob::create_resource_blob, structure::utils::transfer, utils::find_angle_coords

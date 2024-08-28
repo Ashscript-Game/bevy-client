@@ -1,7 +1,6 @@
 use bevy::{
     app::{App, Plugin, Startup}, prelude::*, render::view::RenderLayers, utils::hashbrown::HashMap
 };
-use bevy_magic_light_2d::prelude::CAMERA_LAYER_OBJECTS;
 use hexx::{hex, shapes, Hex};
 
 use crate::{
@@ -47,7 +46,6 @@ pub fn spawn_assembler(
             },
             transferring: None
         },
-        RenderLayers::from_layers(CAMERA_LAYER_OBJECTS)
     ));
 }
 

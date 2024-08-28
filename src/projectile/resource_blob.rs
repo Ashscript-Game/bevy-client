@@ -1,7 +1,7 @@
 use std::f32::consts::PI;
 
 use bevy::{prelude::*, render::view::RenderLayers, sprite::{MaterialMesh2dBundle, Mesh2dHandle}, utils::hashbrown::HashMap};
-use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
+use bevy_light_2d::light::PointLight2d;
 
 use crate::{components::ResourceBlob, constants::{self, coal_node, z_order, Resource, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK}, utils::{find_angle_coords, signed_distance}};
 
@@ -92,17 +92,16 @@ pub fn create_resource_blob(
             },
             ..default()
         },
-        /* OmniLightSource2D {
+        PointLight2d {
             intensity: 0.1,
             color: color,
-            falloff: Vec3::new(2., 2., 0.005),
+            falloff: 2.,
             ..Default::default()
-        }, */
+        },
         ResourceBlob {
             resource: *resource,
             target_pos: *target_pos,
             start_pos: *start_pos,
         },
-        RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
 }
