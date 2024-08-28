@@ -173,6 +173,7 @@ pub mod resource_blob {
 }
 
 pub const SECONDS_PER_TICK: f32 = 2.;
+pub const PROJECTILE_MOVE_END_TICK_PORTION: f32 = 0.75;
 
 #[derive(Eq, PartialEq, Clone, Debug)]
 pub enum GeneralResult {

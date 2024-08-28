@@ -6,7 +6,7 @@ use bevy::{
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 
 use crate::{
-    components::{ResourceBlob, Store}, constants::{self, coal_node, z_order, GeneralResult, Resource, RESOURCE_INPUTS}, engine::terrain::HEX_LAYOUT, utils::find_angle
+    components::{ResourceBlob, Store}, constants::{self, coal_node, z_order, GeneralResult, Resource, RESOURCE_INPUTS}, engine::terrain::HEX_LAYOUT, utils::find_angle_coords
 };
 
 pub fn transfer(

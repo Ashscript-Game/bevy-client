@@ -1,7 +1,5 @@
 use bevy::{
-    app::{App, Plugin, Startup},
-    prelude::*,
-    render::{camera::RenderTarget, view::RenderLayers},
+    app::{App, Plugin, Startup}, core_pipeline::bloom::BloomSettings, prelude::*, render::{camera::RenderTarget, view::RenderLayers}
 };
 use bevy_magic_light_2d::{
     prelude::{CameraTargets, CAMERA_LAYER_FLOOR, CAMERA_LAYER_OBJECTS, CAMERA_LAYER_WALLS},
@@ -82,6 +80,7 @@ fn game_init(mut commands: Commands, camera_targets: Res<CameraTargets>) {
             projection: projection.clone(),
             ..Default::default()
         },
+        /* BloomSettings::NATURAL, */
         Name::new("obejcts_camera"),
         ObjectsCamera,
         SpriteCamera,

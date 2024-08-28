@@ -21,7 +21,7 @@ use crate::{
     components::{Assembler, Distributor, OccupiesTile, ResourceBlob, Store, Structure},
     constants::{self, distributor, z_order, Resource, RESOURCE_INPUTS, SECONDS_PER_TICK},
     engine::terrain::HEX_LAYOUT,
-    utils::{self, find_angle},
+    utils::{self, find_angle_coords},
 };
 
 use super::assembler;

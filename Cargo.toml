@@ -2,7 +2,7 @@
 name = "hex-game"
 version = "0.1.0"
 edition = "2021"
-license = "GPL-3"
+license = "propietary"
 
 [dependencies]
 bevy = { version = "0.13.0", default-features = true, features = [
@@ -18,13 +18,42 @@ rand = "0.8.5"
 # winit = "0.29.10"
 # image = "0.24"
 bevy-inspector-egui = "0.23.0"
-log = "0.4.20"
+log = { version = "0.4.2", features = ["max_level_debug", "release_max_level_warn"] }
 # bevy_rapier2d = "0.25.0"
 lazy_static = "1.5.0"
 hexx = "0.17.0"
 bevy_magic_light_2d = { git = "https://github.com/zaycev/bevy-magic-light-2d.git" } # "0.7.0"
 libnoise = "1.1"
 enum-map = "2.7.3"
+
+[features]
+# cargo run --features dev
+dev = ["bevy/dynamic_linking", "bevy/file_watcher", "bevy/asset_processor"]
+
+[profile.dev]
+debug = 0
+strip = "debuginfo"
+opt-level = 1 # Switch to 1 for more runtime performance
+# overflow-checks = false # Uncomment for better math performance
+
+[profile.dev.package."*"]
+opt-level = 2
+
+[profile.release]
+opt-level = 3
+panic = 'abort'
+debug = 0
+strip = "debuginfo"
+# lto = "thin" # Enable for more inlining with a bigger tradeoff in compile times
+
+# Ship this to players
+# build command
+# cargo build --profile distribution -F tracing/release_max_level_error -F log/release_max_level_off
+[profile.distribution]
+inherits = "release"
+strip = true
+lto = "thin"
+codegen-units = 1
 
 [workspace]
 resolver = "2"

@@ -73,6 +73,7 @@ pub type UnitBody = EnumMap<UnitPart, u32>;
 pub struct Laser {
     pub target_pos: Vec3,
     pub start_pos: Vec3,
+    pub angle: f32,
     /// Used to determine the intensity of the projectile's visuals
     pub damage: u32,
 }
@@ -83,3 +84,18 @@ pub struct Moving {
     pub start_pos: Vec3,
     pub angle: f32,
 }
+
+#[derive(Component)]
+pub struct Turret {
+    
+    pub store: Store,
+}
+
+#[derive(Event)]
+pub struct TickEvent;
+
+#[derive(Event)]
+pub struct ProjectileMoveEndEvent;
+
+#[derive(Resource)]
+pub struct ProjectileMoveEndTimer(pub Timer);

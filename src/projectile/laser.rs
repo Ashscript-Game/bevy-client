@@ -7,19 +7,19 @@ use bevy::{
     utils::hashbrown::HashMap,
 };
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
+use rand::{thread_rng, Rng};
 
 use crate::{
     components::{Laser, ResourceBlob},
     constants::{self, coal_node, laser, z_order, Resource, SECONDS_PER_TICK},
-    utils::{find_angle, signed_distance},
+    utils::{find_angle, find_angle_coords, signed_distance},
 };
 
 pub fn update_lasers(
-    mut lasers: Query<(&mut Transform, &Laser, Entity)>,
+    mut lasers: Query<(&mut Transform, &mut Laser)>,
     time: Res<Time>,
-    mut commands: Commands,
 ) {
-    for (mut laser_transform, laser, entity) in lasers.iter_mut() {
+    for (mut laser_transform, mut laser) in lasers.iter_mut() {
 /*         // the initial sign is important to detect which way we pass the target, negative or positive
 
         let horizontal_sign = (laser.target_pos.x - laser.start_pos.x).signum();
@@ -46,10 +46,30 @@ pub fn update_lasers(
 
         laser_transform.translation += translation_delta; */
 
+        // laser_transform.rotation = Quat::from_rotation_z(angle);
+
+        /* laser_transform.rotation.w += 0.01;
+        let angle = laser_transform.rotation.w; */
+
+        /* let target_angle = find_angle(&laser_transform.translation, &laser.target_pos);
+
+        println!("target angle {}, laser angle {}", target_angle, laser.angle);
+
+        if laser.angle > target_angle {
+            laser.angle -= 0.1; 
+        }
+        else {
+            laser.angle += 0.1;
+        }
+       // laser.angle = target_angle;
+
+        let angle = laser.angle;
+        laser_transform.rotation = Quat::from_rotation_z(angle); */
+
         // use trig to apply evenly for diagonal vs straight movement
 
-        let x_delta = (laser.target_pos.x - laser.start_pos.x) / SECONDS_PER_TICK * time.delta_seconds() /* * direction.x */;
-        let y_delta = (laser.target_pos.y - laser.start_pos.y) / SECONDS_PER_TICK * time.delta_seconds() /* * direction.y */;
+        let x_delta = (laser.target_pos.x - laser.start_pos.x) / SECONDS_PER_TICK * time.delta_seconds() /* * angle.cos().abs() */;
+        let y_delta = (laser.target_pos.y - laser.start_pos.y) / SECONDS_PER_TICK * time.delta_seconds() /* * angle.sin().abs() */;
 
         laser_transform.translation.x += x_delta;
         laser_transform.translation.y += y_delta;
@@ -66,7 +86,10 @@ pub fn create_laser(
 ) {
     /* println!("creating resource blob {:?}", resource); */
 
-    let angle = find_angle(start_pos.x, start_pos.y, target_pos.x, target_pos.y) + PI / 2.;
+    let mut rng = thread_rng();
+    let angle_offset = PI / rng.gen_range(0.1..=0.2);
+
+    let angle = find_angle(start_pos, target_pos) /* + angle_offset */;
 
     let mesh = Mesh2dHandle(meshes.add(Circle::new(10.)));
     let color = laser::COLOR;
@@ -77,8 +100,9 @@ pub fn create_laser(
             material: materials.add(color),
             transform: Transform {
                 translation: Vec3::new(start_pos.x, start_pos.y, z_order::PROJECTILE),
-                rotation: Quat::from_rotation_z(angle),
+                /* rotation: Quat::from_rotation_z(angle), */
                 scale: Vec3::new(1.0, 1.0, 1.0),
+                ..default()
             },
             ..default()
         },
@@ -91,6 +115,7 @@ pub fn create_laser(
         Laser {
             start_pos: *start_pos,
             target_pos: *target_pos,
+            angle,
             damage,
         },
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),

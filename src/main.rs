@@ -7,20 +7,23 @@ use bevy::{
     DefaultPlugins,
 };
 use bevy_magic_light_2d::{gi::BevyMagicLight2DPlugin, prelude::*};
+use components::ProjectileMoveEndTimer;
+use constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK};
 use game::GamePlugin;
 
 pub mod components;
 pub mod constants;
 pub mod controls;
+pub mod debug;
+pub mod engine;
 pub mod game;
 pub mod lighting;
-pub mod structure;
-pub mod utils;
-pub mod debug;
 pub mod player_script;
-pub mod engine;
-pub mod unit;
+pub mod prelude;
 pub mod projectile;
+pub mod structure;
+pub mod unit;
+pub mod utils;
 
 fn main() {
     App::new()
@@ -57,6 +60,10 @@ fn main() {
             },
             ..default()
         })
+        .insert_resource(ProjectileMoveEndTimer(Timer::from_seconds(
+            SECONDS_PER_TICK * PROJECTILE_MOVE_END_TICK_PORTION,
+            TimerMode::Once,
+        )))
         .register_type::<LightOccluder2D>()
         .register_type::<OmniLightSource2D>()
         .register_type::<SkylightMask2D>()

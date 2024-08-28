@@ -5,7 +5,7 @@ use bevy::{prelude::*, transform::commands};
 use crate::{
     components::{Moving, Unit},
     constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS},
-    utils::find_angle,
+    utils::find_angle_coords,
 };
 
 use super::terrain::HEX_LAYOUT;
@@ -98,12 +98,12 @@ pub fn unit_move(
         return GeneralResult::Fail;
     }
 
-    let angle = find_angle(
+    let angle = find_angle_coords(
         unit_transform.translation.x,
         unit_transform.translation.y,
         target_translation.x,
         target_translation.y,
-    ) + PI / 2.;
+    );
 
     unit.moving = Some(Moving {
         start_pos: unit_transform.translation,

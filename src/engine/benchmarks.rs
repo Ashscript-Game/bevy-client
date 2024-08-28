@@ -31,8 +31,6 @@ pub fn assembler_distributor_benchmark(
         occupied_tiles.insert(HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()));
     } */
 
-    println!("occupied tiles: {:?}", occupied_tiles);
-
     let mut rng = rand::thread_rng();
 
     for hex in shapes::hexagon(hex(0, 0), 10) {

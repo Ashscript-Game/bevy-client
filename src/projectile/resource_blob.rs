@@ -3,7 +3,7 @@ use std::f32::consts::PI;
 use bevy::{prelude::*, render::view::RenderLayers, sprite::{MaterialMesh2dBundle, Mesh2dHandle}, utils::hashbrown::HashMap};
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 
-use crate::{components::ResourceBlob, constants::{self, coal_node, z_order, Resource, SECONDS_PER_TICK}, utils::{find_angle, signed_distance}};
+use crate::{components::ResourceBlob, constants::{self, coal_node, z_order, Resource, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK}, utils::{find_angle_coords, signed_distance}};
 
 pub fn update_resource_blobs(
     mut resource_blobs: Query<(&mut Transform, &ResourceBlob, Entity)>,
@@ -13,9 +13,9 @@ pub fn update_resource_blobs(
 
     for (mut blob_transform, blob, entity) in resource_blobs.iter_mut() {
 
-/*         // the initial sign is important to detect which way we pass the target, negative or positive 
+        // the initial sign is important to detect which way we pass the target, negative or positive 
 
-        let horizontal_sign = (blob.target_pos.x - blob.start_pos.x).signum();
+/*         let horizontal_sign = (blob.target_pos.x - blob.start_pos.x).signum();
         let vertical_sign = (blob.target_pos.y - blob.start_pos.y).signum();
         
         // if we have passed or reached the target, despawn the blob
@@ -41,8 +41,8 @@ pub fn update_resource_blobs(
 
         // use trig to apply evenly for diagonal vs straight movement
 
-        let x_delta = (blob.target_pos.x - blob.start_pos.x) / SECONDS_PER_TICK * time.delta_seconds() /* * direction.x */;
-        let y_delta = (blob.target_pos.y - blob.start_pos.y) / SECONDS_PER_TICK * time.delta_seconds() /* * direction.y */;
+        let x_delta = (blob.target_pos.x - blob.start_pos.x) / SECONDS_PER_TICK / PROJECTILE_MOVE_END_TICK_PORTION * time.delta_seconds() /* * direction.x */;
+        let y_delta = (blob.target_pos.y - blob.start_pos.y) / SECONDS_PER_TICK / PROJECTILE_MOVE_END_TICK_PORTION * time.delta_seconds() /* * direction.y */;
 
         blob_transform.translation.x += x_delta;
         blob_transform.translation.y += y_delta;
@@ -67,12 +67,12 @@ pub fn create_resource_blob(
 
     let mesh = Mesh2dHandle(meshes.add(Circle::new(10.)));
 
-    let angle = find_angle(
+    let angle = find_angle_coords(
         start_pos.x,
         start_pos.y,
         target_pos.x,
         target_pos.y,
-    ) + PI / 2.;
+    );
     
     let color_resource_map: HashMap<Resource, Color> = HashMap::from([(Resource::Coal, coal_node::COLOR), (Resource::Minerals, constants::mineral_node::COLOR), (Resource::Metal, constants::metal::COLOR)]);
     let color = *color_resource_map.get(resource).unwrap_or(&Color::WHITE);
@@ -92,12 +92,12 @@ pub fn create_resource_blob(
             },
             ..default()
         },
-        OmniLightSource2D {
+        /* OmniLightSource2D {
             intensity: 0.1,
             color: color,
             falloff: Vec3::new(2., 2., 0.005),
             ..Default::default()
-        },
+        }, */
         ResourceBlob {
             resource: *resource,
             target_pos: *target_pos,

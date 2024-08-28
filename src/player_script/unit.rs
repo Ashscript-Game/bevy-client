@@ -90,7 +90,7 @@ pub fn units_attack(
         .map(|(u, t)| (u.clone(), *t))
         .collect::<Vec<(Unit, Transform)>>();
 
-    for (mut unit, mut unit_transform) in units.iter_mut() {
+    for (mut unit, unit_transform) in units.iter_mut() {
         let unit_hex: Hex = HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate());
 
         if unit_attack_cost(&unit) > unit.energy {
