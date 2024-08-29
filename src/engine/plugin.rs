@@ -13,7 +13,7 @@ use crate::{
 };
 
 use super::{
-    benchmarks::{assembler_distributor_benchmark, unit_benchmark},
+    benchmarks::{assembler_distributor_benchmark, turret_benchmark, unit_benchmark},
     resources::generate_resources,
     terrain::generate_tiles,
     unit::{age_units, energize_units, kill_units},
@@ -30,6 +30,7 @@ impl Plugin for EnginePlugin {
                 generate_resources,
                 /* assembler_distributor_benchmark, */
                 unit_benchmark,
+                turret_benchmark,
             )
                 .chain(),
         )

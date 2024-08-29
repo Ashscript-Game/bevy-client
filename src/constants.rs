@@ -175,3 +175,11 @@ pub mod laser {
 
     pub const COLOR: Color = Color::srgba(240. / 255., 0. / 255., 0. / 255., 1.);
 }
+
+pub mod turret {
+    use bevy::color::Color;
+
+    pub const ASSET_PATH: &str = "turret.png";
+    pub const STORE_CAPACITY: u32 = 1000;
+    pub const COLOR: Color = Color::srgba(241. / 255., 240. / 255., 110. / 255., 1.);
+}

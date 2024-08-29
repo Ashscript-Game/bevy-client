@@ -10,7 +10,7 @@ use rand::Rng;
 use crate::{
     components::OccupiesTile,
     engine::terrain::HEX_LAYOUT,
-    structure::{assembler::spawn_assembler, distributor::spawn_distributor},
+    structure::{assembler::spawn_assembler, distributor::spawn_distributor, turret::spawn_turret},
     unit::plugin::spawn_unit,
 };
 
@@ -68,5 +68,29 @@ pub fn unit_benchmark(
         if rng.gen_range(0..=5) == 0 {
             spawn_unit(hex, &mut commands, &mut meshes, &mut materials)
         }
+    }
+}
+
+pub fn turret_benchmark(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    occupiers: Query<&Transform, With<OccupiesTile>>,
+) {
+
+    let occupied_tiles: HashSet<Hex> = HashSet::from_iter(
+        occupiers
+            .iter()
+            .map(|transform| HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()))
+            .collect::<Vec<Hex>>(),
+    );
+
+    let mut rng = rand::thread_rng();
+
+    for hex in shapes::hexagon(hex(0, 0), 10) {
+        if occupied_tiles.contains(&hex) {
+            continue;
+        }
+
+        if rng.gen_range(0..=5) == 0 { spawn_turret(hex, &mut commands, &asset_server) }
     }
 }

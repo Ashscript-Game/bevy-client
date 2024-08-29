@@ -6,12 +6,10 @@ use bevy::{
     time::common_conditions::on_timer,
 };
 
-use crate::{components::ProjectileMoveEndEvent, constants};
+use crate::{components::{ProjectileMoveEndEvent, TickEvent}, constants};
 
 use super::{
-    assembler::{assembler_ai, assemblers_produce},
-    distributor::distributor_ai,
-    unit::{units_attack, units_move, units_stop_move},
+    assembler::{assembler_ai, assemblers_produce}, distributor::distributor_ai, turret::turret_ai, unit::{units_attack, units_move, units_stop_move}
 };
 
 pub struct PlayerScriptPlugin;
@@ -23,11 +21,9 @@ impl Plugin for PlayerScriptPlugin {
             (
                 distributor_ai,
                 (assemblers_produce, assembler_ai).chain(),
-                (units_move, units_attack).chain(),
+                (units_move, units_attack, turret_ai).chain(),
             )
-                .run_if(on_timer(Duration::from_secs_f32(
-                    constants::SECONDS_PER_TICK,
-                ))),
+                .run_if(on_event::<TickEvent>()),
         )
         .add_systems(
             Update,
