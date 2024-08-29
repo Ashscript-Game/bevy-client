@@ -72,6 +72,7 @@ pub fn spawn_distributor(
             intensity: 0.2,
             color: constants::distributor::COLOR,
             falloff: 4.,
+            cast_shadows: true,
             ..default()
         },
     ));

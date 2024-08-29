@@ -50,6 +50,7 @@ pub fn spawn_unit(
             intensity: 0.1,
             color: unit::LIGHT_COLOR,
             falloff: 2.,
+            cast_shadows: true,
             ..Default::default()
         },
         OccupiesTile,

@@ -43,11 +43,23 @@ pub fn generate_resources(
         /* println!("noise: {}", noise); */
 
         if noise > resource_noise_tresholds::WALL.0 && noise < resource_noise_tresholds::WALL.1 {
-            let occluder = commands
+            let occluder_hori = commands
                 .spawn(LightOccluder2dBundle {
                     light_occluder: LightOccluder2d {
                         shape: LightOccluder2dShape::Rectangle {
-                            half_size: HEX_SIZE * 2., /* / 2. */
+                            half_size: Vec2::new(HEX_SIZE.x, HEX_SIZE.y / 2.), /* / 2. */
+                        },
+                    },
+                    transform: Transform::from_xyz(0., 0., 0.0),
+                    ..default()
+                })
+                .id();
+
+                let occluder_verti = commands
+                .spawn(LightOccluder2dBundle {
+                    light_occluder: LightOccluder2d {
+                        shape: LightOccluder2dShape::Rectangle {
+                            half_size: Vec2::new(1., HEX_SIZE.y), /* / 2. */
                         },
                     },
                     transform: Transform::from_xyz(0., 0., 0.0),
@@ -74,7 +86,7 @@ pub fn generate_resources(
                         },
                     }, */
                 ))
-                .add_child(occluder);
+                .add_child(occluder_hori).add_child(occluder_verti);
 
             continue;
         }
@@ -171,10 +183,11 @@ fn resource_node_light(world_pos: Vec2, commands: &mut Commands, color: Color) -
         .spawn(PointLight2dBundle {
             transform: Transform::from_xyz(0., 0., 150.),
             point_light: PointLight2d {
-                intensity: 5.,
+                intensity: 0.5,
                 color,
                 radius: 1000.,
                 falloff: 1.,
+                cast_shadows: true,
                 ..default()
             },
             ..default()

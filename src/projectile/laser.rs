@@ -101,6 +101,7 @@ pub fn create_laser(
             color,
             radius: 100.,
             falloff: 10.,
+            cast_shadows: true,
             // jitter_intensity: 0.1,
             // jitter_translation: 5.0,
             ..default()

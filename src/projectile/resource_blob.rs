@@ -94,8 +94,9 @@ pub fn create_resource_blob(
         },
         PointLight2d {
             intensity: 0.1,
-            color: color,
+            color,
             falloff: 2.,
+            cast_shadows: true,
             ..Default::default()
         },
         ResourceBlob {
