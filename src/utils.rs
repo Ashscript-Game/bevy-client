@@ -1,6 +1,7 @@
 use std::f32::consts::PI;
 
 use bevy::math::Vec3;
+use hexx::Hex;
 use rand::Rng;
 
 pub fn find_angle(v1: &Vec3, v2: &Vec3) -> f32 {
@@ -46,4 +47,19 @@ pub fn pick<T>(array: &[T]) -> &T {
     let index = rng.gen_range(0..array.len());
 
     &array[index]
+}
+
+pub mod hex {
+    use hexx::Hex;
+
+    pub fn pack(hex: Hex) -> i32 {
+        hex.x * i32::MAX + hex.y
+    }
+
+    pub fn unpack(packed: i32) -> Hex {
+        let x = packed % i32::MAX;
+        let y = packed - x;
+
+        Hex::new(x, y)
+    }
 }

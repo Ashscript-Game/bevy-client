@@ -1,7 +1,8 @@
 use bevy::{prelude::*, utils::{HashMap, HashSet}};
 use enum_map::EnumMap;
+use hexx::Hex;
 
-use crate::constants::{self, Resource, UnitPart};
+use crate::{constants::{self, Resource, UnitPart}, utils};
 
 #[derive(Component)]
 pub struct ResourceNode {
@@ -102,3 +103,21 @@ pub struct ProjectileMoveEndEvent;
 
 #[derive(Resource)]
 pub struct ProjectileMoveEndTimer(pub Timer);
+
+#[derive(Resource)]
+pub struct UnitMap(pub HashMap<i32, Entity>);
+
+impl UnitMap {
+    pub fn insert(&mut self, hex: Hex, entity: Entity) -> Option<Entity> {
+        self.0.insert(utils::hex::pack(hex), entity)
+    }
+
+    pub fn get(&self, hex: Hex) -> Option<&Entity> {
+        self.0.get(&utils::hex::pack(hex))
+    }
+}
+
+#[derive(Resource)]
+pub struct GameSettings {
+    pub lights: bool,
+}

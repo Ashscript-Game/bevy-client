@@ -1,13 +1,10 @@
 use std::time::Duration;
 
 use bevy::{
-    app::{App, Startup},
-    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
-    prelude::*,
-    DefaultPlugins,
+    app::{App, Startup}, diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin}, prelude::*, utils::hashbrown::HashMap, DefaultPlugins
 };
 use bevy_magic_light_2d::{gi::BevyMagicLight2DPlugin, prelude::*};
-use components::ProjectileMoveEndTimer;
+use components::{GameSettings, ProjectileMoveEndTimer, UnitMap};
 use constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK};
 use game::GamePlugin;
 
@@ -64,6 +61,10 @@ fn main() {
             SECONDS_PER_TICK * PROJECTILE_MOVE_END_TICK_PORTION,
             TimerMode::Once,
         )))
+        .insert_resource(GameSettings {
+            lights: true,
+        })
+        .insert_resource(UnitMap(HashMap::new()))
         .register_type::<LightOccluder2D>()
         .register_type::<OmniLightSource2D>()
         .register_type::<SkylightMask2D>()
