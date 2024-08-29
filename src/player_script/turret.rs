@@ -15,7 +15,7 @@ pub fn turret_ai(
 
         turret.energy += turret.energy_gen;
 
-        if turret_attack_cost(&turret) > turret.energy {
+        if turret.energy < turret_attack_cost(&turret) {
             continue;
         }
 

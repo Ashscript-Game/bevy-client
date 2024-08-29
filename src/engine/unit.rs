@@ -68,6 +68,11 @@ pub fn unit_attack(
     unit2: &mut Unit,
     unit2_transform: &Transform,
 ) -> GeneralResult {
+
+    if unit1.energy < unit_attack_cost(unit1) {
+        return GeneralResult::Fail
+    }
+
     let unit_hex = HEX_LAYOUT.world_pos_to_hex(unit1_transform.translation.truncate());
     let other_unit_hex = HEX_LAYOUT.world_pos_to_hex(unit2_transform.translation.truncate());
 
@@ -91,6 +96,11 @@ pub fn unit_move(
     unit_transform: &mut Transform,
     target_translation: &Vec3,
 ) -> GeneralResult {
+
+    if unit.energy < unit_move_cost(unit) {
+        return GeneralResult::Fail
+    }
+
     let hex_pos = HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate());
     let new_hex_pos = HEX_LAYOUT.world_pos_to_hex(target_translation.truncate());
 

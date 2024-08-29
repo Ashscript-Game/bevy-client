@@ -14,6 +14,11 @@ pub fn turret_attack(
     unit: &mut Unit,
     unit_transform: &Transform,
 ) -> GeneralResult {
+
+    if turret.energy < turret_attack_cost(turret) {
+        return GeneralResult::Fail
+    }
+
     let turret_hex = HEX_LAYOUT.world_pos_to_hex(turret_transform.translation.truncate());
     let unit_hex = HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate());
 
