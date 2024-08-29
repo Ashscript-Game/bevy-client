@@ -33,8 +33,10 @@ fn game_init(mut commands: Commands, camera_targets: Res<CameraTargets>) {
 
     let projection: OrthographicProjection = OrthographicProjection {
         scale: constants::camera::MIN_SCALE,
-        near: -2000.0,
-        far: 2000.0,
+        // near: -2000.0,
+        // far: 2000.0,
+        near: -1000.0,
+        far: 1000.0,
         ..default()
     };
 
@@ -81,7 +83,7 @@ fn game_init(mut commands: Commands, camera_targets: Res<CameraTargets>) {
             ..Default::default()
         },
         /* BloomSettings::NATURAL, */
-        Name::new("obejcts_camera"),
+        Name::new("obejects_camera"),
         ObjectsCamera,
         SpriteCamera,
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
