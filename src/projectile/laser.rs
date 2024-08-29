@@ -95,14 +95,14 @@ pub fn create_laser(
     let color = laser::COLOR;
 
     let light = commands.spawn(PointLight2dBundle {
-        transform: Transform::from_xyz(start_pos.x, start_pos.y, 150.),
+        transform: Transform::from_xyz(0., 0., 150.),
         point_light: PointLight2d {
-            intensity: 5.,
+            intensity: 0.5,
             color,
             radius: 100.,
             falloff: 10.,
-            /* jitter_intensity: 0.1,
-            jitter_translation: 5.0, */
+            // jitter_intensity: 0.1,
+            // jitter_translation: 5.0,
             ..default()
         },
         ..default()
@@ -139,6 +139,6 @@ pub fn create_laser(
 
 pub fn kill_lasers(mut commands: Commands, mut lasers: Query<(&Laser, Entity)>) {
     for (_, entity) in lasers.iter_mut() {
-        commands.entity(entity).despawn();
+        commands.entity(entity).despawn_recursive();
     }
 }

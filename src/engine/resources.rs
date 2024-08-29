@@ -11,7 +11,7 @@ use bevy::{
 };
 use bevy_light_2d::{
     light::{PointLight2d, PointLight2dBundle},
-    prelude::{LightOccluder2d, LightOccluder2dShape},
+    prelude::{LightOccluder2d, LightOccluder2dBundle, LightOccluder2dShape},
 };
 use hexx::{hex, shapes};
 use libnoise::Generator;
@@ -43,6 +43,17 @@ pub fn generate_resources(
         /* println!("noise: {}", noise); */
 
         if noise > resource_noise_tresholds::WALL.0 && noise < resource_noise_tresholds::WALL.1 {
+
+            let occluder = commands.spawn(LightOccluder2dBundle {
+                light_occluder: LightOccluder2d {
+                    shape: LightOccluder2dShape::Rectangle {
+                        half_size: HEX_SIZE * 2./* / 2. */,
+                    },
+                },
+                transform: Transform::from_xyz(0., 0., 0.0),
+                ..default()
+            }).id();
+
             commands.spawn((
                 ColorMesh2dBundle {
                     transform: Transform::from_xyz(
@@ -60,33 +71,35 @@ pub fn generate_resources(
                         half_size: HEX_SIZE * 0.5,
                     },
                 }, */
-            ));
+            )).add_child(occluder);
 
             continue;
         }
 
         if noise > resource_noise_tresholds::COAL.0 && noise < resource_noise_tresholds::COAL.1 {
-            commands.spawn((
-                ColorMesh2dBundle {
-                    transform: Transform::from_xyz(
-                        world_pos.x,
-                        world_pos.y,
-                        constants::resource_node::Z_POS,
-                    ),
-                    mesh: mesh_handle.clone().into(),
-                    material: material_handles[0].clone(),
-                    ..default()
-                },
-                OccupiesTile,
-                ResourceNode {
-                    coal_percent: 50,
-                    mineral_percent: 50,
-                    ticks_to_regen: 0,
-                    resource_remaining: 1000,
-                },
-            ));
+            let light = resource_node_light(world_pos, &mut commands, constants::coal_node::COLOR);
 
-            resource_node_light(world_pos, &mut commands, constants::coal_node::COLOR);
+            commands
+                .spawn((
+                    ColorMesh2dBundle {
+                        transform: Transform::from_xyz(
+                            world_pos.x,
+                            world_pos.y,
+                            constants::resource_node::Z_POS,
+                        ),
+                        mesh: mesh_handle.clone().into(),
+                        material: material_handles[0].clone(),
+                        ..default()
+                    },
+                    OccupiesTile,
+                    ResourceNode {
+                        coal_percent: 50,
+                        mineral_percent: 50,
+                        ticks_to_regen: 0,
+                        resource_remaining: 1000,
+                    },
+                ))
+                .add_child(light);
 
             continue;
         }
@@ -94,65 +107,74 @@ pub fn generate_resources(
         if noise > resource_noise_tresholds::MINERALS.0
             && noise < resource_noise_tresholds::MINERALS.1
         {
-            commands.spawn((
-                ColorMesh2dBundle {
-                    transform: Transform::from_xyz(
-                        world_pos.x,
-                        world_pos.y,
-                        constants::resource_node::Z_POS,
-                    ),
-                    mesh: mesh_handle.clone().into(),
-                    material: material_handles[1].clone(),
-                    ..default()
-                },
-                OccupiesTile,
-                ResourceNode {
-                    coal_percent: 50,
-                    mineral_percent: 50,
-                    ticks_to_regen: 0,
-                    resource_remaining: 1000,
-                },
-            ));
-            resource_node_light(world_pos, &mut commands, constants::mineral_node::COLOR);
+            let light =
+                resource_node_light(world_pos, &mut commands, constants::mineral_node::COLOR);
+
+            commands
+                .spawn((
+                    ColorMesh2dBundle {
+                        transform: Transform::from_xyz(
+                            world_pos.x,
+                            world_pos.y,
+                            constants::resource_node::Z_POS,
+                        ),
+                        mesh: mesh_handle.clone().into(),
+                        material: material_handles[1].clone(),
+                        ..default()
+                    },
+                    OccupiesTile,
+                    ResourceNode {
+                        coal_percent: 50,
+                        mineral_percent: 50,
+                        ticks_to_regen: 0,
+                        resource_remaining: 1000,
+                    },
+                ))
+                .add_child(light);
+
             continue;
         }
 
         if noise > resource_noise_tresholds::SCRAP.0 && noise < resource_noise_tresholds::SCRAP.1 {
-            commands.spawn((
-                ColorMesh2dBundle {
-                    transform: Transform::from_xyz(
-                        world_pos.x,
-                        world_pos.y,
-                        constants::resource_node::Z_POS,
-                    ),
-                    mesh: mesh_handle.clone().into(),
-                    material: material_handles[2].clone(),
-                    ..default()
-                },
-                OccupiesTile,
-                Scrap {
-                    metal: 1000,
-                    ticks_to_decay: 100,
-                },
-            ));
-            resource_node_light(world_pos, &mut commands, constants::scrap::COLOR);
+            let light = resource_node_light(world_pos, &mut commands, constants::scrap::COLOR);
+
+            commands
+                .spawn((
+                    ColorMesh2dBundle {
+                        transform: Transform::from_xyz(
+                            world_pos.x,
+                            world_pos.y,
+                            constants::resource_node::Z_POS,
+                        ),
+                        mesh: mesh_handle.clone().into(),
+                        material: material_handles[2].clone(),
+                        ..default()
+                    },
+                    OccupiesTile,
+                    Scrap {
+                        metal: 1000,
+                        ticks_to_decay: 100,
+                    },
+                ))
+                .add_child(light);
+
             continue;
         }
     }
 }
 
-fn resource_node_light(world_pos: Vec2, commands: &mut Commands, color: Color) {
-    commands.spawn(PointLight2dBundle {
-        transform: Transform::from_xyz(world_pos.x, world_pos.y, 150.),
-        point_light: PointLight2d {
-            intensity: 0.5,
-            color,
-            radius: 100.,
-            falloff: 1.,
-            /* jitter_intensity: 0.1,
-            jitter_translation: 5.0, */
+fn resource_node_light(world_pos: Vec2, commands: &mut Commands, color: Color) -> Entity {
+    commands
+        .spawn(PointLight2dBundle {
+            transform: Transform::from_xyz(0., 0., 150.),
+            point_light: PointLight2d {
+                intensity: 5.,
+                color,
+                radius: 1000.,
+                falloff: 1.,
+                ..default()
+            },
             ..default()
-        },
-        ..default()
-    });
+        })
+        .id()
 }
