@@ -1,6 +1,7 @@
 use crate::{
     components::{OccupiesTile, ResourceNode, Scrap},
-    constants::{self, resource_node, resource_noise_tresholds, SIMPLEX_GENERATOR}, engine::terrain::{hexagonal_plane, HEX_LAYOUT, HEX_SIZE},
+    constants::{self, resource_node, resource_noise_tresholds, SIMPLEX_GENERATOR},
+    engine::terrain::{hexagonal_plane, HEX_LAYOUT, HEX_SIZE},
 };
 use bevy::{
     app::{App, Plugin, Startup, Update},
@@ -8,7 +9,10 @@ use bevy::{
     prelude::*,
     render::view::RenderLayers,
 };
-use bevy_magic_light_2d::{gi::render_layer::ALL_LAYERS, prelude::{LightOccluder2D, OmniLightSource2D, CAMERA_LAYER_OBJECTS, CAMERA_LAYER_WALLS}};
+use bevy_magic_light_2d::{
+    gi::render_layer::ALL_LAYERS,
+    prelude::{LightOccluder2D, OmniLightSource2D, CAMERA_LAYER_OBJECTS, CAMERA_LAYER_WALLS},
+};
 use hexx::{hex, shapes};
 use libnoise::Generator;
 
@@ -39,23 +43,41 @@ pub fn generate_resources(
         /* println!("noise: {}", noise); */
 
         if noise > resource_noise_tresholds::WALL.0 && noise < resource_noise_tresholds::WALL.1 {
-            commands.spawn((
-                ColorMesh2dBundle {
-                    transform: Transform::from_xyz(
-                        world_pos.x,
-                        world_pos.y,
-                        constants::resource_node::Z_POS,
-                    ),
-                    mesh: mesh_handle.clone().into(),
-                    material: material_handles[3].clone(),
-                    ..default()
-                },
-                OccupiesTile,
-                RenderLayers::from_layers(CAMERA_LAYER_WALLS),
-                LightOccluder2D {
-                    h_size: HEX_SIZE * 0.5,
-                },
-            ));
+            /* let secondary_occluder = commands
+                .spawn((
+                    Transform {
+                        translation: Vec3 {
+                            x: world_pos.x,
+                            y: world_pos.y,
+                            z: constants::resource_node::Z_POS,
+                        },
+                        ..default()
+                    },
+                    LightOccluder2D {
+                        h_size: Vec2::new(1., HEX_SIZE.y),
+                    },
+                ))
+                .id(); */
+
+            commands
+                .spawn((
+                    ColorMesh2dBundle {
+                        transform: Transform::from_xyz(
+                            world_pos.x,
+                            world_pos.y,
+                            constants::resource_node::Z_POS,
+                        ),
+                        mesh: mesh_handle.clone().into(),
+                        material: material_handles[3].clone(),
+                        ..default()
+                    },
+                    OccupiesTile,
+                    RenderLayers::from_layers(CAMERA_LAYER_WALLS),
+                    LightOccluder2D {
+                        h_size: Vec2::new(HEX_SIZE.x, HEX_SIZE.x * 0.5),
+                    },
+                ))
+                /* .add_child(secondary_occluder) */;
 
             continue;
         }
