@@ -85,7 +85,13 @@ pub fn unit_attack(
         return GeneralResult::Fail;
     }
 
-    unit2.health = (unit2.health - unit_damage(unit1)).max(0);
+    let damage = unit_damage(unit1);
+    if damage > unit2.health {
+        unit2.health = 0
+    } else {
+        unit2.health -= damage
+    }
+
     unit1.energy -= unit_attack_cost(unit1);
 
     GeneralResult::Success

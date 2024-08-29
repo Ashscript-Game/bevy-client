@@ -31,7 +31,12 @@ pub fn turret_attack(
         return GeneralResult::Fail;
     }
 
-    unit.health = (unit.health - turret.damage).max(0);
+    if turret.damage > unit.health {
+        unit.health = 0
+    } else {
+        unit.health -= turret.damage
+    }
+
     turret.energy -= turret_attack_cost(turret);
 
     GeneralResult::Success
