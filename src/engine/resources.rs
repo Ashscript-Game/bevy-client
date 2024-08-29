@@ -43,35 +43,38 @@ pub fn generate_resources(
         /* println!("noise: {}", noise); */
 
         if noise > resource_noise_tresholds::WALL.0 && noise < resource_noise_tresholds::WALL.1 {
-
-            let occluder = commands.spawn(LightOccluder2dBundle {
-                light_occluder: LightOccluder2d {
-                    shape: LightOccluder2dShape::Rectangle {
-                        half_size: HEX_SIZE * 2./* / 2. */,
+            let occluder = commands
+                .spawn(LightOccluder2dBundle {
+                    light_occluder: LightOccluder2d {
+                        shape: LightOccluder2dShape::Rectangle {
+                            half_size: HEX_SIZE * 2., /* / 2. */
+                        },
                     },
-                },
-                transform: Transform::from_xyz(0., 0., 0.0),
-                ..default()
-            }).id();
-
-            commands.spawn((
-                ColorMesh2dBundle {
-                    transform: Transform::from_xyz(
-                        world_pos.x,
-                        world_pos.y,
-                        constants::resource_node::Z_POS,
-                    ),
-                    mesh: mesh_handle.clone().into(),
-                    material: material_handles[3].clone(),
+                    transform: Transform::from_xyz(0., 0., 0.0),
                     ..default()
-                },
-                OccupiesTile,
-                /* LightOccluder2d {
-                    shape: LightOccluder2dShape::Rectangle {
-                        half_size: HEX_SIZE * 0.5,
+                })
+                .id();
+
+            commands
+                .spawn((
+                    ColorMesh2dBundle {
+                        transform: Transform::from_xyz(
+                            world_pos.x,
+                            world_pos.y,
+                            constants::resource_node::Z_POS,
+                        ),
+                        mesh: mesh_handle.clone().into(),
+                        material: material_handles[3].clone(),
+                        ..default()
                     },
-                }, */
-            )).add_child(occluder);
+                    OccupiesTile,
+                    /* LightOccluder2d {
+                        shape: LightOccluder2dShape::Rectangle {
+                            half_size: HEX_SIZE * 0.5,
+                        },
+                    }, */
+                ))
+                .add_child(occluder);
 
             continue;
         }
