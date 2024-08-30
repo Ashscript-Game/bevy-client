@@ -50,7 +50,7 @@ fn main() {
         .insert_resource(BevyMagicLight2DSettings {
             light_pass_params: LightPassParams {
                 reservoir_size: 16,
-                smooth_kernel_size: (2, 1),
+                smooth_kernel_size: (3, 3),
                 direct_light_contrib: 0.2,
                 indirect_light_contrib: 0.8,
                 ..default()
@@ -64,7 +64,6 @@ fn main() {
         .insert_resource(GameSettings {
             lights: true,
         })
-        .insert_resource(UnitMap(HashMap::new()))
         .register_type::<LightOccluder2D>()
         .register_type::<OmniLightSource2D>()
         .register_type::<SkylightMask2D>()

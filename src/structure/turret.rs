@@ -52,7 +52,6 @@ pub fn spawn_turret(
             ..default()
         },
         OccupiesTile,
-        Structure,
         Turret {
             range: 6,
             damage: 2,

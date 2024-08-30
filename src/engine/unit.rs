@@ -1,9 +1,10 @@
 use std::f32::consts::PI;
 
 use bevy::{prelude::*, transform::commands};
+use hexx::Hex;
 
 use crate::{
-    components::{Moving, Unit},
+    components::{Moving, Unit, MappedUnits},
     constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS},
     utils::find_angle_coords,
 };
@@ -22,14 +23,22 @@ pub fn energize_units(mut units: Query<&mut Unit>) {
     }
 }
 
-pub fn kill_units(units: Query<(&Unit, Entity)>, mut commands: Commands) {
-    for (unit, entity) in units.iter() {
+pub fn kill_units(
+    units: Query<(&Unit, &Transform, Entity)>,
+    mut commands: Commands,
+    mut unit_maps: MappedUnits,
+) {
+    for (unit, transform, entity) in units.iter() {
         if unit.age > constants::unit::MAX_AGE {
+            unit_maps.remove(&HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()));
+
             commands.entity(entity).despawn();
             continue;
         }
 
         if unit.health == 0 {
+            unit_maps.remove(&HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()));
+
             commands.entity(entity).despawn();
             continue;
         }
@@ -68,9 +77,8 @@ pub fn unit_attack(
     unit2: &mut Unit,
     unit2_transform: &Transform,
 ) -> GeneralResult {
-
     if unit1.energy < unit_attack_cost(unit1) {
-        return GeneralResult::Fail
+        return GeneralResult::Fail;
     }
 
     let unit_hex = HEX_LAYOUT.world_pos_to_hex(unit1_transform.translation.truncate());
@@ -102,9 +110,8 @@ pub fn unit_move(
     unit_transform: &mut Transform,
     target_translation: &Vec3,
 ) -> GeneralResult {
-
     if unit.energy < unit_move_cost(unit) {
-        return GeneralResult::Fail
+        return GeneralResult::Fail;
     }
 
     let hex_pos = HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate());

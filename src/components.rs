@@ -1,8 +1,15 @@
-use bevy::{prelude::*, utils::{HashMap, HashSet}};
+use bevy::{
+    ecs::system::SystemParam,
+    prelude::*,
+    utils::{HashMap, HashSet},
+};
 use enum_map::EnumMap;
-use hexx::Hex;
+use hexx::{hex, Hex};
 
-use crate::{constants::{self, Resource, UnitPart}, utils};
+use crate::{
+    constants::{self, Resource, UnitPart},
+    utils,
+};
 
 #[derive(Component)]
 pub struct ResourceNode {
@@ -17,9 +24,6 @@ pub struct Scrap {
     pub metal: u32,
     pub ticks_to_decay: u32,
 }
-
-#[derive(Component)]
-pub struct Structure;
 
 #[derive(Component)]
 pub struct OccupiesTile;
@@ -104,20 +108,76 @@ pub struct ProjectileMoveEndEvent;
 #[derive(Resource)]
 pub struct ProjectileMoveEndTimer(pub Timer);
 
-#[derive(Resource)]
-pub struct UnitMap(pub HashMap<i32, Entity>);
+#[derive(Component)]
+/// can use element in queries to get components. query.get(element).unwrap()
+pub struct UnitMap(pub HashMap<Hex, Entity>);
 
-impl UnitMap {
-    pub fn insert(&mut self, hex: Hex, entity: Entity) -> Option<Entity> {
-        self.0.insert(utils::hex::pack(hex), entity)
+// impl UnitMap {
+//     pub fn insert(&mut self, hex: Hex, entity: Entity) -> Option<Entity> {
+//         self.0.insert(utils::hex::pack(hex), entity)
+//     }
+
+//     pub fn get(&self, hex: Hex) -> Option<&Entity> {
+//         self.0.get(&utils::hex::pack(hex))
+//     }
+// }
+
+#[derive(SystemParam)]
+pub struct MappedUnits<'w, 's> {
+    pub entities: Query<'w, 's, &'static mut UnitMap>,
+    pub components: Query<'w, 's, (&'static mut Unit, &'static mut Transform)>,
+}
+
+impl<'w, 's> MappedUnits<'w, 's> {
+    pub fn remove(&mut self, hex: &Hex) {
+        self.entities.single_mut().0.remove(hex);
     }
 
-    pub fn get(&self, hex: Hex) -> Option<&Entity> {
-        self.0.get(&utils::hex::pack(hex))
+    pub fn insert(&mut self, hex: &Hex, entity: &Entity) {
+        self.entities.single_mut().0.insert(*hex, *entity);
+    }
+
+    pub fn entity(&self, hex: &Hex) -> Option<&Entity> {
+        self.entities.single().0.get(hex)
+    }
+
+    pub fn entity_unchecked(&self, hex: &Hex) -> &Entity {
+        self.entity(hex).expect("Entity not found")
+    }
+
+    pub fn unit(&self, entity: Entity) -> Option<(&Unit, &Transform)> {
+        match self.components.get(entity) {
+            Ok(tuple) => Some(tuple),
+            Err(_) => None,
+        }
+    }
+
+    /* pub fn unit_mut(&mut self, entity: Entity) -> Option<(&Mut<'w, Unit>, &Mut<'w, Transform>/* &Mut<'w, Unit>, &Mut<'w, Transform> */)> {
+        match self.components.get_mut(entity) {
+            Ok((unit, transform)) => Some((& unit, &transform)),
+            Err(_) => None,
+        }
+    } */
+
+    pub fn unit_unchecked(&self, entity: Entity) -> (&Unit, &Transform) {
+        self.unit(entity).expect("Unit not found")
     }
 }
+
+#[derive(SystemParam)]
+pub struct MappedTerrain;
+
+#[derive(SystemParam)]
+pub struct MappedStructures;
 
 #[derive(Resource)]
 pub struct GameSettings {
     pub lights: bool,
+}
+
+#[derive(Component)]
+pub enum Structure {
+    Assembler,
+    Distributor,
+    Turret,
 }

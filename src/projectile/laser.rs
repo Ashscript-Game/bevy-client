@@ -1,10 +1,7 @@
 use std::f32::consts::PI;
 
 use bevy::{
-    prelude::*,
-    render::view::RenderLayers,
-    sprite::{MaterialMesh2dBundle, Mesh2dHandle},
-    utils::hashbrown::HashMap,
+    ecs::observer::TriggerTargets, prelude::*, render::view::RenderLayers, sprite::{MaterialMesh2dBundle, Mesh2dHandle}, utils::hashbrown::HashMap
 };
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use rand::{thread_rng, Rng};
@@ -124,6 +121,9 @@ pub fn create_laser(
 
 pub fn kill_lasers(mut commands: Commands, mut lasers: Query<(&Laser, Entity)>) {
     for (_, entity) in lasers.iter_mut() {
+
+        let comps = entity.components();
+
         commands.entity(entity).despawn();
     }
 }

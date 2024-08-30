@@ -8,7 +8,7 @@ use hexx::{hex, shapes, Hex};
 use rand::Rng;
 
 use crate::{
-    components::OccupiesTile,
+    components::{OccupiesTile, MappedUnits},
     engine::terrain::HEX_LAYOUT,
     structure::{assembler::spawn_assembler, distributor::spawn_distributor, turret::spawn_turret},
     unit::plugin::spawn_unit,
@@ -50,6 +50,7 @@ pub fn unit_benchmark(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     occupiers: Query<&Transform, With<OccupiesTile>>,
+    mut units: MappedUnits,
 ) {
     let occupied_tiles: HashSet<Hex> = HashSet::from_iter(
         occupiers
@@ -66,7 +67,7 @@ pub fn unit_benchmark(
         }
 
         if rng.gen_range(0..=5) == 0 {
-            spawn_unit(hex, &mut commands, &mut meshes, &mut materials)
+            spawn_unit(hex, &mut commands, &mut meshes, &mut materials, &mut units)
         }
     }
 }

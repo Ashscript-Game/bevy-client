@@ -1,5 +1,5 @@
 use bevy::{
-    app::{App, Plugin, Startup}, core_pipeline::bloom::BloomSettings, prelude::*, render::{camera::RenderTarget, view::RenderLayers}
+    app::{App, Plugin, Startup}, core_pipeline::bloom::BloomSettings, prelude::*, render::{camera::RenderTarget, view::RenderLayers}, utils::hashbrown::HashMap
 };
 use bevy_magic_light_2d::{
     prelude::{CameraTargets, CAMERA_LAYER_FLOOR, CAMERA_LAYER_OBJECTS, CAMERA_LAYER_WALLS},
@@ -7,7 +7,7 @@ use bevy_magic_light_2d::{
 };
 
 use crate::{
-    components::ResourceBlob, constants::{self, resource_blob, SECONDS_PER_TICK}, controls::{camera::CameraControlsPlugin, plugin::ControlsPlugin}, debug::plugin::DebugPlugin, engine::plugin::EnginePlugin, lighting::plugin::LightingPlugin, player_script::plugin::PlayerScriptPlugin, projectile::plugin::ProjectilePlugin, structure::plugin::StructuresPlugin, unit::plugin::UnitPlugin, utils::signed_distance
+    components::{ResourceBlob, UnitMap}, constants::{self, resource_blob, SECONDS_PER_TICK}, controls::{camera::CameraControlsPlugin, plugin::ControlsPlugin}, debug::plugin::DebugPlugin, engine::plugin::EnginePlugin, lighting::plugin::LightingPlugin, player_script::plugin::PlayerScriptPlugin, projectile::plugin::ProjectilePlugin, structure::plugin::StructuresPlugin, unit::plugin::UnitPlugin, utils::signed_distance
 };
 
 pub struct GamePlugin;
@@ -24,7 +24,7 @@ impl Plugin for GamePlugin {
             UnitPlugin,
             StructuresPlugin,
         ))
-        .add_systems(Startup, game_init);
+        .add_systems(Startup, (game_init, spawn_unit_map));
     }
 }
 
@@ -88,4 +88,9 @@ fn game_init(mut commands: Commands, camera_targets: Res<CameraTargets>) {
         SpriteCamera,
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
+}
+
+fn spawn_unit_map(mut commands: Commands) {
+
+    commands.spawn(UnitMap(HashMap::new()));
 }

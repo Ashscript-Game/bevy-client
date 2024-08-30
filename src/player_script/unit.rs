@@ -1,8 +1,8 @@
 use bevy::{prelude::*, utils::hashbrown::HashSet};
-use hexx::Hex;
+use hexx::{shapes, Hex};
 
 use crate::{
-    components::{OccupiesTile, Unit},
+    components::{MappedUnits, OccupiesTile, Unit},
     constants::GeneralResult,
     engine::{
         terrain::HEX_LAYOUT,
@@ -93,6 +93,7 @@ pub fn units_attack(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    mut mapped_units: MappedUnits,
 ) {
     // temporary solution, cloning probably voids ability to deal damage
     let mut other_units = units
@@ -100,12 +101,30 @@ pub fn units_attack(
         .map(|(u, t)| (u.clone(), *t))
         .collect::<Vec<(Unit, Transform)>>();
 
-    for (mut unit, unit_transform) in units.iter_mut() {
+    // for each unit
+    // check for unit entities in range
+    // if there is one, register an attack intent
+    // assume the attack intent went through, applying costs to the attacker
+    // for each attack intent, apply costs to unit getting attacked
+
+    for (mut unit, unit_transform) in mapped_units.components.iter_mut() {
         let unit_hex: Hex = HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate());
 
         if unit_attack_cost(&unit) > unit.energy {
             continue;
         }
+
+        /* for hex in shapes::hexagon(unit_hex, unit_range(&unit)) {
+        let Some(entity) = mapped_units.entity(&hex) else {
+            continue;
+        };
+
+        let (other_unit, other_unit_transform) = &mut mapped_units.components.get_mut(*entity).unwrap(); */
+
+        /* /* let (other_unit, other_unit_transform) = mapped_units.unit_unchecked(*entity); */
+
+
+        }*/
 
         for (other_unit, other_unit_transform) in other_units.iter_mut() {
             let other_unit_hex =

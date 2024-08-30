@@ -37,7 +37,6 @@ pub fn spawn_assembler(
             ..default()
         },
         OccupiesTile,
-        Structure,
         Assembler {
             output_resource: constants::Resource::Metal,
             store: Store {

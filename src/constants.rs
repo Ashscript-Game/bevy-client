@@ -183,3 +183,8 @@ pub mod turret {
     pub const STORE_CAPACITY: u32 = 1000;
     pub const COLOR: Color = Color::srgba(241. / 255., 240. / 255., 110. / 255., 1.);
 }
+
+pub mod map {
+    /// allows for a rectangle with 2 025 000 000 tiles
+    pub const MAX_WIDTH_HEIGHT: i32 = 45000;
+}

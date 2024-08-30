@@ -52,13 +52,15 @@ pub fn pick<T>(array: &[T]) -> &T {
 pub mod hex {
     use hexx::Hex;
 
+    use crate::constants::map;
+
     pub fn pack(hex: Hex) -> i32 {
-        hex.x * i32::MAX + hex.y
+        hex.x * map::MAX_WIDTH_HEIGHT + hex.y
     }
 
     pub fn unpack(packed: i32) -> Hex {
-        let x = packed % i32::MAX;
-        let y = packed - x;
+        let x = packed / map::MAX_WIDTH_HEIGHT;
+        let y = packed % map::MAX_WIDTH_HEIGHT;
 
         Hex::new(x, y)
     }

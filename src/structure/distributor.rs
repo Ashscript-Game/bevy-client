@@ -55,7 +55,6 @@ pub fn spawn_distributor(
             ..default()
         },
         OccupiesTile,
-        Structure,
         Distributor {
             resource: *resource,
             store: Store {

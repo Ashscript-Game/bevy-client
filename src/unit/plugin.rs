@@ -3,7 +3,7 @@ use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use enum_map::enum_map;
 use hexx::Hex;
 
-use crate::{components::{OccupiesTile, Unit}, constants::{unit, z_order, UnitPart}, engine::terrain::HEX_LAYOUT};
+use crate::{components::{OccupiesTile, Unit, MappedUnits}, constants::{unit, z_order, UnitPart}, engine::terrain::HEX_LAYOUT};
 
 pub struct UnitPlugin;
 
@@ -23,6 +23,7 @@ pub fn spawn_unit(
     commands: &mut Commands,
     meshes: &mut ResMut<Assets<Mesh>>,
     materials: &mut ResMut<Assets<ColorMaterial>>,
+    units: &mut MappedUnits,
 ) {
 
     let mesh = Mesh2dHandle(meshes.add(Circle::new(30.)));
@@ -30,7 +31,7 @@ pub fn spawn_unit(
 
     let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
 
-    commands.spawn((
+    let entity = commands.spawn((
         MaterialMesh2dBundle {
             mesh,
             material: materials.add(color),
@@ -63,5 +64,7 @@ pub fn spawn_unit(
             ..default()
         },
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
-    ));
+    )).id();
+
+    units.insert(&hex, &entity);
 }
