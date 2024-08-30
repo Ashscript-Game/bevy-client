@@ -151,12 +151,12 @@ pub fn create_resource_blob(
             },
             ..default()
         },
-        /* OmniLightSource2D {
-            intensity: 0.1,
+        OmniLightSource2D {
+            intensity: 0.05,
             color: color,
             falloff: Vec3::new(2., 2., 0.005),
             ..Default::default()
-        }, */
+        },
         ResourceBlob {
             resource: *resource,
             target_pos: *target_pos,
