@@ -28,20 +28,14 @@ pub fn update_lasers(
     time: Res<Time>,
 ) {
     for (mut laser_transform, mut laser, laser_entity) in lasers.iter_mut() {
-        let Ok((unit, unit_transform)) = units.get(laser.target_entity) else {
+        let Ok((_, unit_transform)) = units.get(laser.target_entity) else {
             commands.entity(laser_entity).despawn();
             continue;
         };
 
-        let laser_aabb = Aabb2d::new(
-            laser_transform.translation.truncate(),
-            Vec2::new(5., 5.),
-        );
+        let laser_aabb = Aabb2d::new(laser_transform.translation.truncate(), Vec2::new(5., 5.));
 
-        let unit_aabb = Aabb2d::new(
-            unit_transform.translation.truncate(),
-            Vec2::new(20., 20.),
-        );
+        let unit_aabb = Aabb2d::new(unit_transform.translation.truncate(), Vec2::new(20., 20.));
 
         if laser_aabb.intersects(&unit_aabb) {
             println!("intersection");
@@ -60,22 +54,24 @@ pub fn update_lasers(
             laser.angle = (laser.angle + projectile::TURN_SPEED).clamp(f32::MIN, target_angle);
         }
 
-        let angle = laser.angle;
-        laser_transform.rotation = Quat::from_rotation_z(angle);
+        laser_transform.rotation = Quat::from_rotation_z(target_angle/* laser.angle */);
 
         let direction = laser_transform.rotation * Vec3::Y;
 
+        let delta_seconds = time.delta_seconds();
         let speed = Vec3::new(
-            (laser.target_pos.x - laser.start_pos.x)
+            (laser.target_pos.x/* unit_transform.translation.x */ - laser.start_pos.x)
                 / SECONDS_PER_TICK
                 / PROJECTILE_MOVE_END_TICK_PORTION
-                * time.delta_seconds()
-                * 2.,
-            (laser.target_pos.y - laser.start_pos.y)
+                * delta_seconds
+                * 2.
+                + projectile::DEFAULT_SPEED * delta_seconds,
+            (laser.target_pos.y/* unit_transform.translation.y */ - laser.start_pos.y)
                 / SECONDS_PER_TICK
                 / PROJECTILE_MOVE_END_TICK_PORTION
-                * time.delta_seconds()
-                * 2.,
+                * delta_seconds
+                * 2.
+                + projectile::DEFAULT_SPEED * delta_seconds,
             0.,
         );
 

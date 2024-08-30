@@ -81,8 +81,7 @@ pub fn update_resource_blobs(
             blob.angle = (blob.angle + projectile::TURN_SPEED).clamp(f32::MIN, target_angle);
         }
 
-        let angle = blob.angle;
-        blob_transform.rotation = Quat::from_rotation_z(angle);
+        blob_transform.rotation = Quat::from_rotation_z(target_angle/* angle */);
 
         let direction = blob_transform.rotation * Vec3::Y;
 

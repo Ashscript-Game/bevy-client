@@ -200,4 +200,5 @@ pub mod projectile {
     pub const TURN_SPEED: f32 = 0.05;
     /// The minimum and maximum angle bounds for which to spawn a new projectile inside of relative to the desired angle
     pub const SPAWN_ARC: (f32, f32) = (-PI/6., PI/6.);
+    pub const DEFAULT_SPEED: f32 = 3.;
 }
