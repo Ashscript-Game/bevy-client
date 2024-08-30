@@ -7,8 +7,9 @@ pub fn turret_ai(
     mut turrets: Query<(&mut Turret, &Transform)>,
     mut units: Query<(&mut Unit, &Transform)>,
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    /* mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>, */
+    asset_server: Res<AssetServer>,
 ) {
 
     for (mut turret, turret_transform) in turrets.iter_mut() {
@@ -47,8 +48,9 @@ pub fn turret_ai(
                 &laser_target_pos,
                 turret.damage,
                 &mut commands,
-                &mut meshes,
-                &mut materials,
+                /* &mut meshes,
+                &mut materials, */
+                &asset_server,
             );
             break;
         }

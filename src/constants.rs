@@ -148,6 +148,7 @@ pub enum GeneralResult {
 pub mod unit {
     use bevy::prelude::*;
 
+    pub const ASSET_PATH: &str = "player.png";
     pub const MAX_PARTS: u32 = 100;
     pub const MAX_HEALTH: u32 = 100;
     pub const MAX_AGE: u32 = 100;
@@ -174,6 +175,7 @@ pub mod laser {
     use bevy::prelude::*;
 
     pub const COLOR: Color = Color::srgba(240. / 255., 0. / 255., 0. / 255., 1.);
+    pub const ASSET_PATH: &str = "laser.png";
 }
 
 pub mod turret {
@@ -187,4 +189,9 @@ pub mod turret {
 pub mod map {
     /// allows for a rectangle with 2 025 000 000 tiles
     pub const MAX_WIDTH_HEIGHT: i32 = 45000;
+}
+
+pub mod projectile {
+    /// Turn speed in radians
+    pub const TURN_SPEED: f32 = 0.1;
 }

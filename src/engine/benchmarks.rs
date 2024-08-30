@@ -47,8 +47,7 @@ pub fn assembler_distributor_benchmark(
 
 pub fn unit_benchmark(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    mut asset_server: Res<AssetServer>,
     occupiers: Query<&Transform, With<OccupiesTile>>,
     mut units: MappedUnits,
 ) {
@@ -67,7 +66,7 @@ pub fn unit_benchmark(
         }
 
         if rng.gen_range(0..=5) == 0 {
-            spawn_unit(hex, &mut commands, &mut meshes, &mut materials, &mut units)
+            spawn_unit(hex, &mut commands, &asset_server, &mut units);
         }
     }
 }

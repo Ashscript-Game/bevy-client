@@ -1,7 +1,7 @@
 use bevy::{
     ecs::system::SystemParam,
     prelude::*,
-    utils::{HashMap, HashSet},
+    utils::{hashbrown::HashSet, HashMap},
 };
 use enum_map::EnumMap;
 use hexx::{hex, Hex};
@@ -167,8 +167,29 @@ impl<'w, 's> MappedUnits<'w, 's> {
 #[derive(SystemParam)]
 pub struct MappedTerrain;
 
+#[derive(Component)]
+pub struct OccupyStructuresMap(pub HashMap<Hex, HashSet<Entity>>);
+
 #[derive(SystemParam)]
-pub struct MappedStructures;
+pub struct MappedOccupyStructures<'w, 's>(pub Query<'w, 's, &'static mut OccupyStructuresMap>);
+
+impl <'w, 's> MappedOccupyStructures<'w, 's> {
+    pub fn insert(&mut self, hex: &Hex, entity: &Entity) {
+        self.0.single_mut().0.get_mut(hex).unwrap().insert(*entity);
+    }
+
+    pub fn remove(&mut self, hex: &Hex, entity: &Entity) {
+        self.0.single_mut().0.get_mut(hex).unwrap().remove(entity);
+    }
+
+    pub fn get(&self, hex: &Hex) -> Option<&HashSet<Entity>> {
+        self.0.single().0.get(hex)
+    }
+
+    pub fn get_unchecked(&self, hex: &Hex) -> &HashSet<Entity> {
+        self.get(hex).unwrap()
+    }
+}
 
 #[derive(Resource)]
 pub struct GameSettings {

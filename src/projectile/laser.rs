@@ -1,3 +1,4 @@
+use core::f32;
 use std::f32::consts::PI;
 
 use bevy::{
@@ -8,7 +9,7 @@ use rand::{thread_rng, Rng};
 
 use crate::{
     components::{Laser, ResourceBlob},
-    constants::{self, coal_node, laser, z_order, Resource, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK},
+    constants::{self, coal_node, laser, projectile, z_order, Resource, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK},
     utils::{find_angle, find_angle_coords, signed_distance},
 };
 
@@ -48,28 +49,63 @@ pub fn update_lasers(
         /* laser_transform.rotation.w += 0.01;
         let angle = laser_transform.rotation.w; */
 
-        /* let target_angle = find_angle(&laser_transform.translation, &laser.target_pos);
+        let target_angle = find_angle(&laser_transform.translation, &laser.target_pos) + PI;
 
-        println!("target angle {}, laser angle {}", target_angle, laser.angle);
+        /* println!("target angle {}, laser angle {}", target_angle, laser.angle); */
+
+        // clamping is breaking the projectiles
 
         if laser.angle > target_angle {
-            laser.angle -= 0.1; 
+            laser.angle = (laser.angle - projectile::TURN_SPEED).clamp(target_angle, f32::MAX); 
         }
-        else {
-            laser.angle += 0.1;
+        else if laser.angle < target_angle {
+            laser.angle = (laser.angle + projectile::TURN_SPEED).clamp(f32::MIN, target_angle);
         }
        // laser.angle = target_angle;
 
-        let angle = laser.angle;
+        /* let angle = laser.angle;
         laser_transform.rotation = Quat::from_rotation_z(angle); */
+
+        /* let direction = laser_transform.rotation * Vec3::Y;
+
+        let delta = direction * 200. * time.delta_seconds();
+        laser_transform.translation += delta; */
+
+        /*
+
+        let delta_x = 0.;
+        let delta_y = 200. * time.delta_seconds() * laser_transform.rotation.y;
+
+        laser_transform.translation.x += delta_x;
+        laser_transform.translation.y += delta_y; */
+
+        let angle = laser.angle;
+        laser_transform.rotation = Quat::from_rotation_z(angle);
+
+        let direction = laser_transform.rotation * Vec3::Y;
+
+        let speed = Vec3::new(
+            (laser.target_pos.x - laser.start_pos.x)
+                / SECONDS_PER_TICK
+                / PROJECTILE_MOVE_END_TICK_PORTION
+                * time.delta_seconds() * 2.,
+            (laser.target_pos.y - laser.start_pos.y)
+                / SECONDS_PER_TICK
+                / PROJECTILE_MOVE_END_TICK_PORTION
+                * time.delta_seconds() * 2.,
+            0.,
+        );
+
+        let delta = direction * speed.abs();
+        laser_transform.translation += delta;
 
         // use trig to apply evenly for diagonal vs straight movement
 
-        let x_delta = (laser.target_pos.x - laser.start_pos.x) / SECONDS_PER_TICK / PROJECTILE_MOVE_END_TICK_PORTION * time.delta_seconds() /* * angle.cos().abs() */;
-        let y_delta = (laser.target_pos.y - laser.start_pos.y) / SECONDS_PER_TICK / PROJECTILE_MOVE_END_TICK_PORTION * time.delta_seconds() /* * angle.sin().abs() */;
+        /* let x_delta = (laser.target_pos.x - laser.start_pos.x) / SECONDS_PER_TICK / PROJECTILE_MOVE_END_TICK_PORTION * time.delta_seconds()/* * angle.cos().abs() */;
+        let y_delta = (laser.target_pos.y - laser.start_pos.y) / SECONDS_PER_TICK / PROJECTILE_MOVE_END_TICK_PORTION * time.delta_seconds()/* * angle.sin().abs() */;
 
         laser_transform.translation.x += x_delta;
-        laser_transform.translation.y += y_delta;
+        laser_transform.translation.y += y_delta; */
     }
 }
 
@@ -78,27 +114,36 @@ pub fn create_laser(
     target_pos: &Vec3,
     damage: u32,
     commands: &mut Commands,
-    meshes: &mut ResMut<Assets<Mesh>>,
-    materials: &mut ResMut<Assets<ColorMaterial>>,
+    asset_server: &Res<AssetServer>,
 ) {
     /* println!("creating resource blob {:?}", resource); */
 
     let mut rng = thread_rng();
-    let angle_offset = PI / rng.gen_range(0.1..=0.2);
+    let angle_offset = PI * rng.gen_range(0.1..=0.2);
 
-    let angle = find_angle(start_pos, target_pos) /* + angle_offset */;
+    let angle = find_angle(start_pos, target_pos) + angle_offset + PI;
 
-    let mesh = Mesh2dHandle(meshes.add(Circle::new(10.)));
+    /* let mesh = Mesh2dHandle(meshes.add(Circle::new(10.))); */
     let color = laser::COLOR;
 
     commands.spawn((
-        MaterialMesh2dBundle {
+        /* MaterialMesh2dBundle {
             mesh,
             material: materials.add(color),
             transform: Transform {
                 translation: Vec3::new(start_pos.x, start_pos.y, z_order::PROJECTILE),
                 /* rotation: Quat::from_rotation_z(angle), */
                 scale: Vec3::new(1.0, 1.0, 1.0),
+                ..default()
+            },
+            ..default()
+        }, */
+        SpriteBundle {
+            texture: asset_server.load(laser::ASSET_PATH),
+            transform: Transform {
+                translation: Vec3::new(start_pos.x, start_pos.y, 1.0),
+                scale: Vec3::new(1.2, 1.2, 1.0),
+                rotation: Quat::from_rotation_z(angle),
                 ..default()
             },
             ..default()

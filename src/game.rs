@@ -7,7 +7,7 @@ use bevy_magic_light_2d::{
 };
 
 use crate::{
-    components::{ResourceBlob, UnitMap}, constants::{self, resource_blob, SECONDS_PER_TICK}, controls::{camera::CameraControlsPlugin, plugin::ControlsPlugin}, debug::plugin::DebugPlugin, engine::plugin::EnginePlugin, lighting::plugin::LightingPlugin, player_script::plugin::PlayerScriptPlugin, projectile::plugin::ProjectilePlugin, structure::plugin::StructuresPlugin, unit::plugin::UnitPlugin, utils::signed_distance
+    components::{MappedOccupyStructures, ResourceBlob, OccupyStructuresMap, UnitMap}, constants::{self, resource_blob, SECONDS_PER_TICK}, controls::{camera::CameraControlsPlugin, plugin::ControlsPlugin}, debug::plugin::DebugPlugin, engine::plugin::EnginePlugin, lighting::plugin::LightingPlugin, player_script::plugin::PlayerScriptPlugin, projectile::plugin::ProjectilePlugin, structure::plugin::StructuresPlugin, unit::plugin::UnitPlugin, utils::signed_distance
 };
 
 pub struct GamePlugin;
@@ -24,7 +24,7 @@ impl Plugin for GamePlugin {
             UnitPlugin,
             StructuresPlugin,
         ))
-        .add_systems(Startup, (game_init, spawn_unit_map));
+        .add_systems(Startup, (game_init, spawn_unit_map, spawn_structures_map));
     }
 }
 
@@ -93,4 +93,8 @@ fn game_init(mut commands: Commands, camera_targets: Res<CameraTargets>) {
 fn spawn_unit_map(mut commands: Commands) {
 
     commands.spawn(UnitMap(HashMap::new()));
+}
+
+fn spawn_structures_map(mut commands: Commands) {
+    commands.spawn(OccupyStructuresMap(HashMap::new()));
 }

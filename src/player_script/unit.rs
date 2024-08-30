@@ -91,8 +91,9 @@ pub fn units_move(
 pub fn units_attack(
     mut units: Query<(&mut Unit, &mut Transform)>,
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    /* mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>, */
+    asset_server: Res<AssetServer>,
     /* mut mapped_units: MappedUnits, */
 ) {
     // temporary solution, cloning probably voids ability to deal damage
@@ -154,8 +155,9 @@ pub fn units_attack(
                 &laser_target_pos,
                 unit_damage(&unit),
                 &mut commands,
-                &mut meshes,
-                &mut materials,
+                &asset_server
+                /* &mut meshes,
+                &mut materials, */
             );
             break;
         }

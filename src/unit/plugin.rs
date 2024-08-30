@@ -21,18 +21,17 @@ pub fn spawn_test_unit() {
 pub fn spawn_unit(
     hex: Hex,
     commands: &mut Commands,
-    meshes: &mut ResMut<Assets<Mesh>>,
-    materials: &mut ResMut<Assets<ColorMaterial>>,
+    asset_server: &Res<AssetServer>,
     units: &mut MappedUnits,
 ) {
 
-    let mesh = Mesh2dHandle(meshes.add(Circle::new(30.)));
-    let color = unit::COLOR;
+    /* let mesh = Mesh2dHandle(meshes.add(Circle::new(30.)));
+    let color = unit::COLOR; */
 
     let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
 
     let entity = commands.spawn((
-        MaterialMesh2dBundle {
+        /* MaterialMesh2dBundle {
             mesh,
             material: materials.add(color),
             transform: Transform {
@@ -41,8 +40,17 @@ pub fn spawn_unit(
                     world_pos.y,
                     1.,
                 ),
-                /* rotation: Quat::from_rotation_z(angle), */
+                // rotation: Quat::from_rotation_z(angle),
                 scale: Vec3::new(1.0, 1.0, 1.0),
+                ..default()
+            },
+            ..default()
+        }, */
+        SpriteBundle {
+            texture: asset_server.load(unit::ASSET_PATH),
+            transform: Transform {
+                translation: Vec3::new(world_pos.x, world_pos.y, 1.0),
+                scale: Vec3::new(1.2, 1.2, 1.0),
                 ..default()
             },
             ..default()
