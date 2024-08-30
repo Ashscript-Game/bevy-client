@@ -172,6 +172,8 @@ pub enum UnitPart {
 }
 
 pub mod laser {
+    use std::f32::consts::PI;
+
     use bevy::prelude::*;
 
     pub const COLOR: Color = Color::srgba(240. / 255., 0. / 255., 0. / 255., 1.);
@@ -192,6 +194,10 @@ pub mod map {
 }
 
 pub mod projectile {
+    use std::f32::consts::PI;
+
     /// Turn speed in radians
-    pub const TURN_SPEED: f32 = 0.1;
+    pub const TURN_SPEED: f32 = 0.05;
+    /// The minimum and maximum angle bounds for which to spawn a new projectile inside of relative to the desired angle
+    pub const SPAWN_ARC: (f32, f32) = (-PI/6., PI/6.);
 }

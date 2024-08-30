@@ -77,6 +77,7 @@ pub type UnitBody = EnumMap<UnitPart, u32>;
 #[derive(Component)]
 pub struct Laser {
     pub target_pos: Vec3,
+    pub target_entity: Entity,
     pub start_pos: Vec3,
     pub angle: f32,
     /// Used to determine the intensity of the projectile's visuals

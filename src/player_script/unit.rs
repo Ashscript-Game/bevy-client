@@ -89,7 +89,7 @@ pub fn units_move(
 }
 
 pub fn units_attack(
-    mut units: Query<(&mut Unit, &mut Transform)>,
+    mut units: Query<(&mut Unit, &mut Transform, Entity)>,
     mut commands: Commands,
     /* mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>, */
@@ -99,8 +99,8 @@ pub fn units_attack(
     // temporary solution, cloning probably voids ability to deal damage
     let mut other_units = units
         .iter_mut()
-        .map(|(u, t)| (u.clone(), *t))
-        .collect::<Vec<(Unit, Transform)>>();
+        .map(|(u, t, e)| (u.clone(), *t, e))
+        .collect::<Vec<(Unit, Transform, Entity)>>();
 
     // for each unit
     // check for unit entities in range
@@ -108,7 +108,7 @@ pub fn units_attack(
     // assume the attack intent went through, applying costs to the attacker
     // for each attack intent, apply costs to unit getting attacked
 
-    for (mut unit, unit_transform) in units.iter_mut() {
+    for (mut unit, unit_transform, _) in units.iter_mut() {
         let unit_hex: Hex = HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate());
 
         if unit_attack_cost(&unit) > unit.energy {
@@ -127,7 +127,7 @@ pub fn units_attack(
 
         }*/
 
-        for (other_unit, other_unit_transform) in other_units.iter_mut() {
+        for (other_unit, other_unit_transform, entity) in other_units.iter_mut() {
             let other_unit_hex =
                 HEX_LAYOUT.world_pos_to_hex(other_unit_transform.translation.truncate());
 
@@ -153,6 +153,7 @@ pub fn units_attack(
             create_laser(
                 &unit_transform.translation,
                 &laser_target_pos,
+                *entity,
                 unit_damage(&unit),
                 &mut commands,
                 &asset_server

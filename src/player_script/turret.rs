@@ -5,7 +5,7 @@ use crate::{components::{Turret, Unit}, constants::GeneralResult, engine::{terra
 
 pub fn turret_ai(
     mut turrets: Query<(&mut Turret, &Transform)>,
-    mut units: Query<(&mut Unit, &Transform)>,
+    mut units: Query<(&mut Unit, &Transform, Entity)>,
     mut commands: Commands,
     /* mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>, */
@@ -22,7 +22,7 @@ pub fn turret_ai(
 
         let turret_hex: Hex = HEX_LAYOUT.world_pos_to_hex(turret_transform.translation.truncate());
 
-        for (mut unit, unit_transform) in units.iter_mut() {
+        for (mut unit, unit_transform, unit_entity) in units.iter_mut() {
             let unit_hex =
                 HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate());
 
@@ -46,6 +46,7 @@ pub fn turret_ai(
             create_laser(
                 &turret_transform.translation,
                 &laser_target_pos,
+                unit_entity,
                 turret.damage,
                 &mut commands,
                 /* &mut meshes,
