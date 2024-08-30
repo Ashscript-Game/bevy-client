@@ -125,7 +125,7 @@ pub struct UnitMap(pub HashMap<Hex, Entity>);
 #[derive(SystemParam)]
 pub struct MappedUnits<'w, 's> {
     pub entities: Query<'w, 's, &'static mut UnitMap>,
-    pub components: Query<'w, 's, (&'static mut Unit, &'static mut Transform)>,
+    /* pub components: Query<'w, 's, (&'static mut Unit, &'static mut Transform)>, */
 }
 
 impl<'w, 's> MappedUnits<'w, 's> {
@@ -145,12 +145,12 @@ impl<'w, 's> MappedUnits<'w, 's> {
         self.entity(hex).expect("Entity not found")
     }
 
-    pub fn unit(&self, entity: Entity) -> Option<(&Unit, &Transform)> {
+    /* pub fn unit(&self, entity: Entity) -> Option<(&Unit, &Transform)> {
         match self.components.get(entity) {
             Ok(tuple) => Some(tuple),
             Err(_) => None,
         }
-    }
+    } */
 
     /* pub fn unit_mut(&mut self, entity: Entity) -> Option<(&Mut<'w, Unit>, &Mut<'w, Transform>/* &Mut<'w, Unit>, &Mut<'w, Transform> */)> {
         match self.components.get_mut(entity) {
@@ -159,9 +159,9 @@ impl<'w, 's> MappedUnits<'w, 's> {
         }
     } */
 
-    pub fn unit_unchecked(&self, entity: Entity) -> (&Unit, &Transform) {
+    /* pub fn unit_unchecked(&self, entity: Entity) -> (&Unit, &Transform) {
         self.unit(entity).expect("Unit not found")
-    }
+    } */
 }
 
 #[derive(SystemParam)]

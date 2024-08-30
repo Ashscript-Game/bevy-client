@@ -93,7 +93,7 @@ pub fn units_attack(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    mut mapped_units: MappedUnits,
+    /* mut mapped_units: MappedUnits, */
 ) {
     // temporary solution, cloning probably voids ability to deal damage
     let mut other_units = units
@@ -107,7 +107,7 @@ pub fn units_attack(
     // assume the attack intent went through, applying costs to the attacker
     // for each attack intent, apply costs to unit getting attacked
 
-    for (mut unit, unit_transform) in mapped_units.components.iter_mut() {
+    for (mut unit, unit_transform) in units.iter_mut() {
         let unit_hex: Hex = HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate());
 
         if unit_attack_cost(&unit) > unit.energy {
