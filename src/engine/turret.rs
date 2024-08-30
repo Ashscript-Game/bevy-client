@@ -1,6 +1,9 @@
-use bevy::prelude::Transform;
+use std::f32::consts::PI;
 
-use crate::{components::{Turret, Unit}, constants::GeneralResult};
+use bevy::{math::Quat, prelude::Transform};
+use hexx::utils::Quad;
+
+use crate::{components::{Turret, Unit}, constants::GeneralResult, utils::find_angle};
 
 use super::terrain::HEX_LAYOUT;
 
@@ -10,7 +13,7 @@ pub fn turret_attack_cost(turret: &Turret) -> u32 {
 
 pub fn turret_attack(
     turret: &mut Turret,
-    turret_transform: &Transform,
+    turret_transform: &mut Transform,
     unit: &mut Unit,
     unit_transform: &Transform,
 ) -> GeneralResult {
@@ -36,6 +39,9 @@ pub fn turret_attack(
     } else {
         unit.health -= turret.damage
     }
+
+    let angle = find_angle(&turret_transform.translation, &unit_transform.translation) + PI / 2.;
+    turret_transform.rotation = Quat::from_rotation_z(angle);
 
     turret.energy -= turret_attack_cost(turret);
 

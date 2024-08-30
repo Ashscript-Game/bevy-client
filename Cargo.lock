@@ -1235,7 +1235,7 @@ dependencies = [
 [[package]]
 name = "bevy_magic_light_2d"
 version = "0.8.0"
-source = "git+https://github.com/CarsonBurke/bevy-magic-light-2d.git#355d0348ccab56b7799ceee6b3a2076c5767278d"
+source = "git+https://github.com/zaycev/bevy-magic-light-2d.git?branch=issue/64#b7f4ade7a8fd06f1f9c691893bb5e9eae9729c9e"
 dependencies = [
  "bevy 0.14.1",
  "bevy-inspector-egui 0.25.2",

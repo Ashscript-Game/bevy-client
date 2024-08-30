@@ -4,15 +4,15 @@ use hexx::Hex;
 use crate::{components::{Turret, Unit}, constants::GeneralResult, engine::{terrain::HEX_LAYOUT, turret::{turret_attack, turret_attack_cost}}, projectile::laser::create_laser};
 
 pub fn turret_ai(
-    mut turrets: Query<(&mut Turret, &Transform)>,
-    mut units: Query<(&mut Unit, &Transform, Entity)>,
+    mut turrets: Query<(&mut Turret, &mut Transform)>,
+    mut units: Query<(&mut Unit, &Transform, Entity), Without<Turret>>,
     mut commands: Commands,
     /* mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>, */
     asset_server: Res<AssetServer>,
 ) {
 
-    for (mut turret, turret_transform) in turrets.iter_mut() {
+    for (mut turret, mut turret_transform) in turrets.iter_mut() {
 
         turret.energy += turret.energy_gen;
 
@@ -31,7 +31,7 @@ pub fn turret_ai(
                 continue;
             }
 
-            if turret_attack(&mut turret, turret_transform, &mut unit, unit_transform) == GeneralResult::Fail {
+            if turret_attack(&mut turret, &mut turret_transform, &mut unit, unit_transform) == GeneralResult::Fail {
                 continue;
             }
 

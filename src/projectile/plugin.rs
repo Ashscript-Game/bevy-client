@@ -26,9 +26,9 @@ impl Plugin for ProjectilePlugin {
                 update_resource_blobs,
             ),
         )
-        .add_systems(
+        /* .add_systems(
             Update,
             (kill_lasers, kill_resource_blobs).run_if(on_event::<ProjectileMoveEndEvent>()),
-        );
+        ) */;
     }
 }

@@ -13,7 +13,7 @@ use crate::{
 
 pub fn distributor_ai(
     mut distributors: Query<(&Transform, &mut Distributor)>,
-    mut assemblers: Query<(&Transform, &mut Assembler)>,
+    mut assemblers: Query<(&Transform, &mut Assembler, Entity)>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -34,7 +34,7 @@ pub fn distributor_ai(
         let distributor_hex =
             HEX_LAYOUT.world_pos_to_hex(distributor_transform.translation.truncate());
 
-        for (assembler_transform, mut assembler) in assemblers.iter_mut() {
+        for (assembler_transform, mut assembler, entity) in assemblers.iter_mut() {
             let distributor_resource_amount = {
                 *distributor
                     .store
@@ -72,6 +72,7 @@ pub fn distributor_ai(
             create_resource_blob(
                 &distributor_transform.translation,
                 &assembler_transform.translation,
+                entity,
                 &distributor_resource,
                 &mut commands,
                 &mut meshes,

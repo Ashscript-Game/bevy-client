@@ -47,7 +47,7 @@ pub fn assembler_distributor_benchmark(
 
 pub fn unit_benchmark(
     mut commands: Commands,
-    mut asset_server: Res<AssetServer>,
+    asset_server: Res<AssetServer>,
     occupiers: Query<&Transform, With<OccupiesTile>>,
     mut units: MappedUnits,
 ) {

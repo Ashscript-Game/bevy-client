@@ -56,7 +56,9 @@ pub struct FpsText;
 pub struct ResourceBlob {
     pub target_pos: Vec3,
     pub start_pos: Vec3,
+    pub target_entity: Entity,
     pub resource: Resource,
+    pub angle: f32,
 }
 
 #[derive(Component, Default, Clone)]

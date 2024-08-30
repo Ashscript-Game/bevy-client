@@ -20,7 +20,7 @@ pub fn assemblers_produce(
 
 pub fn assembler_ai(
     mut assemblers: Query<(&Transform, &mut Assembler)>,
-    mut distributors: Query<(&Transform, &mut Distributor)>,
+    mut distributors: Query<(&Transform, &mut Distributor, Entity)>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -55,8 +55,8 @@ pub fn assembler_ai(
             continue;
         }; */
 
-        let Some((distributor_transform, mut distributor)) =
-            distributors.iter_mut().find(|(transform, distributor)| {
+        let Some((distributor_transform, mut distributor, entity)) =
+            distributors.iter_mut().find(|(transform, distributor, entity)| {
                 let distributor_hex = HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate());
 
                 distributor.resource == output_resource
@@ -82,6 +82,7 @@ pub fn assembler_ai(
         create_resource_blob(
             &assembler_transform.translation,
             &distributor_transform.translation,
+            entity,
             &output_resource,
             &mut commands,
             &mut meshes,

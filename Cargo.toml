@@ -22,7 +22,7 @@ log = { version = "0.4.2", features = ["max_level_debug", "release_max_level_war
 # bevy_rapier2d = "0.25.0"
 lazy_static = "1.5.0"
 hexx = { git = "https://github.com/ManevilleF/hexx" }# version = "0.17.0" }
-bevy_magic_light_2d = { git = "https://github.com/CarsonBurke/bevy-magic-light-2d.git" } # "0.8.0" # { git = "https://github.com/zaycev/bevy-magic-light-2d.git" }
+bevy_magic_light_2d = { git = "https://github.com/zaycev/bevy-magic-light-2d.git", branch = "issue/64" } # "0.8.0" # { git = "https://github.com/zaycev/bevy-magic-light-2d.git" }
 libnoise = "1.1"
 enum-map = "2.7.3"
 
