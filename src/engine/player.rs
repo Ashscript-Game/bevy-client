@@ -75,7 +75,9 @@ pub fn run_move_intents(
 
     for (player_name, player_state) in &player_states.0 {
         for intent in player_state.intents.unit_move.iter() {
-            let (mut unit, mut unit_transform, entity) = units.get_mut(intent.entity).unwrap();
+            let Ok((mut unit, mut unit_transform, entity)) = units.get_mut(intent.entity) else {
+                continue
+            };
 
             if unit.owner_id != player_state.owner_id {
                 continue;
@@ -106,7 +108,9 @@ pub fn run_factory_spawn_intents(
 ) {
     for (player_name, player_state) in &player_states.0 {
         for intent in player_state.intents.factory_spawn.iter() {
-            let (factory, _) = factories.get(intent.entity).expect("Factory not found");
+            let Ok((factory, _)) = factories.get(intent.entity) else {
+                continue;
+            };
             if factory.owner_id != player_state.owner_id {
                 continue;
             }
