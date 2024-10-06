@@ -22,7 +22,8 @@ pub fn spawn_unit(
     hex: Hex,
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
-    units: &mut MappedUnits,
+    mapped_units: &mut MappedUnits,
+    owner_id: u32,
 ) {
 
     /* let mesh = Mesh2dHandle(meshes.add(Circle::new(30.)));
@@ -69,10 +70,11 @@ pub fn spawn_unit(
                 UnitPart::Generate => 6,
                 _ => 1,
             },
+            owner_id,
             ..default()
         },
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     )).id();
 
-    units.insert(&hex, &entity);
+    mapped_units.insert(&hex, &entity);
 }

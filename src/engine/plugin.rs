@@ -14,8 +14,13 @@ use crate::{
 };
 
 use super::{
-    benchmarks::{assembler_distributor_benchmark, turret_benchmark, unit_benchmark},
-    player::{populate_game_state, run_move_intents, run_player_scripts},
+    benchmarks::{
+        assembler_distributor_benchmark, factory_combat_benchmark, turret_benchmark, unit_benchmark,
+    },
+    factory::progress_factories,
+    player::{
+        populate_game_state, run_factory_spawn_intents, run_move_intents, run_player_scripts,
+    },
     resources::generate_resources,
     terrain::generate_tiles,
     unit::{age_units, energize_units, kill_units},
@@ -31,7 +36,8 @@ impl Plugin for EnginePlugin {
                 generate_tiles,
                 generate_resources,
                 /* assembler_distributor_benchmark, */
-                unit_benchmark,
+                /* unit_benchmark, */
+                factory_combat_benchmark,
                 /* turret_benchmark, */
             )
                 .chain(),
@@ -44,8 +50,14 @@ impl Plugin for EnginePlugin {
                 projectile_move_end_event,
                 (
                     tick_event,
-                    /* units_stop_move, */ (age_units, kill_units, energize_units),
-                    (populate_game_state, run_player_scripts, run_move_intents),
+                    /* units_stop_move, */
+                    (age_units, kill_units, energize_units, progress_factories),
+                    (
+                        populate_game_state,
+                        run_player_scripts,
+                        run_move_intents,
+                        run_factory_spawn_intents,
+                    ),
                 )
                     .run_if(on_timer(Duration::from_secs_f32(
                         constants::SECONDS_PER_TICK,

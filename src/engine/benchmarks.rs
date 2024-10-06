@@ -8,9 +8,9 @@ use hexx::{hex, shapes, Hex};
 use rand::Rng;
 
 use crate::{
-    components::{OccupiesTile, MappedUnits},
+    components::{MappedUnits, OccupiesTile},
     engine::terrain::HEX_LAYOUT,
-    structure::{assembler::spawn_assembler, distributor::spawn_distributor, turret::spawn_turret},
+    structure::{assembler::spawn_assembler, distributor::spawn_distributor, factory::spawn_factory, turret::spawn_turret},
     unit::plugin::spawn_unit,
 };
 
@@ -66,7 +66,7 @@ pub fn unit_benchmark(
         }
 
         if rng.gen_range(0..=5) == 0 {
-            spawn_unit(hex, &mut commands, &asset_server, &mut units);
+            spawn_unit(hex, &mut commands, &asset_server, &mut units, 0);
         }
     }
 }
@@ -95,9 +95,15 @@ pub fn turret_benchmark(
     }
 }
 
-pub fn factory_combat_benchmark() {
+pub fn factory_combat_benchmark(
+    asset_server: Res<AssetServer>,
+    mut commands: Commands,
+) {
     // spawn 2 factories somewhat away from each other
     // each factory is owned by a different player
     // each factory produces units for free
     // units will try to attack the other factory
+
+    spawn_factory(hex(10, 2), &mut commands, &asset_server, 0);
+    spawn_factory(hex(-10, -3), &mut commands, &asset_server, 1);
 }

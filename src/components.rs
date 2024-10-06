@@ -61,25 +61,16 @@ pub struct ResourceBlob {
     pub angle: f32,
 }
 
-#[derive(Default, Clone)]
+#[derive(Clone)]
 pub struct Owner {
     pub name: String,
     pub id: u32,
     // obviously need an ID system at some point
 }
 
-impl Owner {
-    pub fn new() -> Self {
-        Self { 
-            name: "default_name".to_string(),
-            id: 0,
-         }
-    }
-}
-
 #[derive(Component, Default, Clone)]
 pub struct Unit {
-    pub owner: Owner,
+    pub owner_id: u32,
     pub body: UnitBody,
     pub health: u32,
     pub age: u32,
@@ -219,6 +210,7 @@ pub struct GameSettings {
 #[derive(Resource, Default)]
 pub struct GameState {
     pub units: Vec<(Unit, Transform, Entity)>,
+    pub factories: Vec<(Factory, Transform, Entity)>,
     pub players: Vec<Owner>,
 }
 
@@ -262,6 +254,11 @@ pub mod intents {
         pub from: Entity,
         pub to: Entity,
     }
+
+    pub struct FactorySpawn {
+        pub entity: Entity,
+        pub out: Option<Hex>,
+    }
 }
 
 #[derive(Resource, Default)]
@@ -270,6 +267,7 @@ pub struct Intents {
     pub unit_attack: Vec<intents::UnitAttack>,
     pub unit_move: Vec<intents::UnitMove>,
     pub resource_transfer: Vec<intents::ResourceTransfer>,
+    pub factory_spawn: Vec<intents::FactorySpawn>,
 }
 
 impl Intents {
@@ -283,13 +281,15 @@ impl Intents {
 pub struct PlayerState {
     pub memory: HashMap<String, String>,
     pub intents: Intents,
+    pub owner_id: u32,
 }
 
 impl PlayerState {
-    pub fn new() -> Self {
+    pub fn new(owner_id: u32) -> Self {
         Self {
             memory: HashMap::new(),
             intents: Intents::new(),
+            owner_id,
         }
     }
 }
@@ -313,8 +313,12 @@ pub enum Structure {
     Turret,
 }
 
-#[derive(Component)]
+#[derive(Component, Default, Clone)]
 pub struct Factory {
-    pub tick_last_produced: u32,
     pub store: Store,
+    pub owner_id: u32,
+    pub energy: u32,
+    pub energy_capacity: u32,
+    // 100(%)+ = completed
+    pub production_progress: u8,
 }

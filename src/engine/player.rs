@@ -1,16 +1,21 @@
 use crate::{
     ai_scripts,
-    components::{GameState, PlayerState, PlayerStates, Unit},
+    components::{Factory, GameState, MappedUnits, PlayerState, PlayerStates, Unit},
     types::PlayerScript,
 };
 use bevy::{ecs::entity, prelude::*};
 use std::collections::HashMap;
 
-use super::{terrain::HEX_LAYOUT, unit::unit_move_hex};
+use super::{
+    factory::factory_spawn,
+    terrain::HEX_LAYOUT,
+    unit::{unit_at_hex, unit_move_hex},
+};
 
 pub fn populate_game_state(
     mut game_state: ResMut<GameState>,
     units: Query<(&Unit, &Transform, Entity)>,
+    factories: Query<(&Factory, &Transform, Entity)>,
 ) {
     // Units
 
@@ -18,17 +23,32 @@ pub fn populate_game_state(
         .iter()
         .map(|(u, t, e)| (u.clone(), *t, e))
         .collect::<Vec<(Unit, Transform, Entity)>>();
-
     game_state.units = cloned_units;
+
+    let cloned_factories = factories
+        .iter()
+        .map(|(f, t, e)| (f.clone(), *t, e))
+        .collect::<Vec<(Factory, Transform, Entity)>>();
+    game_state.factories = cloned_factories;
 }
 
 pub fn run_player_scripts(game_state: Res<GameState>, mut player_states: ResMut<PlayerStates>) {
     let mut player_scripts: HashMap<String, PlayerScript> = HashMap::new(); /*  vec![ai_scripts::basic_economy::main]; */
-    player_scripts.insert(game_state.players[0].name.clone(), ai_scripts::basic_economy::main);
-    player_scripts.insert(game_state.players[1].name.clone(), ai_scripts::basic_economy::main);
+    player_scripts.insert(
+        game_state.players[0].name.clone(),
+        ai_scripts::basic_economy::main,
+    );
+    player_scripts.insert(
+        game_state.players[1].name.clone(),
+        ai_scripts::basic_economy::main,
+    );
 
-    player_states.0.insert(game_state.players[0].name.clone(), PlayerState::new());
-    player_states.0.insert(game_state.players[1].name.clone(), PlayerState::new());
+    player_states
+        .0
+        .insert(game_state.players[0].name.clone(), PlayerState::new(0));
+    player_states
+        .0
+        .insert(game_state.players[1].name.clone(), PlayerState::new(1));
 
     // run player scripts
 
@@ -57,6 +77,10 @@ pub fn run_move_intents(
         for intent in player_state.intents.unit_move.iter() {
             let (mut unit, mut unit_transform, entity) = units.get_mut(intent.entity).unwrap();
 
+            if unit.owner_id != player_state.owner_id {
+                continue;
+            }
+
             // check if there is an other_unit at the destination
             // does not work in a bevy context because units might be moving towards but not yet reached. So allows double moving to a destination
             if let Some((other_unit, other_unit_transform, other_entity)) =
@@ -72,18 +96,29 @@ pub fn run_move_intents(
     }
 }
 
-fn unit_at_hex<'a>(
-    hex: hexx::Hex,
-    units: &'a Vec<(Unit, Transform, Entity)>,
-) -> Option<(&'a Unit, &'a Transform, &'a Entity)> {
-    for (unit, unit_transform, entity) in units.iter() {
-        if hex != HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate()) {
-            continue;
+pub fn run_factory_spawn_intents(
+    player_states: ResMut<PlayerStates>,
+    mut factories: Query<(&mut Factory, &Transform)>,
+    units: Query<(&Unit, &Transform, Entity)>,
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut mapped_units: MappedUnits,
+) {
+    for (player_name, player_state) in &player_states.0 {
+        for intent in player_state.intents.factory_spawn.iter() {
+            let (factory, _) = factories.get(intent.entity).expect("Factory not found");
+            if factory.owner_id != player_state.owner_id {
+                continue;
+            }
+
+            factory_spawn(
+                intent,
+                &mut factories,
+                &units,
+                &mut commands,
+                &asset_server,
+                &mut mapped_units,
+            );
         }
-
-        return Some((unit, unit_transform, entity));
     }
-
-    None
-    /* `(&'a components::Unit, &'a bevy::prelude::Transform, bevy::prelude::Entity)` value */
 }

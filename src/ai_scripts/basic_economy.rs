@@ -3,12 +3,13 @@ use hexx::Hex;
 
 use crate::{
     components::{GameState, PlayerState},
-    engine::{terrain::HEX_LAYOUT, unit::unit_move_intent},
+    engine::{factory::factory_spawn_intent, terrain::HEX_LAYOUT, unit::unit_move_intent},
     utils::pick,
 };
 
 pub fn main(game_state: &Res<GameState>, player_state: &mut PlayerState) {
     move_units(game_state, player_state);
+    use_factories(game_state, player_state);
 }
 
 fn move_units(game_state: &GameState, player_state: &mut PlayerState) {
@@ -23,5 +24,11 @@ fn move_units(game_state: &GameState, player_state: &mut PlayerState) {
         );
 
         unit_move_intent(entity, to_hex, player_state);
+    }
+}
+
+fn use_factories(game_state: &GameState, player_state: &mut PlayerState) {
+    for (_, _, entity) in game_state.factories.iter() {
+        factory_spawn_intent(entity, player_state);
     }
 }

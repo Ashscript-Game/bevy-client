@@ -18,7 +18,7 @@ use bevy_magic_light_2d::prelude::{LightOccluder2D, OmniLightSource2D, CAMERA_LA
 use hexx::{hex, shapes, Hex};
 
 use crate::{
-    components::{Assembler, Distributor, Factory, OccupiesTile, ResourceBlob, Store, Structure},
+    components::{Assembler, Distributor, Factory, OccupiesTile, Owner, ResourceBlob, Store, Structure},
     constants::{self, distributor, factory, z_order, Resource, RESOURCE_INPUTS, SECONDS_PER_TICK},
     engine::terrain::HEX_LAYOUT,
     utils::{self, find_angle_coords},
@@ -28,6 +28,7 @@ pub fn spawn_factory(
     hex: hexx::Hex,
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
+    owner_id: u32,
 ) {
     let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
 
@@ -36,14 +37,14 @@ pub fn spawn_factory(
             texture: asset_server.load(factory::ASSET_PATH),
             transform: Transform {
                 translation: Vec3::new(world_pos.x, world_pos.y, 5.0),
-                scale: Vec3::new(0.08, 0.08, 1.0),
+                scale: Vec3::new(1., 1., 1.0),
                 ..default()
             },
             ..default()
         },
         OccupiesTile,
         Factory {
-            tick_last_produced: 0,
+            production_progress: 0,
             store: Store {
                 resources: {
                     let mut map = HashMap::new();
@@ -53,6 +54,10 @@ pub fn spawn_factory(
                 allowed_inputs: Some(HashSet::from([Resource::Metal])),
                 capacity: 1000,
             },
+            owner_id,
+            energy: 100,
+            energy_capacity: 1000,
+            ..default()
         },
         OmniLightSource2D {
             intensity: 0.2,

@@ -157,3 +157,18 @@ pub fn unit_move(
 
     GeneralResult::Success
 }
+
+pub fn unit_at_hex<'a>(
+    hex: hexx::Hex,
+    units: &'a Vec<(Unit, Transform, Entity)>,
+) -> Option<(&'a Unit, &'a Transform, &'a Entity)> {
+    for (unit, unit_transform, entity) in units.iter() {
+        if hex != HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate()) {
+            continue;
+        }
+
+        return Some((unit, unit_transform, entity));
+    }
+
+    None
+}
