@@ -4,7 +4,7 @@ use bevy::{
     app::{App, Startup}, diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin}, prelude::*, utils::hashbrown::HashMap, DefaultPlugins
 };
 use bevy_magic_light_2d::{gi::BevyMagicLight2DPlugin, prelude::*};
-use components::{GameSettings, ProjectileMoveEndTimer, UnitMap};
+use components::{GameSettings, GameState, PlayerState, PlayerStates, ProjectileMoveEndTimer, UnitMap};
 use constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK};
 use game::GamePlugin;
 
@@ -21,6 +21,8 @@ pub mod projectile;
 pub mod structure;
 pub mod unit;
 pub mod utils;
+pub mod ai_scripts;
+pub mod types;
 
 fn main() {
     App::new()
@@ -64,6 +66,8 @@ fn main() {
         .insert_resource(GameSettings {
             lights: true,
         })
+        .insert_resource(GameState::new())
+        .insert_resource(PlayerStates(HashMap::new()))
         .register_type::<LightOccluder2D>()
         .register_type::<OmniLightSource2D>()
         .register_type::<SkylightMask2D>()

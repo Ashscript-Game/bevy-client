@@ -202,3 +202,11 @@ pub mod projectile {
     pub const SPAWN_ARC: (f32, f32) = (-PI/6., PI/6.);
     pub const DEFAULT_SPEED: f32 = 3.;
 }
+
+pub mod factory {
+    use bevy::color::*;
+
+    pub const ASSET_PATH: &str = "factory.png";
+    pub const COLOR: Color = Color::srgba(100. / 255., 100. / 255., 100. / 255., 1.);
+    pub const DEFAULT_PRODUCTION_SPEED: u32 = 5;
+}

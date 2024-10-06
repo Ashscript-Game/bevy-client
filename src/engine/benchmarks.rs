@@ -94,3 +94,10 @@ pub fn turret_benchmark(
         if rng.gen_range(0..=5) == 0 { spawn_turret(hex, &mut commands, &asset_server) }
     }
 }
+
+pub fn factory_combat_benchmark() {
+    // spawn 2 factories somewhat away from each other
+    // each factory is owned by a different player
+    // each factory produces units for free
+    // units will try to attack the other factory
+}

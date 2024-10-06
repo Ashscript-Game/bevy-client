@@ -24,10 +24,10 @@ impl Plugin for PlayerScriptPlugin {
                 (units_move, units_attack, turret_ai).chain(),
             )
                 .run_if(on_event::<TickEvent>()),
-        )
-        .add_systems(
+        );
+        /*         .add_systems(
             Update,
             units_stop_move.run_if(on_event::<ProjectileMoveEndEvent>()),
-        );
+        ) */
     }
 }

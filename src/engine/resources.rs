@@ -167,8 +167,8 @@ fn resource_node_light(world_pos: Vec2, commands: &mut Commands, color: Color) {
             intensity: 0.5,
             color,
             falloff: Vec3::new(20., 20., 0.005),
-            jitter_intensity: 0.1,
-            jitter_translation: 5.0,
+            jitter_intensity: 0.01,
+            jitter_translation: 0.1,
             ..default()
         })
         .insert(SpatialBundle {

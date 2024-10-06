@@ -18,7 +18,7 @@ impl Plugin for GamePlugin {
             ControlsPlugin,
             LightingPlugin,
             DebugPlugin,
-            PlayerScriptPlugin,
+            /* PlayerScriptPlugin, */
             EnginePlugin,
             ProjectilePlugin,
             UnitPlugin,

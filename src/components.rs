@@ -61,8 +61,25 @@ pub struct ResourceBlob {
     pub angle: f32,
 }
 
+#[derive(Default, Clone)]
+pub struct Owner {
+    pub name: String,
+    pub id: u32,
+    // obviously need an ID system at some point
+}
+
+impl Owner {
+    pub fn new() -> Self {
+        Self { 
+            name: "default_name".to_string(),
+            id: 0,
+         }
+    }
+}
+
 #[derive(Component, Default, Clone)]
 pub struct Unit {
+    pub owner: Owner,
     pub body: UnitBody,
     pub health: u32,
     pub age: u32,
@@ -199,9 +216,105 @@ pub struct GameSettings {
     pub lights: bool,
 }
 
+#[derive(Resource, Default)]
+pub struct GameState {
+    pub units: Vec<(Unit, Transform, Entity)>,
+    pub players: Vec<Owner>,
+}
+
+impl GameState {
+    pub fn new() -> Self {
+        Self {
+            players: vec![
+                Owner {
+                    name: "Player".to_string(),
+                    id: 0,
+                },
+                Owner {
+                    name: "AI".to_string(),
+                    id: 1,
+                },
+            ],
+            ..default()
+        }
+    }
+}
+
+pub mod intents {
+    use bevy::prelude::*;
+    use hexx::Hex;
+
+    use crate::constants::Resource;
+
+    pub struct UnitAttack {
+        pub attacker: Entity,
+        pub target: Entity,
+    }
+
+    pub struct UnitMove {
+        pub entity: Entity,
+        pub to: Hex,
+    }
+
+    pub struct ResourceTransfer {
+        pub resource: Resource,
+        pub amount: u32,
+        pub from: Entity,
+        pub to: Entity,
+    }
+}
+
+#[derive(Resource, Default)]
+/// should probably spacialize this at some point, to align with chunks
+pub struct Intents {
+    pub unit_attack: Vec<intents::UnitAttack>,
+    pub unit_move: Vec<intents::UnitMove>,
+    pub resource_transfer: Vec<intents::ResourceTransfer>,
+}
+
+impl Intents {
+    pub fn new() -> Self {
+        Self {
+            ..default()
+        }
+    }
+}
+
+pub struct PlayerState {
+    pub memory: HashMap<String, String>,
+    pub intents: Intents,
+}
+
+impl PlayerState {
+    pub fn new() -> Self {
+        Self {
+            memory: HashMap::new(),
+            intents: Intents::new(),
+        }
+    }
+}
+
+#[derive(Resource)]
+pub struct PlayerStates(pub HashMap<String, PlayerState>);
+
+// #[derive(Resource)]
+// pub struct PlayerScripts<'a>(pub Vec<&'a dyn Fn(Res<GameState>, Res<PlayerState>)>);
+
+// impl PlayerScripts<'_> {
+//     pub fn new() -> Self {
+//         Self(Vec::new())
+//     }
+// }
+
 #[derive(Component)]
 pub enum Structure {
     Assembler,
     Distributor,
     Turret,
+}
+
+#[derive(Component)]
+pub struct Factory {
+    pub tick_last_produced: u32,
+    pub store: Store,
 }

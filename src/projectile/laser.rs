@@ -38,7 +38,7 @@ pub fn update_lasers(
         let unit_aabb = Aabb2d::new(unit_transform.translation.truncate(), Vec2::new(20., 20.));
 
         if laser_aabb.intersects(&unit_aabb) {
-            println!("intersection");
+            
             commands.entity(laser_entity).despawn();
             continue;
         }

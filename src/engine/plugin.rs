@@ -9,11 +9,13 @@ use bevy::{
 use crate::{
     components::{ProjectileMoveEndEvent, ProjectileMoveEndTimer, TickEvent},
     constants::{self, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK},
+    player_script::unit::units_stop_move,
     structure, unit,
 };
 
 use super::{
     benchmarks::{assembler_distributor_benchmark, turret_benchmark, unit_benchmark},
+    player::{populate_game_state, run_move_intents, run_player_scripts},
     resources::generate_resources,
     terrain::generate_tiles,
     unit::{age_units, energize_units, kill_units},
@@ -28,9 +30,9 @@ impl Plugin for EnginePlugin {
             (
                 generate_tiles,
                 generate_resources,
-                assembler_distributor_benchmark,
+                /* assembler_distributor_benchmark, */
                 unit_benchmark,
-                turret_benchmark,
+                /* turret_benchmark, */
             )
                 .chain(),
         )
@@ -38,20 +40,38 @@ impl Plugin for EnginePlugin {
         .add_event::<ProjectileMoveEndEvent>()
         .add_systems(
             Update,
-            (projectile_move_end_event, (tick_event, age_units, kill_units, energize_units).run_if(on_timer(Duration::from_secs_f32(
-                constants::SECONDS_PER_TICK,
-            )))),
+            (
+                projectile_move_end_event,
+                (
+                    tick_event,
+                    /* units_stop_move, */ (age_units, kill_units, energize_units),
+                    (populate_game_state, run_player_scripts, run_move_intents),
+                )
+                    .run_if(on_timer(Duration::from_secs_f32(
+                        constants::SECONDS_PER_TICK,
+                    ))),
+            ),
         );
     }
 }
 
-fn tick_event(mut event_writer: EventWriter<TickEvent>, mut projectile_timer: ResMut<ProjectileMoveEndTimer>) {
+fn tick_event(
+    mut event_writer: EventWriter<TickEvent>,
+    mut projectile_timer: ResMut<ProjectileMoveEndTimer>,
+) {
     event_writer.send(TickEvent);
 
-    projectile_timer.0 = Timer::from_seconds(SECONDS_PER_TICK * PROJECTILE_MOVE_END_TICK_PORTION, TimerMode::Once);
+    projectile_timer.0 = Timer::from_seconds(
+        SECONDS_PER_TICK * PROJECTILE_MOVE_END_TICK_PORTION,
+        TimerMode::Once,
+    );
 }
 
-fn projectile_move_end_event(mut event_writer: EventWriter<ProjectileMoveEndEvent>, mut projectile_timer: ResMut<ProjectileMoveEndTimer>, time: Res<Time>) {
+fn projectile_move_end_event(
+    mut event_writer: EventWriter<ProjectileMoveEndEvent>,
+    mut projectile_timer: ResMut<ProjectileMoveEndTimer>,
+    time: Res<Time>,
+) {
     projectile_timer.0.tick(time.delta());
 
     if projectile_timer.0.finished() {
@@ -61,7 +81,6 @@ fn projectile_move_end_event(mut event_writer: EventWriter<ProjectileMoveEndEven
 
 fn on_tick(mut event_reader: EventReader<TickEvent>) {
     for (event, _) in event_reader.read_with_id() {
-
         // event.projectile_move_end_event.tick(Duration::from_secs_f32(SECONDS_PER_TICK));
 
         println!("tick event happened");

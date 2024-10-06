@@ -65,7 +65,7 @@ pub fn update_resource_blobs(
         );
 
         if blob_aabb.intersects(&unit_aabb) {
-            println!("intersection");
+            
             commands.entity(blob_entity).despawn();
             continue;
         }
@@ -153,7 +153,7 @@ pub fn create_resource_blob(
         },
         OmniLightSource2D {
             intensity: 0.05,
-            color: color,
+            color,
             falloff: Vec3::new(2., 2., 0.005),
             ..Default::default()
         },

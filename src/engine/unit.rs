@@ -4,7 +4,7 @@ use bevy::{prelude::*, transform::commands};
 use hexx::Hex;
 
 use crate::{
-    components::{Moving, Unit, MappedUnits},
+    components::{intents, MappedUnits, Moving, PlayerState, Unit},
     constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS},
     utils::find_angle_coords,
 };
@@ -103,6 +103,24 @@ pub fn unit_attack(
     unit1.energy -= unit_attack_cost(unit1);
 
     GeneralResult::Success
+}
+
+pub fn unit_move_intent(entity: &Entity, to_hex: Hex, player_state: &mut PlayerState) {
+    player_state.intents.unit_move.push(intents::UnitMove {
+        entity: *entity,
+        to: to_hex,
+    });
+}
+
+pub fn unit_move_hex(
+    unit: &mut Unit,
+    unit_transform: &mut Transform,
+    target_hex: Hex,
+) -> GeneralResult {
+    let target_translation_2d = HEX_LAYOUT.hex_to_world_pos(target_hex);
+    let target_translation = Vec3::new(target_translation_2d.x, target_translation_2d.y, 1.);
+
+    unit_move(unit, unit_transform, &target_translation)
 }
 
 pub fn unit_move(
