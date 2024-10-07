@@ -69,8 +69,9 @@ pub fn spawn_unit(
             body: enum_map! {
                 UnitPart::Ranged => 3,
                 UnitPart::Generate => {
-                    let num_parts = rand::random::<u32>() % 10 + 25;
-                    num_parts
+                    println!("This is a test for clippy");
+                    let num_part = rand::random::<u32>() % 10 + 25;
+                    num_part
                 },
                 _ => 1,
             },
