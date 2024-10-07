@@ -34,15 +34,8 @@ jobs:
     - uses: LoliGothick/clippy-check@master
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        allow: >
-          nonstandard_macro_braces
-          mutex_atomic
-        deny: warnings
-#  quality:
-#    runs-on: ubuntu-latest
-#    steps:
-#    - uses: actions/checkout@v4
-#    - name: Install Needed
-#      run: sudo apt-get install -y -qq librust-alsa-sys-dev pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0
-#    - name: Run Clippy
-#      run: cargo clippy --all-targets --all-features
+        #allow: >
+        #  nonstandard_macro_braces
+        #  mutex_atomic
+        #deny: warnings
+        # Same thing as the #![deny(clippy::warnings)] in rust.
