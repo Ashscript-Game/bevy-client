@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install Needed
-      run: sudo apt-get install -y -qq librust-alsa-sys-dev
+      run: sudo apt-get install -y -qq librust-alsa-sys-dev pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0
     - name: Buildable
       run: cargo build --verbose --features dev
   quality:
@@ -23,6 +23,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install Needed
-      run: sudo apt-get install -y -qq librust-alsa-sys-dev
+      run: sudo apt-get install -y -qq librust-alsa-sys-dev pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0
     - name: Run Clippy
       run: cargo clippy --all-targets --all-features
