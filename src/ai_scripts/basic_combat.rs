@@ -31,7 +31,8 @@ fn move_and_attack_units(game_state: &GameState, player_state: &mut PlayerState)
         .map(|(u, t, _)| HEX_LAYOUT.world_pos_to_hex(t.translation.truncate()))
         .collect::<HashSet<Hex>>();
 
-    for (unit, unit_transform, entity) in &game_state.units {
+    for unit in &game_state.units {
+        let (unit, unit_transform, entity) = unit;
         if unit.owner_id != player_state.owner_id {
             continue;
         }
