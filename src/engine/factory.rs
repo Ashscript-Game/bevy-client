@@ -24,13 +24,9 @@ pub fn factory_spawn(
     let (mut factory, factory_transform) =
         factories.get_mut(intent.entity).expect("Factory not found");
 
-    println!("before production progress {}", factory.production_progress);
-
     if factory.production_progress < 100 {
         return;
     }
-
-    println!("gpt past production progress");
 
     let factory_hex = HEX_LAYOUT.world_pos_to_hex(factory_transform.translation.truncate());
 
@@ -38,8 +34,6 @@ pub fn factory_spawn(
         if let Some(unit) = unit_at_hex(neighbour_hex, &units_vec) {
             continue;
         };
-
-        println!("Spawning unit at");
 
         spawn_unit(
             neighbour_hex,
@@ -58,8 +52,6 @@ pub fn progress_factories(mut factories: Query<&mut Factory>) {
         factory.production_progress = (factory.production_progress
             + (1. / constants::factory::DEFAULT_PRODUCTION_SPEED as f32 * 100.) as u8)
             .min(100);
-
-        println!("tick last produced: {}", factory.production_progress);
     }
 }
 

@@ -1,6 +1,8 @@
 use crate::{
     ai_scripts,
     components::{Factory, GameState, MappedUnits, PlayerState, PlayerStates, Unit},
+    constants::GeneralResult,
+    projectile::laser::create_laser,
     types::PlayerScript,
 };
 use bevy::{ecs::entity, prelude::*};
@@ -9,7 +11,7 @@ use std::collections::HashMap;
 use super::{
     factory::factory_spawn,
     terrain::HEX_LAYOUT,
-    unit::{unit_at_hex, unit_move_hex},
+    unit::{unit_at_hex, unit_attack, unit_damage, unit_move_hex},
 };
 
 pub fn populate_game_state(
@@ -36,7 +38,7 @@ pub fn run_player_scripts(game_state: Res<GameState>, mut player_states: ResMut<
     let mut player_scripts: HashMap<String, PlayerScript> = HashMap::new(); /*  vec![ai_scripts::basic_economy::main]; */
     player_scripts.insert(
         game_state.players[0].name.clone(),
-        ai_scripts::basic_economy::main,
+        ai_scripts::basic_combat::main,
     );
     player_scripts.insert(
         game_state.players[1].name.clone(),
@@ -76,7 +78,7 @@ pub fn run_move_intents(
     for (player_name, player_state) in &player_states.0 {
         for intent in player_state.intents.unit_move.iter() {
             let Ok((mut unit, mut unit_transform, entity)) = units.get_mut(intent.entity) else {
-                continue
+                continue;
             };
 
             if unit.owner_id != player_state.owner_id {
@@ -122,6 +124,57 @@ pub fn run_factory_spawn_intents(
                 &mut commands,
                 &asset_server,
                 &mut mapped_units,
+            );
+        }
+    }
+}
+
+pub fn run_unit_attack_intents(
+    player_states: ResMut<PlayerStates>,
+    mut units: Query<(&mut Unit, &Transform, Entity)>,
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+) {
+    for (player_name, player_state) in &player_states.0 {
+        for intent in player_state.intents.unit_attack.iter() {
+            let Ok([(mut attacker, attacker_transform, _), (mut target, target_transform, _)]) =
+                units.get_many_mut([intent.attacker, intent.target])
+            else {
+                println!("[run unit attack intents] attacker or target not found");
+                continue;
+            };
+            println!("before");
+            if attacker.owner_id != player_state.owner_id {
+                continue;
+            }
+
+            println!("unit tried to attack");
+
+            if unit_attack(
+                &mut attacker,
+                attacker_transform,
+                &mut target,
+                target_transform,
+            ) != GeneralResult::Success
+            {
+                continue;
+            }
+
+            let laser_target_pos = {
+                if let Some(moving) = &target.moving {
+                    moving.target_pos
+                } else {
+                    target_transform.translation
+                }
+            };
+
+            create_laser(
+                &attacker_transform.translation,
+                &laser_target_pos,
+                intent.target,
+                unit_damage(&attacker),
+                &mut commands,
+                &asset_server,
             );
         }
     }

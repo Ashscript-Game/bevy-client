@@ -44,7 +44,7 @@ pub fn spawn_factory(
         },
         OccupiesTile,
         Factory {
-            production_progress: 0,
+            production_progress: 100,
             store: Store {
                 resources: {
                     let mut map = HashMap::new();

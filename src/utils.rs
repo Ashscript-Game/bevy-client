@@ -65,3 +65,7 @@ pub mod hex {
         Hex::new(x, y)
     }
 }
+
+// pub fn find_smallest_cloned<T>(arr: &Vec<T>) -> Option<T> {
+
+// }

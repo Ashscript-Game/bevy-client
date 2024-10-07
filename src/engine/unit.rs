@@ -89,9 +89,9 @@ pub fn unit_attack(
     }
 
     let distance = unit_hex.unsigned_distance_to(other_unit_hex);
-    if distance > unit_range(unit1) {
+    /* if distance > unit_range(unit1) {
         return GeneralResult::Fail;
-    }
+    } */
 
     let damage = unit_damage(unit1);
     if damage > unit2.health {
@@ -171,4 +171,11 @@ pub fn unit_at_hex<'a>(
     }
 
     None
+}
+
+pub fn unit_attack_intent(entity: &Entity, target: &Entity, player_state: &mut PlayerState) {
+    player_state.intents.unit_attack.push(intents::UnitAttack {
+        attacker: *entity,
+        target: *target,
+    });
 }

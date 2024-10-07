@@ -19,7 +19,7 @@ use super::{
     },
     factory::progress_factories,
     player::{
-        populate_game_state, run_factory_spawn_intents, run_move_intents, run_player_scripts,
+        populate_game_state, run_factory_spawn_intents, run_move_intents, run_player_scripts, run_unit_attack_intents,
     },
     resources::generate_resources,
     terrain::generate_tiles,
@@ -57,6 +57,7 @@ impl Plugin for EnginePlugin {
                         run_player_scripts,
                         run_move_intents,
                         run_factory_spawn_intents,
+                        run_unit_attack_intents,
                     ),
                 )
                     .run_if(on_timer(Duration::from_secs_f32(
