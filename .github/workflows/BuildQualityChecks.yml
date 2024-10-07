@@ -14,11 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Install Needed
+      run: sudo apt-get install -y -qq librust-alsa-sys-dev
     - name: Buildable
       run: cargo build --verbose --features dev
   quality:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Install Needed
+      run: sudo apt-get install -y -qq librust-alsa-sys-dev
     - name: Run Clippy
       run: cargo clippy --all-targets --all-features
