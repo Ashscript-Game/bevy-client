@@ -1,5 +1,5 @@
 use bevy::{
-    app::{App, Plugin, Startup}, core_pipeline::bloom::BloomSettings, prelude::*, render::{camera::RenderTarget, view::RenderLayers}, utils::hashbrown::HashMap
+    app::{App, Plugin, Startup}, prelude::*, render::{camera::RenderTarget, view::RenderLayers}, utils::hashbrown::HashMap
 };
 use bevy_magic_light_2d::{
     prelude::{CameraTargets, CAMERA_LAYER_FLOOR, CAMERA_LAYER_OBJECTS, CAMERA_LAYER_WALLS},
@@ -7,7 +7,7 @@ use bevy_magic_light_2d::{
 };
 
 use crate::{
-    components::{MappedOccupyStructures, ResourceBlob, OccupyStructuresMap, UnitMap}, constants::{self, resource_blob, SECONDS_PER_TICK}, controls::{camera::CameraControlsPlugin, plugin::ControlsPlugin}, debug::plugin::DebugPlugin, engine::plugin::EnginePlugin, lighting::plugin::LightingPlugin, player_script::plugin::PlayerScriptPlugin, projectile::plugin::ProjectilePlugin, structure::plugin::StructuresPlugin, unit::plugin::UnitPlugin, utils::signed_distance
+    components::{OccupyStructuresMap, UnitMap}, constants::{self}, controls::plugin::ControlsPlugin, debug::plugin::DebugPlugin, engine::plugin::EnginePlugin, lighting::plugin::LightingPlugin, projectile::plugin::ProjectilePlugin, structure::plugin::StructuresPlugin, unit::plugin::UnitPlugin
 };
 
 pub struct GamePlugin;

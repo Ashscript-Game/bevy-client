@@ -4,7 +4,7 @@ use bevy::{math::bounding::{Aabb2d, IntersectsVolume}, prelude::*, render::view:
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use rand::{thread_rng, Rng};
 
-use crate::{components::{OccupiesTile, ResourceBlob}, constants::{self, coal_node, projectile, z_order, Resource, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK}, utils::{find_angle, find_angle_coords, signed_distance}};
+use crate::{components::{OccupiesTile, ResourceBlob}, constants::{self, coal_node, projectile, z_order, Resource, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK}, utils::{find_angle, find_angle_coords}};
 
 pub fn update_resource_blobs(
     mut resource_blobs: Query<(&mut Transform, &mut ResourceBlob, Entity)>,

@@ -6,19 +6,17 @@ use bevy::{
     math::bounding::{Aabb2d, IntersectsVolume},
     prelude::*,
     render::view::RenderLayers,
-    sprite::{MaterialMesh2dBundle, Mesh2dHandle},
-    utils::hashbrown::HashMap,
 };
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use rand::{thread_rng, Rng};
 
 use crate::{
-    components::{Laser, ResourceBlob, Unit},
+    components::{Laser, Unit},
     constants::{
-        self, coal_node, laser, projectile, z_order, Resource, PROJECTILE_MOVE_END_TICK_PORTION,
+        laser, projectile, PROJECTILE_MOVE_END_TICK_PORTION,
         SECONDS_PER_TICK,
     },
-    utils::{find_angle, find_angle_coords, signed_distance},
+    utils::find_angle,
 };
 
 pub fn update_lasers(

@@ -10,7 +10,6 @@ use crate::{
         terrain::HEX_LAYOUT,
         unit::{unit_attack_intent, unit_move_intent, unit_range},
     },
-    utils::{self, pick},
 };
 
 pub fn main(game_state: &Res<GameState>, player_state: &mut PlayerState) {

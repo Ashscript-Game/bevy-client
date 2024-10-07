@@ -1,6 +1,4 @@
 use bevy::prelude::*;
-use hexx::Hex;
-use rand::distributions::DistIter;
 
 use crate::{
     components::{Assembler, Distributor}, constants::{self, GeneralResult}, engine::{terrain::HEX_LAYOUT}, projectile::resource_blob::create_resource_blob, structure::{

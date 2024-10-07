@@ -1,4 +1,4 @@
-use bevy::app::{App, Plugin, Startup};
+use bevy::app::{App, Plugin};
 
 use super::{assembler::AssemblerPlugin, distributor::DistributorPlugin};
 

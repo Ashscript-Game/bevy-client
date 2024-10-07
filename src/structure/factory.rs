@@ -1,27 +1,15 @@
-use std::{f32::consts::PI, time::Instant};
 
 use bevy::{
-    app::{App, Plugin, Startup},
-    gizmos,
     prelude::*,
-    render::{
-        extract_component::ExtractComponent,
-        mesh::{self, PrimitiveTopology},
-        render_asset::RenderAssetUsages,
-        view::RenderLayers,
-    },
-    sprite::{MaterialMesh2dBundle, Mesh2dHandle},
+    render::view::RenderLayers,
     utils::{hashbrown::HashMap, HashSet},
 };
-use bevy_inspector_egui::bevy_egui::systems::InputResources;
-use bevy_magic_light_2d::prelude::{LightOccluder2D, OmniLightSource2D, CAMERA_LAYER_OBJECTS};
-use hexx::{hex, shapes, Hex};
+use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 
 use crate::{
-    components::{Assembler, Distributor, Factory, OccupiesTile, Owner, ResourceBlob, Store, Structure},
-    constants::{self, distributor, factory, z_order, Resource, RESOURCE_INPUTS, SECONDS_PER_TICK},
+    components::{Factory, OccupiesTile, Store},
+    constants::{factory, Resource},
     engine::terrain::HEX_LAYOUT,
-    utils::{self, find_angle_coords},
 };
 
 pub fn spawn_factory(

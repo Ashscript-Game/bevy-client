@@ -1,5 +1,5 @@
 use bevy::{
-    app::{App, Plugin},
+    app::Plugin,
     prelude::*,
     render::{
         mesh::{Indices, PrimitiveTopology},
@@ -8,7 +8,7 @@ use bevy::{
     },
 };
 use bevy_magic_light_2d::prelude::CAMERA_LAYER_FLOOR;
-use hexx::{hex, shapes, HexLayout, HexOrientation, MeshInfo, PlaneMeshBuilder};
+use hexx::{hex, shapes, HexLayout, HexOrientation, PlaneMeshBuilder};
 
 pub const HEX_SIZE: Vec2 = Vec2::splat(64.0);
 pub const CHUNK_SIZE: u32 = 5;

@@ -1,12 +1,8 @@
-use std::f32::consts::PI;
 
-use bevy::{
-    math::{Quat, Vec3}, prelude::*, render::view::RenderLayers, sprite::{MaterialMesh2dBundle, Mesh2dHandle}, utils::HashMap
-};
-use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
+use bevy::math::Vec3;
 
 use crate::{
-    components::{ResourceBlob, Store}, constants::{self, coal_node, z_order, GeneralResult, Resource, RESOURCE_INPUTS}, engine::terrain::HEX_LAYOUT, utils::find_angle_coords
+    components::Store, constants::{self, GeneralResult, Resource}, engine::terrain::HEX_LAYOUT
 };
 
 pub fn transfer(

@@ -1,11 +1,10 @@
 use bevy::{
-    app::{App, Plugin, Startup}, prelude::*, render::view::RenderLayers, utils::hashbrown::HashMap
+    app::{App, Plugin}, prelude::*, render::view::RenderLayers, utils::hashbrown::HashMap
 };
 use bevy_magic_light_2d::prelude::CAMERA_LAYER_OBJECTS;
-use hexx::{hex, shapes, Hex};
 
 use crate::{
-    components::{Assembler, OccupiesTile, Store, Structure},
+    components::{Assembler, OccupiesTile, Store},
     constants::{self, assembler, Resource, RESOURCE_INPUTS},
     engine::terrain::HEX_LAYOUT,
 };

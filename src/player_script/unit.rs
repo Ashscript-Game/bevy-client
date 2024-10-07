@@ -1,12 +1,12 @@
 use bevy::{prelude::*, utils::hashbrown::HashSet};
-use hexx::{shapes, Hex};
+use hexx::Hex;
 
 use crate::{
-    components::{MappedUnits, OccupiesTile, Unit},
+    components::{OccupiesTile, Unit},
     constants::GeneralResult,
     engine::{
         terrain::HEX_LAYOUT,
-        unit::{unit_attack, unit_attack_cost, unit_damage, unit_move, unit_move_cost, unit_range},
+        unit::{unit_attack, unit_attack_cost, unit_damage, unit_move, unit_move_cost},
     },
     projectile::laser::create_laser,
     utils::pick,

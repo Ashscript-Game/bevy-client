@@ -1,12 +1,9 @@
 use bevy::{
-    app::{App, Plugin, Update},
+    app::{App, Plugin},
     prelude::*,
-    render::{camera::RenderTarget, view::RenderLayers},
 };
-use bevy_magic_light_2d::{prelude::*, FloorCamera, SpriteCamera};
-use hexx::hex;
+use bevy_magic_light_2d::prelude::*;
 
-use crate::engine::terrain::HEX_LAYOUT;
 
 pub struct LightingPlugin;
 

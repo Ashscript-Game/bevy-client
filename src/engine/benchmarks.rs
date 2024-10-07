@@ -1,5 +1,4 @@
 use bevy::{
-    app::{Plugin, Update},
     asset::AssetServer,
     prelude::*,
     utils::hashbrown::HashSet,

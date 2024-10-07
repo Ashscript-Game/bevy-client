@@ -1,15 +1,13 @@
-use std::time::Duration;
 
 use bevy::{
     app::{App, Plugin, Update},
     prelude::{on_event, IntoSystemConfigs},
-    time::common_conditions::on_timer,
 };
 
-use crate::{components::{ProjectileMoveEndEvent, TickEvent}, constants};
+use crate::components::TickEvent;
 
 use super::{
-    assembler::{assembler_ai, assemblers_produce}, distributor::distributor_ai, turret::turret_ai, unit::{units_attack, units_move, units_stop_move}
+    assembler::{assembler_ai, assemblers_produce}, distributor::distributor_ai, turret::turret_ai, unit::{units_attack, units_move}
 };
 
 pub struct PlayerScriptPlugin;

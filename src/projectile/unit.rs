@@ -3,7 +3,6 @@ use bevy::prelude::*;
 use crate::{
     components::Unit,
     constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK},
-    utils::signed_distance,
 };
 
 pub fn update_units(mut units: Query<(&mut Transform, &Unit)>, time: Res<Time>) {

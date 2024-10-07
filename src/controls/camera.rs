@@ -2,11 +2,10 @@ use bevy::{
     app::{App, Plugin, Update},
     input::mouse::MouseWheel,
     prelude::*,
-    render::camera,
 };
 use bevy_magic_light_2d::SpriteCamera;
 
-use crate::constants::{self, control_keys, ResultCode};
+use crate::constants::{self};
 
 pub struct CameraControlsPlugin;
 

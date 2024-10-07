@@ -1,10 +1,9 @@
-use std::time::Duration;
 
 use bevy::{
-    app::{App, Startup}, diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin}, prelude::*, utils::hashbrown::HashMap, DefaultPlugins
+    app::App, diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, utils::hashbrown::HashMap, DefaultPlugins
 };
 use bevy_magic_light_2d::{gi::BevyMagicLight2DPlugin, prelude::*};
-use components::{GameSettings, GameState, PlayerState, PlayerStates, ProjectileMoveEndTimer, UnitMap};
+use components::{GameSettings, GameState, PlayerStates, ProjectileMoveEndTimer};
 use constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK};
 use game::GamePlugin;
 

@@ -4,12 +4,9 @@ use bevy::{
     utils::{hashbrown::HashSet, HashMap},
 };
 use enum_map::EnumMap;
-use hexx::{hex, Hex};
+use hexx::Hex;
 
-use crate::{
-    constants::{self, Resource, UnitPart},
-    utils,
-};
+use crate::constants::{self, Resource, UnitPart};
 
 #[derive(Component)]
 pub struct ResourceNode {

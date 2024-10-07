@@ -1,10 +1,9 @@
 use crate::{
     components::{OccupiesTile, ResourceNode, Scrap, Wall},
-    constants::{self, resource_node, resource_noise_tresholds, SIMPLEX_GENERATOR},
+    constants::{self, resource_noise_tresholds, SIMPLEX_GENERATOR},
     engine::terrain::{hexagonal_plane, HEX_LAYOUT, HEX_SIZE},
 };
 use bevy::{
-    app::{App, Plugin, Startup, Update},
     math::Vec3,
     prelude::*,
     render::view::RenderLayers,

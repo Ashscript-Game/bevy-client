@@ -1,10 +1,10 @@
-use bevy::{app::{App, Plugin}, prelude::*, render::view::RenderLayers, sprite::{MaterialMesh2dBundle, Mesh2dHandle}};
+use bevy::{app::{App, Plugin}, prelude::*, render::view::RenderLayers};
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use enum_map::enum_map;
 use hexx::Hex;
 use rand;
 
-use crate::{components::{OccupiesTile, Unit, MappedUnits}, constants::{unit, z_order, UnitPart}, engine::terrain::HEX_LAYOUT};
+use crate::{components::{OccupiesTile, Unit, MappedUnits}, constants::{unit, UnitPart}, engine::terrain::HEX_LAYOUT};
 
 pub struct UnitPlugin;
 

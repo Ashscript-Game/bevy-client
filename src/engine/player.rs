@@ -1,11 +1,11 @@
 use crate::{
     ai_scripts,
-    components::{Factory, GameState, MappedUnits, OccupiesTile, PlayerState, PlayerStates, Unit, Wall},
+    components::{Factory, GameState, MappedUnits, PlayerState, PlayerStates, Unit, Wall},
     constants::GeneralResult,
     projectile::laser::create_laser,
     types::PlayerScript,
 };
-use bevy::{ecs::entity, prelude::*, utils::hashbrown::HashSet};
+use bevy::{prelude::*, utils::hashbrown::HashSet};
 use hexx::Hex;
 use std::collections::HashMap;
 

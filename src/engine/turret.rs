@@ -1,7 +1,6 @@
 use std::f32::consts::PI;
 
 use bevy::{math::Quat, prelude::Transform};
-use hexx::utils::Quad;
 
 use crate::{components::{Turret, Unit}, constants::GeneralResult, utils::find_angle};
 

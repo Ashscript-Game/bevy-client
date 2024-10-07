@@ -1,16 +1,14 @@
-use std::time::Duration;
 
 use bevy::{
     app::{App, Plugin, Update},
     prelude::*,
-    time::common_conditions::on_timer,
 };
 
-use crate::{components::ProjectileMoveEndEvent, constants, player_script::unit::units_stop_move};
+use crate::{components::ProjectileMoveEndEvent, player_script::unit::units_stop_move};
 
 use super::{
-    laser::{kill_lasers, update_lasers},
-    resource_blob::{kill_resource_blobs, update_resource_blobs},
+    laser::update_lasers,
+    resource_blob::update_resource_blobs,
     unit::update_units,
 };
 

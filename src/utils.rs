@@ -1,7 +1,6 @@
 use std::f32::consts::PI;
 
 use bevy::math::Vec3;
-use hexx::Hex;
 use rand::Rng;
 
 pub fn find_angle(v1: &Vec3, v2: &Vec3) -> f32 {
