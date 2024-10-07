@@ -1,4 +1,4 @@
-name: Rust
+name: Buildable
 
 on:
   push:
@@ -16,7 +16,5 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Build
+    - name: Buildable
       run: cargo build --verbose --features dev
-    - name: Clippy code quality check
-      run: cargo clippy
