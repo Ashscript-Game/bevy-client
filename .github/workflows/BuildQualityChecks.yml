@@ -31,9 +31,13 @@ jobs:
     - uses: dtolnay/rust-toolchain@stable
       with:
         components: clippy
-    - uses: auguwu/clippy-action@1.4.0
+    - uses: LoliGothick/clippy-check@master
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+        allow: >
+          nonstandard_macro_braces
+          mutex_atomic
+        deny: warnings
 #  quality:
 #    runs-on: ubuntu-latest
 #    steps:
