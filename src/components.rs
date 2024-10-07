@@ -214,7 +214,7 @@ pub struct GameState {
 
 impl GameState {
     pub fn new() -> Self {
-        Self {
+        let s = Self {
             players: vec![
                 Owner {
                     name: "Player".to_string(),
@@ -226,7 +226,9 @@ impl GameState {
                 },
             ],
             ..default()
-        }
+        };
+
+        return s;
     }
 }
 
