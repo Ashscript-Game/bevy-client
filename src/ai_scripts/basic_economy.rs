@@ -8,11 +8,11 @@ use crate::{
 };
 
 pub fn main(game_state: &Res<GameState>, player_state: &mut PlayerState) {
-    move_units(game_state, player_state);
+    move_units_randomly(game_state, player_state);
     use_factories(game_state, player_state);
 }
 
-fn move_units(game_state: &GameState, player_state: &mut PlayerState) {
+fn move_units_randomly(game_state: &GameState, player_state: &mut PlayerState) {
     let q_offsets = [-1, 0, 1];
     let t_offsets = [-1, 0, 1];
 

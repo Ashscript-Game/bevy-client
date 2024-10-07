@@ -212,6 +212,7 @@ pub struct GameState {
     pub units: Vec<(Unit, Transform, Entity)>,
     pub factories: Vec<(Factory, Transform, Entity)>,
     pub players: Vec<Owner>,
+    pub walls: HashSet<Hex>,
 }
 
 impl GameState {
@@ -322,3 +323,6 @@ pub struct Factory {
     // 100(%)+ = completed
     pub production_progress: u8,
 }
+
+#[derive(Component)]
+pub struct Wall;

@@ -2,6 +2,7 @@ use bevy::{app::{App, Plugin}, prelude::*, render::view::RenderLayers, sprite::{
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use enum_map::enum_map;
 use hexx::Hex;
+use rand;
 
 use crate::{components::{OccupiesTile, Unit, MappedUnits}, constants::{unit, z_order, UnitPart}, engine::terrain::HEX_LAYOUT};
 
@@ -67,7 +68,10 @@ pub fn spawn_unit(
             health: 100,
             body: enum_map! {
                 UnitPart::Ranged => 3,
-                UnitPart::Generate => 6,
+                UnitPart::Generate => {
+                    let num_parts = rand::random::<u32>() % 10 + 25;
+                    num_parts
+                },
                 _ => 1,
             },
             owner_id,

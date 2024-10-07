@@ -136,8 +136,8 @@ pub mod z_order {
 
 pub mod resource_blob {}
 
-pub const SECONDS_PER_TICK: f32 = 2.;
-pub const PROJECTILE_MOVE_END_TICK_PORTION: f32 = 0.75;
+pub const SECONDS_PER_TICK: f32 = 0.5;
+pub const PROJECTILE_MOVE_END_TICK_PORTION: f32 = 0.4;
 
 #[derive(Eq, PartialEq, Clone, Debug)]
 pub enum GeneralResult {
@@ -151,7 +151,7 @@ pub mod unit {
     pub const ASSET_PATH: &str = "player.png";
     pub const MAX_PARTS: u32 = 100;
     pub const MAX_HEALTH: u32 = 100;
-    pub const MAX_AGE: u32 = 100;
+    pub const MAX_AGE: u32 = 300;
     pub const COLOR: Color = /* Color::Srgba {
             red: 150. / 255.,
             green: 150. / 255.,

@@ -89,9 +89,9 @@ pub fn unit_attack(
     }
 
     let distance = unit_hex.unsigned_distance_to(other_unit_hex);
-    /* if distance > unit_range(unit1) {
+    if distance > unit_range(unit1) {
         return GeneralResult::Fail;
-    } */
+    }
 
     let damage = unit_damage(unit1);
     if damage > unit2.health {

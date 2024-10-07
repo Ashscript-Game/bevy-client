@@ -1,11 +1,12 @@
 use crate::{
     ai_scripts,
-    components::{Factory, GameState, MappedUnits, PlayerState, PlayerStates, Unit},
+    components::{Factory, GameState, MappedUnits, OccupiesTile, PlayerState, PlayerStates, Unit, Wall},
     constants::GeneralResult,
     projectile::laser::create_laser,
     types::PlayerScript,
 };
-use bevy::{ecs::entity, prelude::*};
+use bevy::{ecs::entity, prelude::*, utils::hashbrown::HashSet};
+use hexx::Hex;
 use std::collections::HashMap;
 
 use super::{
@@ -18,6 +19,7 @@ pub fn populate_game_state(
     mut game_state: ResMut<GameState>,
     units: Query<(&Unit, &Transform, Entity)>,
     factories: Query<(&Factory, &Transform, Entity)>,
+    walls: Query<&Transform, With<Wall>>,
 ) {
     // Units
 
@@ -27,11 +29,23 @@ pub fn populate_game_state(
         .collect::<Vec<(Unit, Transform, Entity)>>();
     game_state.units = cloned_units;
 
+    // Factories
+
     let cloned_factories = factories
         .iter()
         .map(|(f, t, e)| (f.clone(), *t, e))
         .collect::<Vec<(Factory, Transform, Entity)>>();
     game_state.factories = cloned_factories;
+
+    // Occupied Tiles
+
+    let occupied_tiles: HashSet<Hex> = HashSet::from_iter(
+        walls
+            .iter()
+            .map(|transform| HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()))
+            .collect::<Vec<Hex>>(),
+    );
+    game_state.walls = occupied_tiles;
 }
 
 pub fn run_player_scripts(game_state: Res<GameState>, mut player_states: ResMut<PlayerStates>) {
@@ -42,7 +56,7 @@ pub fn run_player_scripts(game_state: Res<GameState>, mut player_states: ResMut<
     );
     player_scripts.insert(
         game_state.players[1].name.clone(),
-        ai_scripts::basic_economy::main,
+        ai_scripts::basic_combat::main,
     );
 
     player_states
@@ -143,12 +157,10 @@ pub fn run_unit_attack_intents(
                 println!("[run unit attack intents] attacker or target not found");
                 continue;
             };
-            println!("before");
+
             if attacker.owner_id != player_state.owner_id {
                 continue;
             }
-
-            println!("unit tried to attack");
 
             if unit_attack(
                 &mut attacker,

@@ -104,6 +104,6 @@ pub fn factory_combat_benchmark(
     // each factory produces units for free
     // units will try to attack the other factory
 
-    spawn_factory(hex(10, 2), &mut commands, &asset_server, 0);
-    spawn_factory(hex(-10, -3), &mut commands, &asset_server, 1);
+    spawn_factory(hex(8, 6), &mut commands, &asset_server, 0);
+    spawn_factory(hex(-8, -3), &mut commands, &asset_server, 1);
 }

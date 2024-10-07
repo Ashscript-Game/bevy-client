@@ -1,5 +1,5 @@
 use crate::{
-    components::{OccupiesTile, ResourceNode, Scrap},
+    components::{OccupiesTile, ResourceNode, Scrap, Wall},
     constants::{self, resource_node, resource_noise_tresholds, SIMPLEX_GENERATOR},
     engine::terrain::{hexagonal_plane, HEX_LAYOUT, HEX_SIZE},
 };
@@ -71,6 +71,7 @@ pub fn generate_resources(
                         material: material_handles[3].clone(),
                         ..default()
                     },
+                    Wall,
                     OccupiesTile,
                     RenderLayers::from_layers(CAMERA_LAYER_WALLS),
                     LightOccluder2D {
