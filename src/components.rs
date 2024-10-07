@@ -304,6 +304,7 @@ pub struct PlayerStates(pub HashMap<String, PlayerState>);
 //     }
 // }
 
+
 #[derive(Component)]
 pub enum Structure {
     Assembler,
