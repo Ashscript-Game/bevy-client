@@ -131,7 +131,7 @@ pub fn units_attack(
             let other_unit_hex =
                 HEX_LAYOUT.world_pos_to_hex(other_unit_transform.translation.truncate());
 
-            let distance = unit_hex.unsigned_distance_to(other_unit_hex);
+            let _distance = unit_hex.unsigned_distance_to(other_unit_hex);
             /* if distance > unit_range(&unit) {
                 continue;
             } */

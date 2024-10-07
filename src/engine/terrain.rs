@@ -1,5 +1,4 @@
 use bevy::{
-    app::Plugin,
     prelude::*,
     render::{
         mesh::{Indices, PrimitiveTopology},

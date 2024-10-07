@@ -9,7 +9,7 @@ use crate::{components::{OccupiesTile, Unit, MappedUnits}, constants::{unit, Uni
 pub struct UnitPlugin;
 
 impl Plugin for UnitPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, _app: &mut App) {
         /* app.add_plugins(UnitBenchmarks); */
     }
 }
@@ -69,9 +69,7 @@ pub fn spawn_unit(
             body: enum_map! {
                 UnitPart::Ranged => 3,
                 UnitPart::Generate => {
-                    println!("This is a test for clippy");
-                    let num_part = rand::random::<u32>() % 10 + 25;
-                    num_part
+                    rand::random::<u32>() % 10 + 25
                 },
                 _ => 1,
             },

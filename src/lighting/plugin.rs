@@ -35,7 +35,8 @@ fn generate_lights(mut commands: Commands) {
 
     commands.spawn((
         SkylightLight2D {
-            color: Color::rgb_u8(93, 158, 179),
+            //color: Color::rgb_u8(93, 158, 179),
+            color: Color::srgb_u8(93, 158, 179),
             intensity: 0.025,
         },
         Name::new("global_skylight"),

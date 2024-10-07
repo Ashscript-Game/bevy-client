@@ -70,12 +70,12 @@ pub fn run_player_scripts(game_state: Res<GameState>, mut player_states: ResMut<
 
     let player_names = player_scripts.keys().cloned();
     for player_name in player_names {
-        let mut player_state = player_states.0.get_mut(&player_name).unwrap();
+        let player_state = player_states.0.get_mut(&player_name).unwrap();
         let player_script = player_scripts
             .get(&player_name)
             .expect("player script not found");
 
-        player_script(&game_state, &mut player_state);
+        player_script(&game_state, player_state);
     }
 }
 
@@ -89,9 +89,9 @@ pub fn run_move_intents(
         .map(|(u, t, e)| (u.clone(), *t, e))
         .collect::<Vec<(Unit, Transform, Entity)>>();
 
-    for (player_name, player_state) in &player_states.0 {
+    for (_player_name, player_state) in &player_states.0 {
         for intent in player_state.intents.unit_move.iter() {
-            let Ok((mut unit, mut unit_transform, entity)) = units.get_mut(intent.entity) else {
+            let Ok((mut unit, mut unit_transform, _entity)) = units.get_mut(intent.entity) else {
                 continue;
             };
 
@@ -101,7 +101,7 @@ pub fn run_move_intents(
 
             // check if there is an other_unit at the destination
             // does not work in a bevy context because units might be moving towards but not yet reached. So allows double moving to a destination
-            if let Some((other_unit, other_unit_transform, other_entity)) =
+            if let Some((_other_unit, _other_unit_transform, _other_entity)) =
                 unit_at_hex(intent.to, &other_units)
             {
                 continue;
@@ -122,7 +122,7 @@ pub fn run_factory_spawn_intents(
     asset_server: Res<AssetServer>,
     mut mapped_units: MappedUnits,
 ) {
-    for (player_name, player_state) in &player_states.0 {
+    for (_player_name, player_state) in &player_states.0 {
         for intent in player_state.intents.factory_spawn.iter() {
             let Ok((factory, _)) = factories.get(intent.entity) else {
                 continue;
@@ -149,7 +149,7 @@ pub fn run_unit_attack_intents(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
 ) {
-    for (player_name, player_state) in &player_states.0 {
+    for (_player_name, player_state) in &player_states.0 {
         for intent in player_state.intents.unit_attack.iter() {
             let Ok([(mut attacker, attacker_transform, _), (mut target, target_transform, _)]) =
                 units.get_many_mut([intent.attacker, intent.target])

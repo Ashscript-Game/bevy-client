@@ -88,11 +88,11 @@ fn projectile_move_end_event(
     }
 }
 
-fn on_tick(mut event_reader: EventReader<TickEvent>) {
+/*fn on_tick(mut event_reader: EventReader<TickEvent>) {
     for (event, _) in event_reader.read_with_id() {
         // event.projectile_move_end_event.tick(Duration::from_secs_f32(SECONDS_PER_TICK));
 
         println!("tick event happened");
     }
-}
+}*/
  

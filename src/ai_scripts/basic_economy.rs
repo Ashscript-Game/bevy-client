@@ -16,7 +16,7 @@ fn move_units_randomly(game_state: &GameState, player_state: &mut PlayerState) {
     let q_offsets = [-1, 0, 1];
     let t_offsets = [-1, 0, 1];
 
-    for (unit, unit_transform, entity) in game_state.units.iter() {
+    for (_unit, unit_transform, entity) in game_state.units.iter() {
         let unit_hex = HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate());
         let to_hex = Hex::new(
             unit_hex.x + *pick(&q_offsets),

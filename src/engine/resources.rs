@@ -17,7 +17,7 @@ use libnoise::Generator;
 
 pub fn generate_resources(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    _asset_server: Res<AssetServer>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
@@ -168,8 +168,7 @@ fn resource_node_light(world_pos: Vec2, commands: &mut Commands, color: Color) {
             color,
             falloff: Vec3::new(20., 20., 0.005),
             jitter_intensity: 0.01,
-            jitter_translation: 0.1,
-            ..default()
+            jitter_translation: 0.1
         })
         .insert(SpatialBundle {
             transform: Transform {

@@ -44,8 +44,7 @@ pub fn spawn_factory(
             },
             owner_id,
             energy: 100,
-            energy_capacity: 1000,
-            ..default()
+            energy_capacity: 1000
         },
         OmniLightSource2D {
             intensity: 0.2,

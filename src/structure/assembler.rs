@@ -12,8 +12,8 @@ use crate::{
 pub struct AssemblerPlugin;
 
 impl Plugin for AssemblerPlugin {
-    fn build(&self, app: &mut App) {
-        app;
+    fn build(&self, _app: &mut App) {
+        //app;
     }
 }
 

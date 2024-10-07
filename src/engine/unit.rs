@@ -157,10 +157,10 @@ pub fn unit_move(
     GeneralResult::Success
 }
 
-pub fn unit_at_hex<'a>(
+pub fn unit_at_hex(
     hex: hexx::Hex,
-    units: &'a Vec<(Unit, Transform, Entity)>,
-) -> Option<(&'a Unit, &'a Transform, &'a Entity)> {
+    units: &[(Unit, Transform, Entity)],
+) -> Option<(&Unit, &Transform, &Entity)> {
     for (unit, unit_transform, entity) in units.iter() {
         if hex != HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate()) {
             continue;

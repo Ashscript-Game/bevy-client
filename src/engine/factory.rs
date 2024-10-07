@@ -31,7 +31,7 @@ pub fn factory_spawn(
     let factory_hex = HEX_LAYOUT.world_pos_to_hex(factory_transform.translation.truncate());
 
     for neighbour_hex in factory_hex.all_neighbors() {
-        if let Some(unit) = unit_at_hex(neighbour_hex, &units_vec) {
+        if let Some(_unit) = unit_at_hex(neighbour_hex, &units_vec) {
             continue;
         };
 

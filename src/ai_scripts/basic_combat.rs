@@ -1,4 +1,3 @@
-use std::u32;
 
 use bevy::{prelude::*, utils::hashbrown::HashSet};
 use hexx::Hex;
@@ -28,7 +27,7 @@ fn move_and_attack_units(game_state: &GameState, player_state: &mut PlayerState)
     let unit_hexes = game_state
         .units
         .iter()
-        .map(|(u, t, _)| HEX_LAYOUT.world_pos_to_hex(t.translation.truncate()))
+        .map(|(_u, t, _)| HEX_LAYOUT.world_pos_to_hex(t.translation.truncate()))
         .collect::<HashSet<Hex>>();
 
     for unit in &game_state.units {
@@ -43,7 +42,7 @@ fn move_and_attack_units(game_state: &GameState, player_state: &mut PlayerState)
         let mut lowest_distance = u32::MAX;
         let mut closest_enemy_hex = Hex::new(0, 0);
 
-        for (enemy_unit, enemy_transform, enemy_entity) in enemy_units.iter() {
+        for (_enemy_unit, enemy_transform, enemy_entity) in enemy_units.iter() {
             let enemy_hex = HEX_LAYOUT.world_pos_to_hex(enemy_transform.translation.truncate());
 
             let distance = unit_hex.unsigned_distance_to(enemy_hex);
@@ -60,7 +59,7 @@ fn move_and_attack_units(game_state: &GameState, player_state: &mut PlayerState)
             continue;
         };
 
-        unit_attack_intent(&entity, &closest_enemy, player_state);
+        unit_attack_intent(entity, &closest_enemy, player_state);
 
         // If we are sufficiently out of range, move closer
         if lowest_distance >= unit_range(unit) {

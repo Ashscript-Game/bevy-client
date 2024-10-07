@@ -113,8 +113,7 @@ pub fn create_laser(
             transform: Transform {
                 translation: Vec3::new(start_pos.x, start_pos.y, 1.0),
                 scale: Vec3::new(0.7, 0.7, 1.0),
-                rotation: Quat::from_rotation_z(angle),
-                ..default()
+                rotation: Quat::from_rotation_z(angle)
             },
             ..default()
         },
@@ -137,7 +136,7 @@ pub fn create_laser(
 
 pub fn kill_lasers(mut commands: Commands, mut lasers: Query<(&Laser, Entity)>) {
     for (_, entity) in lasers.iter_mut() {
-        let comps = entity.components();
+        let _comps = entity.components();
 
         commands.entity(entity).despawn();
     }

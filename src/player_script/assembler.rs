@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    components::{Assembler, Distributor}, constants::{self, GeneralResult}, engine::{terrain::HEX_LAYOUT}, projectile::resource_blob::create_resource_blob, structure::{
+    components::{Assembler, Distributor}, constants::{self, GeneralResult}, engine::terrain::HEX_LAYOUT, projectile::resource_blob::create_resource_blob, structure::{
         assembler::assembler_produce,
         utils::transfer,
     }
@@ -54,7 +54,7 @@ pub fn assembler_ai(
         }; */
 
         let Some((distributor_transform, mut distributor, entity)) =
-            distributors.iter_mut().find(|(transform, distributor, entity)| {
+            distributors.iter_mut().find(|(transform, distributor, _entity)| {
                 let distributor_hex = HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate());
 
                 distributor.resource == output_resource
