@@ -324,9 +324,9 @@ dependencies = [
 
 [[package]]
 name = "ashscript-types"
-version = "0.1.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d8f531df8e04fd2ae6d046c0958274aaf71f4fb8d3949a47200689665141b2f3"
+checksum = "f3b90ac781a4b2aa1f36b17d23f6e1d2d22928165db6a96254f46adaae03d072"
 dependencies = [
  "enum-map",
  "hashbrown 0.15.0",
