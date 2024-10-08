@@ -5,6 +5,7 @@ use bevy::{
     prelude::*,
     time::common_conditions::on_timer,
 };
+use rust_socketio::ClientBuilder;
 
 use crate::{
     components::{ProjectileMoveEndEvent, ProjectileMoveEndTimer, TickEvent},
@@ -15,7 +16,8 @@ use super::{
     benchmarks::factory_combat_benchmark,
     factory::progress_factories,
     player::{
-        populate_game_state, run_factory_spawn_intents, run_move_intents, run_player_scripts, run_unit_attack_intents,
+        populate_game_state, run_factory_spawn_intents, run_move_intents, run_player_scripts,
+        run_unit_attack_intents,
     },
     resources::generate_resources,
     terrain::generate_tiles,
@@ -95,4 +97,3 @@ fn projectile_move_end_event(
         println!("tick event happened");
     }
 }*/
- 
