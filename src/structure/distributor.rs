@@ -10,7 +10,7 @@ use bevy::{
 use crate::{
     components::{Distributor, OccupiesTile, Store},
     constants::{self, distributor, Resource},
-    engine::terrain::HEX_LAYOUT,
+    engine::terrain::{HEX_LAYOUT, HEX_SIZE},
     utils::{self},
 };
 
@@ -59,7 +59,7 @@ pub fn spawn_distributor(
         Emitter {
             intensity: 1.,
             color: constants::distributor::COLOR,
-            shape: SdfShape::Circle(200.),
+            shape: SdfShape::Circle(HEX_SIZE.x),
         },
     ));
 }

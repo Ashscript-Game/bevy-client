@@ -68,7 +68,7 @@ pub fn generate_resources(
                     Emitter {
                         intensity: 1.,
                         color: Color::BLACK,
-                        shape: SdfShape::Circle(200.),
+                        shape: SdfShape::Rect(Vec2::splat(HEX_SIZE.x)),
                     },
                 ))
                 /* .add_child(secondary_occluder) */;
@@ -157,7 +157,7 @@ fn resource_node_light(world_pos: Vec2, commands: &mut Commands, color: Color) {
         .spawn(Emitter {
             intensity: 1.,
             color,
-            shape: SdfShape::Circle(200.),
+            shape: SdfShape::Rect(Vec2::splat(HEX_SIZE.x)),
         })
         .insert(SpatialBundle {
             transform: Transform {

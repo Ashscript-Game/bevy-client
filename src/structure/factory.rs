@@ -9,7 +9,7 @@ use bevy::{
 use crate::{
     components::{Factory, OccupiesTile, Store},
     constants::{factory, Resource},
-    engine::terrain::HEX_LAYOUT,
+    engine::terrain::{HEX_LAYOUT, HEX_SIZE},
 };
 
 pub fn spawn_factory(
@@ -49,7 +49,7 @@ pub fn spawn_factory(
         Emitter {
             intensity: 1.,
             color: factory::COLOR,
-            shape: SdfShape::Circle(200.),
+            shape: SdfShape::Circle(HEX_SIZE.x),
         },
     ));
 }

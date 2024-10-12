@@ -11,12 +11,10 @@ use bevy::{
 use rand::{thread_rng, Rng};
 
 use crate::{
-    components::{Laser, Unit},
-    constants::{
+    components::{Laser, Unit}, constants::{
         laser, projectile, PROJECTILE_MOVE_END_TICK_PORTION,
         SECONDS_PER_TICK,
-    },
-    utils::find_angle,
+    }, engine::terrain::HEX_SIZE, utils::find_angle
 };
 
 pub fn update_lasers(
@@ -120,7 +118,7 @@ pub fn create_laser(
         Emitter {
             intensity: 1.,
             color,
-            shape: SdfShape::Circle(200.),
+            shape: SdfShape::Circle(HEX_SIZE.x),
         },
         Laser {
             start_pos: *start_pos,

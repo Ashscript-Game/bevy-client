@@ -4,7 +4,7 @@ use enum_map::enum_map;
 use hexx::Hex;
 use rand;
 
-use crate::{components::{OccupiesTile, Unit, MappedUnits}, constants::{unit, UnitPart}, engine::terrain::HEX_LAYOUT};
+use crate::{components::{MappedUnits, OccupiesTile, Unit}, constants::{unit, UnitPart}, engine::terrain::{HEX_LAYOUT, HEX_SIZE}};
 
 pub struct UnitPlugin;
 
@@ -60,7 +60,7 @@ pub fn spawn_unit(
         Emitter {
             intensity: 1.,
             color: unit::LIGHT_COLOR,
-            shape: SdfShape::Circle(200.),
+            shape: SdfShape::Circle(HEX_SIZE.x),
         },
         OccupiesTile,
         Unit {

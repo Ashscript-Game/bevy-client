@@ -4,7 +4,7 @@ use ashscript_solis_2d::prelude::{Emitter, SdfShape};
 use bevy::{math::bounding::{Aabb2d, IntersectsVolume}, prelude::*, render::view::RenderLayers, sprite::{MaterialMesh2dBundle, Mesh2dHandle}, utils::hashbrown::HashMap};
 use rand::{thread_rng, Rng};
 
-use crate::{components::{OccupiesTile, ResourceBlob}, constants::{self, coal_node, projectile, z_order, Resource, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK}, utils::{find_angle, find_angle_coords}};
+use crate::{components::{OccupiesTile, ResourceBlob}, constants::{self, coal_node, projectile, resource_blob, z_order, Resource, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK}, engine::terrain::HEX_SIZE, utils::{find_angle, find_angle_coords}};
 
 pub fn update_resource_blobs(
     mut resource_blobs: Query<(&mut Transform, &mut ResourceBlob, Entity)>,
@@ -154,7 +154,7 @@ pub fn create_resource_blob(
         Emitter {
             intensity: 1.,
             color,
-            shape: SdfShape::Circle(200.),
+            shape: SdfShape::Circle(HEX_SIZE.x),
         },
         ResourceBlob {
             resource: *resource,

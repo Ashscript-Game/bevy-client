@@ -9,7 +9,7 @@ use bevy::{
 use crate::{
     components::{OccupiesTile, Turret},
     constants::{self, turret},
-    engine::terrain::HEX_LAYOUT,
+    engine::terrain::{HEX_LAYOUT, HEX_SIZE},
 };
 
 
@@ -48,7 +48,7 @@ pub fn spawn_turret(
         Emitter {
             intensity: 1.,
             color: constants::turret::COLOR,
-            shape: SdfShape::Circle(200.),
+            shape: SdfShape::Circle(HEX_SIZE.x),
         },
     ));
 }

@@ -336,7 +336,7 @@ dependencies = [
 [[package]]
 name = "ashscript_solis_2d"
 version = "0.1.0"
-source = "git+https://github.com/Ashscript-Game/solis_2d.git#5ad59fe299de2144013afa84e06b2e2fe446e237"
+source = "git+https://github.com/Ashscript-Game/solis_2d.git#1db3555a8586e53edb3e819fb32d112a7cb982c5"
 dependencies = [
  "bevy 0.14.1",
  "bitflags 2.6.0",
