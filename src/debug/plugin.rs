@@ -4,53 +4,38 @@ use bevy::{
     prelude::*,
     render::view::RenderLayers,
 };
+use bevy_egui::{egui, EguiContexts};
 use bevy_magic_light_2d::gi::render_layer::ALL_LAYERS;
 
-use crate::components::FpsText;
+use crate::components::{DebugSettings, FpsText};
 
 pub struct DebugPlugin;
 
 impl Plugin for DebugPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, create_fps_text)
-            .add_systems(Update, update_fps_text);
+        app.add_systems(Update, debug_window);
     }
 }
 
-fn create_fps_text(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn((
-        // Create a TextBundle that has a Text with a list of sections.
-        TextBundle::from_sections([
-            TextSection::new(
-                "FPS: ",
-                TextStyle {
-                    // This font is loaded and will be used instead of the default font.
-                    font: asset_server.load("fonts/outfit.ttf"),
-                    font_size: 60.0,
-                    ..default()
-                },
-            ),
-            TextSection::from_style(
-                // "default_font" feature is unavailable, load a font to use instead.
-                TextStyle {
-                    font: asset_server.load("fonts/outfit.ttf"),
-                    font_size: 60.0,
-                    color: Color::WHITE,
-                },
-            ),
-        ]),
-        FpsText,
-        RenderLayers::from_layers(ALL_LAYERS),
-    ));
-}
+fn debug_window(
+    mut egui: EguiContexts,
+    mut debug_settings: ResMut<DebugSettings>,
+    diagnostics: Res<DiagnosticsStore>,
+) {
+    let Some(fps) = diagnostics.get(&FrameTimeDiagnosticsPlugin::FPS) else {
+        return;
+    };
 
-fn update_fps_text(diagnostics: Res<DiagnosticsStore>, mut query: Query<&mut Text, With<FpsText>>) {
-    for mut text in &mut query {
-        if let Some(fps) = diagnostics.get(&FrameTimeDiagnosticsPlugin::FPS) {
+    egui::Window::new("Debug")
+        .anchor(egui::Align2::RIGHT_TOP, [0., 0.])
+        .show(egui.ctx_mut(), |ui| {
             if let Some(value) = fps.smoothed() {
-                // Update the value of the second section
-                text.sections[1].value = format!("{value:.2}");
+                ui.label(format!("FPS: {:.1}", value));
             }
-        }
-    }
+            if let Some(value) = fps.average() {
+                ui.label(format!("Avg FPS: {:.1}", value));
+            }
+
+            ui.checkbox(&mut debug_settings.hightlight_chunks, "Highlight chunks");
+        });
 }

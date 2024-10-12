@@ -204,6 +204,11 @@ pub struct GameSettings {
     pub lights: bool,
 }
 
+#[derive(Resource)]
+pub struct DebugSettings {
+    pub hightlight_chunks: bool,
+}
+
 #[derive(Resource, Default)]
 pub struct GameState {
     pub units: Vec<(Unit, Transform, Entity)>,
