@@ -1,10 +1,10 @@
 
+use ashscript_solis_2d::prelude::{Emitter, SdfShape};
 use bevy::{
     app::{App, Plugin},
     prelude::*,
     render::view::RenderLayers,
 };
-use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 
 use crate::{
     components::{OccupiesTile, Turret},
@@ -45,12 +45,10 @@ pub fn spawn_turret(
             energy_gen: 60,
             ..default()
         },
-        OmniLightSource2D {
-            intensity: 0.2,
+        Emitter {
+            intensity: 1.,
             color: constants::turret::COLOR,
-            falloff: Vec3::new(4., 4., 0.005),
-            ..default()
+            shape: SdfShape::Circle(200.),
         },
-        RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
 }

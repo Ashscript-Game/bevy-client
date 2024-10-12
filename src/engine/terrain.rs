@@ -6,7 +6,6 @@ use bevy::{
         view::RenderLayers,
     },
 };
-use bevy_magic_light_2d::prelude::CAMERA_LAYER_FLOOR;
 use hexx::{hex, shapes, HexLayout, HexOrientation, PlaneMeshBuilder};
 
 pub const HEX_SIZE: Vec2 = Vec2::splat(64.0);
@@ -56,7 +55,7 @@ pub fn generate_tiles(
                 mesh: mesh_handle.clone().into(),
                 material: material_handle,
                 ..default()
-            }, RenderLayers::from_layers(CAMERA_LAYER_FLOOR)));
+            }));
     }
 }
 

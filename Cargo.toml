@@ -22,11 +22,12 @@ log = { version = "0.4.2", features = ["max_level_debug", "release_max_level_war
 # bevy_rapier2d = "0.25.0"
 lazy_static = "1.5.0"
 hexx ="0.18.0"#{ git = "https://github.com/ManevilleF/hexx" } }
-bevy_magic_light_2d = { git = "https://github.com/zaycev/bevy-magic-light-2d.git", branch = "issue/64" } # "0.8.0" # { git = "https://github.com/zaycev/bevy-magic-light-2d.git" }
+# bevy_magic_light_2d = { git = "https://github.com/zaycev/bevy-magic-light-2d.git", branch = "issue/64" } # "0.8.0" # { git = "https://github.com/zaycev/bevy-magic-light-2d.git" }
 libnoise = "1.1.2"
 enum-map = "2.7.3"
 rust_socketio = "0.6.0"
-ashscript-types="0.3.0"
+ashscript-types="0.4.0"
+ashscript_solis_2d={ git = "https://github.com/Ashscript-Game/solis_2d.git" }
 
 [features]
 # cargo run --features dev

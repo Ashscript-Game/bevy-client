@@ -1,13 +1,13 @@
 use core::f32;
 use std::f32::consts::PI;
 
+use ashscript_solis_2d::prelude::{Emitter, SdfShape};
 use bevy::{
     ecs::observer::TriggerTargets,
     math::bounding::{Aabb2d, IntersectsVolume},
     prelude::*,
     render::view::RenderLayers,
 };
-use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use rand::{thread_rng, Rng};
 
 use crate::{
@@ -117,11 +117,10 @@ pub fn create_laser(
             },
             ..default()
         },
-        OmniLightSource2D {
-            intensity: 0.1,
+        Emitter {
+            intensity: 1.,
             color,
-            falloff: Vec3::new(2., 2., 0.005),
-            ..Default::default()
+            shape: SdfShape::Circle(200.),
         },
         Laser {
             start_pos: *start_pos,
@@ -130,7 +129,6 @@ pub fn create_laser(
             angle,
             damage,
         },
-        RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
 }
 

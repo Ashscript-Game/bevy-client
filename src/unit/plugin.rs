@@ -1,5 +1,5 @@
+use ashscript_solis_2d::prelude::{Emitter, SdfShape};
 use bevy::{app::{App, Plugin}, prelude::*, render::view::RenderLayers};
-use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use enum_map::enum_map;
 use hexx::Hex;
 use rand;
@@ -57,11 +57,10 @@ pub fn spawn_unit(
             },
             ..default()
         },
-        OmniLightSource2D {
-            intensity: 0.1,
+        Emitter {
+            intensity: 1.,
             color: unit::LIGHT_COLOR,
-            falloff: Vec3::new(2., 2., 0.005),
-            ..Default::default()
+            shape: SdfShape::Circle(200.),
         },
         OccupiesTile,
         Unit {
@@ -76,7 +75,6 @@ pub fn spawn_unit(
             owner_id,
             ..default()
         },
-        RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     )).id();
 
     mapped_units.insert(&hex, &entity);

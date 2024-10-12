@@ -3,15 +3,8 @@ use crate::{
     constants::{self, resource_noise_tresholds, SIMPLEX_GENERATOR},
     engine::terrain::{hexagonal_plane, HEX_LAYOUT, HEX_SIZE},
 };
-use bevy::{
-    math::Vec3,
-    prelude::*,
-    render::view::RenderLayers,
-};
-use bevy_magic_light_2d::{
-    gi::render_layer::ALL_LAYERS,
-    prelude::{LightOccluder2D, OmniLightSource2D, CAMERA_LAYER_OBJECTS, CAMERA_LAYER_WALLS},
-};
+use ashscript_solis_2d::prelude::{Emitter, SdfShape};
+use bevy::{math::Vec3, prelude::*, render::view::RenderLayers};
 use hexx::{hex, shapes};
 use libnoise::Generator;
 
@@ -43,20 +36,20 @@ pub fn generate_resources(
 
         if noise > resource_noise_tresholds::WALL.0 && noise < resource_noise_tresholds::WALL.1 {
             /* let secondary_occluder = commands
-                .spawn((
-                    Transform {
-                        translation: Vec3 {
-                            x: world_pos.x,
-                            y: world_pos.y,
-                            z: constants::resource_node::Z_POS,
-                        },
-                        ..default()
+            .spawn((
+                Transform {
+                    translation: Vec3 {
+                        x: world_pos.x,
+                        y: world_pos.y,
+                        z: constants::resource_node::Z_POS,
                     },
-                    LightOccluder2D {
-                        h_size: Vec2::new(1., HEX_SIZE.y),
-                    },
-                ))
-                .id(); */
+                    ..default()
+                },
+                LightOccluder2D {
+                    h_size: Vec2::new(1., HEX_SIZE.y),
+                },
+            ))
+            .id(); */
 
             commands
                 .spawn((
@@ -72,9 +65,10 @@ pub fn generate_resources(
                     },
                     Wall,
                     OccupiesTile,
-                    RenderLayers::from_layers(CAMERA_LAYER_WALLS),
-                    LightOccluder2D {
-                        h_size: Vec2::new(HEX_SIZE.x, HEX_SIZE.x * 0.5),
+                    Emitter {
+                        intensity: 1.,
+                        color: Color::BLACK,
+                        shape: SdfShape::Circle(200.),
                     },
                 ))
                 /* .add_child(secondary_occluder) */;
@@ -101,7 +95,6 @@ pub fn generate_resources(
                     ticks_to_regen: 0,
                     resource_remaining: 1000,
                 },
-                RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
             ));
 
             resource_node_light(world_pos, &mut commands, constants::coal_node::COLOR);
@@ -130,7 +123,6 @@ pub fn generate_resources(
                     ticks_to_regen: 0,
                     resource_remaining: 1000,
                 },
-                RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
             ));
             resource_node_light(world_pos, &mut commands, constants::mineral_node::COLOR);
             continue;
@@ -153,7 +145,6 @@ pub fn generate_resources(
                     metal: 1000,
                     ticks_to_decay: 100,
                 },
-                RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
             ));
             resource_node_light(world_pos, &mut commands, constants::scrap::COLOR);
             continue;
@@ -163,12 +154,10 @@ pub fn generate_resources(
 
 fn resource_node_light(world_pos: Vec2, commands: &mut Commands, color: Color) {
     commands
-        .spawn(OmniLightSource2D {
-            intensity: 0.5,
+        .spawn(Emitter {
+            intensity: 1.,
             color,
-            falloff: Vec3::new(20., 20., 0.005),
-            jitter_intensity: 0.01,
-            jitter_translation: 0.1
+            shape: SdfShape::Circle(200.),
         })
         .insert(SpatialBundle {
             transform: Transform {
@@ -176,6 +165,5 @@ fn resource_node_light(world_pos: Vec2, commands: &mut Commands, color: Color) {
                 ..default()
             },
             ..default()
-        })
-        .insert(RenderLayers::from_layers(ALL_LAYERS));
+        });
 }

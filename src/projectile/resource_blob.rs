@@ -1,7 +1,7 @@
 use std::f32::consts::PI;
 
+use ashscript_solis_2d::prelude::{Emitter, SdfShape};
 use bevy::{math::bounding::{Aabb2d, IntersectsVolume}, prelude::*, render::view::RenderLayers, sprite::{MaterialMesh2dBundle, Mesh2dHandle}, utils::hashbrown::HashMap};
-use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use rand::{thread_rng, Rng};
 
 use crate::{components::{OccupiesTile, ResourceBlob}, constants::{self, coal_node, projectile, z_order, Resource, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK}, utils::{find_angle, find_angle_coords}};
@@ -151,11 +151,10 @@ pub fn create_resource_blob(
             },
             ..default()
         },
-        OmniLightSource2D {
-            intensity: 0.05,
+        Emitter {
+            intensity: 1.,
             color,
-            falloff: Vec3::new(2., 2., 0.005),
-            ..Default::default()
+            shape: SdfShape::Circle(200.),
         },
         ResourceBlob {
             resource: *resource,
@@ -164,6 +163,5 @@ pub fn create_resource_blob(
             angle,
             start_pos: *start_pos,
         },
-        RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
 }

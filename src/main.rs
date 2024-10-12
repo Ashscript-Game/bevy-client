@@ -1,8 +1,8 @@
 
+use ashscript_solis_2d::LightPlugin;
 use bevy::{
     app::App, diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, utils::hashbrown::HashMap, DefaultPlugins
 };
-use bevy_magic_light_2d::{gi::BevyMagicLight2DPlugin, prelude::*};
 use components::{GameSettings, GameState, PlayerStates, ProjectileMoveEndTimer};
 use constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK};
 use game::GamePlugin;
@@ -25,7 +25,7 @@ pub mod ai_scripts;
 pub mod types;
 
 fn main() {
-    test_socket();
+    /* test_socket(); */
 
     App::new()
         .insert_resource(ClearColor(Color::srgba(0., 0., 0., 0.)))
@@ -43,24 +43,14 @@ fn main() {
                     ..default()
                 }),
             GamePlugin,
-            BevyMagicLight2DPlugin,
             FrameTimeDiagnosticsPlugin,
+            LightPlugin,
             /* LogDiagnosticsPlugin {
                 debug: false,
                 wait_duration: Duration::from_secs(1),
                 filter: None,
             }, */
         ))
-        .insert_resource(BevyMagicLight2DSettings {
-            light_pass_params: LightPassParams {
-                reservoir_size: 1/* 16 */,
-                smooth_kernel_size: (3, 3),
-                direct_light_contrib: 0.2,
-                indirect_light_contrib: 0.8,
-                ..default()
-            },
-            ..default()
-        })
         .insert_resource(ProjectileMoveEndTimer(Timer::from_seconds(
             SECONDS_PER_TICK * PROJECTILE_MOVE_END_TICK_PORTION,
             TimerMode::Once,
@@ -70,12 +60,6 @@ fn main() {
         })
         .insert_resource(GameState::new())
         .insert_resource(PlayerStates(HashMap::new()))
-        .register_type::<LightOccluder2D>()
-        .register_type::<OmniLightSource2D>()
-        .register_type::<SkylightMask2D>()
-        .register_type::<SkylightLight2D>()
-        .register_type::<BevyMagicLight2DSettings>()
-        .register_type::<LightPassParams>()
         .run();
 }
 

@@ -1,11 +1,11 @@
 
+use ashscript_solis_2d::prelude::{Emitter, SdfShape};
 use bevy::{
     app::{App, Plugin},
     prelude::*,
     render::view::RenderLayers,
     utils::{hashbrown::HashMap, HashSet},
 };
-use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 
 use crate::{
     components::{Distributor, OccupiesTile, Store},
@@ -56,12 +56,10 @@ pub fn spawn_distributor(
                 capacity: 1000,
             },
         },
-        OmniLightSource2D {
-            intensity: 0.2,
+        Emitter {
+            intensity: 1.,
             color: constants::distributor::COLOR,
-            falloff: Vec3::new(4., 4., 0.005),
-            ..default()
+            shape: SdfShape::Circle(200.),
         },
-        RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
 }

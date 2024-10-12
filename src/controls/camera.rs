@@ -3,7 +3,6 @@ use bevy::{
     input::mouse::MouseWheel,
     prelude::*,
 };
-use bevy_magic_light_2d::SpriteCamera;
 
 use crate::constants::{self};
 
@@ -16,7 +15,7 @@ impl Plugin for CameraControlsPlugin {
 }
 
 fn control_camera_zoom(
-    mut cameras: Query<&mut OrthographicProjection, With<SpriteCamera>>,
+    mut cameras: Query<&mut OrthographicProjection, With<Camera>>,
     time: Res<Time>,
     mut scroll_event_reader: EventReader<MouseWheel>,
 ) {
@@ -39,7 +38,7 @@ fn control_camera_zoom(
 fn control_camera_movement(
     mut camera_current: Local<Vec2>,
     mut camera_target: Local<Vec2>,
-    mut query_cameras: Query<&mut Transform, With<SpriteCamera>>,
+    mut query_cameras: Query<&mut Transform, With<Camera>>,
     keyboard: Res<ButtonInput<KeyCode>>,
     _time: Res<Time>,
 ) {
