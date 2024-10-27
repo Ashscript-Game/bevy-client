@@ -1,9 +1,10 @@
 
+use ashscript_types::{actions::ActionsByKind, global::Global, map::Map};
 use bevy::{
     app::App, diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, utils::hashbrown::HashMap, DefaultPlugins
 };
 use bevy_magic_light_2d::{gi::BevyMagicLight2DPlugin, prelude::*};
-use components::{DebugSettings, GameSettings, GameState, PlayerStates, ProjectileMoveEndTimer};
+use components::{Actions, DebugSettings, GameSettings, GameState, PlayerStates, ProjectileMoveEndTimer, State};
 use constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK};
 use game::GamePlugin;
 use rust_socketio::{ClientBuilder, Payload, Socket, RawClient};
@@ -23,9 +24,9 @@ pub mod unit;
 pub mod utils;
 pub mod ai_scripts;
 pub mod types;
+pub mod receiver;
 
 fn main() {
-    /* test_socket(); */
 
     App::new()
         .insert_resource(ClearColor(Color::srgba(0., 0., 0., 0.)))
@@ -72,6 +73,11 @@ fn main() {
         .insert_resource(DebugSettings {
             hightlight_chunks: false,
         })
+        .insert_resource(State {
+            map: Map::new(),
+            global: Global::new(),
+        })
+        .insert_resource(Actions(ActionsByKind::new()))
         .insert_resource(GameState::new())
         .insert_resource(PlayerStates(HashMap::new()))
         .register_type::<LightOccluder2D>()
@@ -81,23 +87,4 @@ fn main() {
         .register_type::<BevyMagicLight2DSettings>()
         .register_type::<LightPassParams>()
         .run();
-}
-
-fn test_socket() {
-    // get a socket that is connected to the admin namespace
-    let socket = ClientBuilder::new("http://localhost:3000")
-        .namespace("/client")
-        .on("keyframe", keyframe_callback)
-        .on("action", action_callback)
-        .on("error", |err, _| eprintln!("Error: {:#?}", err))
-        .connect()
-        .expect("Connection failed");
-}
-
-fn keyframe_callback(payload: Payload, raw_client: RawClient) {
-    println!("received keyframe: {:?}", payload);
-}
-
-fn action_callback(payload: Payload, raw_client: RawClient) {
-    println!("received action: {:?}", payload);
 }

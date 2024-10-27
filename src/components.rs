@@ -1,3 +1,4 @@
+use ashscript_types::{global::Global, map::Map};
 use bevy::{
     ecs::system::SystemParam,
     prelude::*,
@@ -328,3 +329,12 @@ pub struct Factory {
 
 #[derive(Component)]
 pub struct Wall;
+
+#[derive(Resource)]
+pub struct State {
+    pub map: Map,
+    pub global: Global,
+}
+
+#[derive(Resource)]
+pub struct Actions(pub ashscript_types::actions::ActionsByKind);
