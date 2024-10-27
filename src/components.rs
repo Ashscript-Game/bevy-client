@@ -336,5 +336,16 @@ pub struct State {
     pub global: Global,
 }
 
+#[derive(Component)]
+pub struct InternalState {
+    pub map: Map,
+    pub global: Global,
+}
+
+#[derive(SystemParam)]
+pub struct AltState<'w, 's> {
+    pub internal_state: Query<'w, 's, &'static mut InternalState>,
+}
+
 #[derive(Resource)]
 pub struct Actions(pub ashscript_types::actions::ActionsByKind);

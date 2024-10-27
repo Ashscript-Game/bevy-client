@@ -1,4 +1,5 @@
 use bevy::{prelude::*, utils::hashbrown::HashMap};
+use hexx::hex;
 use rust_socketio::{ClientBuilder, Payload, RawClient};
 use serde_json::json;
 use std::{hash::Hash, time::Duration};
@@ -21,16 +22,34 @@ pub fn setup_receiver(mut state: ResMut<State>, mut actions: ResMut<Actions>) {
                 println!("Received text: {:#?}", text);
             },
         }
-
-        socket
-            .emit("test", json!({"this is an ack": true}))
-            .expect("Server unreachable")
     };
 
     // get a socket that is connected to the admin namespace
     let socket = ClientBuilder::new("http://localhost:3000")
         .namespace("/client")
-        .on("keyframe", move |payload: Payload, socket: RawClient| callback(&payload, &socket, &mut value))
+        .on("keyframe", move |payload: Payload, socket: RawClient| {
+            
+            // callback(&payload, &socket, &mut value);
+            value.insert("key".to_string(), "value".to_string());
+
+            match payload {
+                Payload::String(str) => {
+                    println!("Received: {}", str);
+                    value.insert("key".to_string(), "value".to_string());
+                    /* state.map = serde_json::from_str(&str).unwrap(); */
+                    
+                    // state.map.chunk_at(&hex(0, 0));
+                },
+                Payload::Binary(bin_data) => println!("Received bytes: {:#?}", bin_data),
+                Payload::Text(text) => {
+                    println!("Received text: {:#?}", text);
+                },
+            }
+
+            socket
+            .emit("test", json!({"this is an ack": true}))
+            .expect("Server unreachable")
+        })
         .on("error", |err, _| eprintln!("Error: {:#?}", err))
         .connect()
         .expect("Connection failed");
