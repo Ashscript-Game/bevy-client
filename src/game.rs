@@ -5,10 +5,10 @@ use bevy_magic_light_2d::{
     prelude::{CameraTargets, CAMERA_LAYER_FLOOR, CAMERA_LAYER_OBJECTS, CAMERA_LAYER_WALLS},
     FloorCamera, ObjectsCamera, SpriteCamera, WallsCamera,
 };
+use bevy_mqtt::MqttPlugin;
 
 use crate::{
-    networker::{run_network, send_message},
-    components::{OccupyStructuresMap, UnitMap}, constants::{self}, controls::plugin::ControlsPlugin, debug::plugin::DebugPlugin, engine::plugin::EnginePlugin, lighting::plugin::LightingPlugin, projectile::plugin::ProjectilePlugin, structure::plugin::StructuresPlugin, unit::plugin::UnitPlugin
+    components::{OccupyStructuresMap, TickEvent, UnitMap}, constants::{self}, controls::plugin::ControlsPlugin, debug::plugin::DebugPlugin, engine::plugin::EnginePlugin, lighting::plugin::LightingPlugin, networker::{handle_error, handle_message, publish_message, setup_clients, sub_topic}, projectile::plugin::ProjectilePlugin, structure::plugin::StructuresPlugin, unit::plugin::UnitPlugin
 };
 
 pub struct GamePlugin;
@@ -19,14 +19,16 @@ impl Plugin for GamePlugin {
             ControlsPlugin,
             LightingPlugin,
             DebugPlugin,
+            MqttPlugin,
             /* PlayerScriptPlugin, */
             EnginePlugin,
             ProjectilePlugin,
             UnitPlugin,
             StructuresPlugin,
         ))
-        .add_systems(Startup, (game_init, spawn_unit_map, spawn_structures_map, send_message))
-        .add_systems(Update, (run_network));
+        .add_systems(Startup, (game_init, spawn_unit_map, spawn_structures_map, setup_clients))
+        .add_systems(Update, (sub_topic, handle_message, handle_error))
+        .add_systems(Update, (publish_message).run_if(on_event::<TickEvent>()));
     }
 }
 
