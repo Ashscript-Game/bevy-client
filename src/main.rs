@@ -1,13 +1,15 @@
 
+use std::net::{SocketAddr, UdpSocket};
+
 use ashscript_types::{actions::ActionsByKind, global::Global, map::Map};
 use bevy::{
     app::App, diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, utils::hashbrown::HashMap, DefaultPlugins
 };
 use bevy_magic_light_2d::{gi::BevyMagicLight2DPlugin, prelude::*};
+use bevy_simple_networking::{ClientPlugin, SocketAddrResource, UdpSocketResource};
 use components::{Actions, DebugSettings, GameSettings, GameState, PlayerStates, ProjectileMoveEndTimer, State};
 use constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK};
 use game::GamePlugin;
-use rust_socketio::{ClientBuilder, Payload, Socket, RawClient};
 
 pub mod components;
 pub mod constants;
@@ -24,9 +26,16 @@ pub mod unit;
 pub mod utils;
 pub mod ai_scripts;
 pub mod types;
-pub mod receiver;
+pub mod networker;
 
 fn main() {
+
+    let address: SocketAddr = "127.0.0.1:3000".parse().expect("could not parse socket address");
+    let socket = UdpSocket::bind("[::]:0").expect("unable to bind socket");
+
+    socket.connect(address).expect("unable to connect to server");
+    socket.set_nonblocking(true)
+    .expect("unable to set socket to nonblocking");
 
     App::new()
         .insert_resource(ClearColor(Color::srgba(0., 0., 0., 0.)))
@@ -44,6 +53,7 @@ fn main() {
                     ..default()
                 }),
             GamePlugin,
+            ClientPlugin,
             BevyMagicLight2DPlugin,
             bevy_egui::EguiPlugin,
             FrameTimeDiagnosticsPlugin,
@@ -53,6 +63,8 @@ fn main() {
                 filter: None,
             }, */
         ))
+        .insert_resource(SocketAddrResource::new(address))
+        .insert_resource(UdpSocketResource::new(socket))
         .insert_resource(BevyMagicLight2DSettings {
             light_pass_params: LightPassParams {
                 reservoir_size: 1/* 16 */,

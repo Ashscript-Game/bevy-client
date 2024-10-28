@@ -5,7 +5,6 @@ use bevy::{
     prelude::*,
     time::common_conditions::on_timer,
 };
-use rust_socketio::ClientBuilder;
 
 use crate::{
     components::{ProjectileMoveEndEvent, ProjectileMoveEndTimer, TickEvent},
