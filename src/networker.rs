@@ -1,105 +1,93 @@
-use std::time::Duration;
-
+use ashscript_types::{keyframe::KeyFrame, map::Map};
 use bevy::{prelude::*, utils::hashbrown::HashMap};
-use bevy_mqtt::{rumqttc::{MqttOptions, QoS, Transport}, MqttClient, MqttClientConnected, MqttClientError, MqttConnectError, MqttEvent, MqttSetting, SubscribeTopic, TopicMessage};
+use rust_socketio::{ClientBuilder, Payload, RawClient};
+use serde_json::json;
+use std::{hash::Hash, time::Duration};
 
-pub fn setup_clients(mut commands: Commands) {
-    commands.spawn(MqttSetting {
-        mqtt_options: MqttOptions::new("bevy-mqtt-client", "http://localhost", 3000),
-        cap: 10,
-    });
+use crate::components::{Actions, State};
 
-    // spawn websocket client
-    let mut mqtt_options = MqttOptions::new("mqtt-ws-client", "ws://127.0.0.1:8080", 8080);
-    mqtt_options.set_transport(Transport::Ws);
-    // mqtt_options.set_credentials("username", "password");
-    mqtt_options.set_keep_alive(Duration::from_secs(5));
+pub fn setup_receiver(mut state: ResMut<State>, mut actions: ResMut<Actions>) {
 
-    commands.spawn((
-        MqttSetting {
-            mqtt_options,
-            cap: 10,
-        },
-        WebsocketMqttClient,
-    ));
-}
+    let mut value: HashMap<String, String> = HashMap::new();
 
-// just a marker component for filter
-#[derive(Component)]
-struct WebsocketMqttClient;
-
-/// this is a system that subscribes to a topic and handle the incoming messages
-pub fn sub_topic(
-    mqtt_client: Query<(Entity, &MqttClient, &MqttSetting), Added<MqttClientConnected>>,
-    mut commands: Commands,
-) {
-    for (entity, client, setting) in mqtt_client.iter() {
-        client
-            .subscribe("hello".to_string(), QoS::AtMostOnce)
-            .unwrap();
-
-        let setting = setting.clone();
-        let child_id = commands
-            .spawn(SubscribeTopic::new("/client", QoS::AtMostOnce))
-            .observe(move |topic_message: Trigger<TopicMessage>| {
-                println!(
-                    "{:?}: Topic: '+/mqtt' received : {:?}",
-                    setting.mqtt_options.broker_address().clone(),
-                    topic_message.event().payload
-                );
-            })
-            .id();
-        commands.entity(entity).add_child(child_id);
-    }
-}
-
-/// this is global handler for all incoming messages
-pub fn handle_message(mut mqtt_event: EventReader<MqttEvent>) {
-    for event in mqtt_event.read() {
-        match &event.event {
-            rumqttc::Event::Incoming(income) => match income {
-                rumqttc::Incoming::Publish(publish) => {
-                    println!(
-                        "Topic Component: {} Received: {:?}",
-                        publish.topic, publish.payload
-                    );
-                }
-                _ => {
-                    println!("Incoming: {:?}", income);
-                }
+    let callback = move |payload: &Payload, socket: &RawClient, value: &mut HashMap<String, String>/* , state: &mut  State*/| {
+        match payload {
+            Payload::String(str) => {
+                println!("Received string: {}", str);
+                value.insert("key".to_string(), "value".to_string());
+                /* state.map = serde_json::from_str(&str).unwrap(); */
             },
-            rumqttc::Event::Outgoing(_) => {}
+            Payload::Binary(bin_data) => println!("Received bytes: {:#?}", bin_data),
+            Payload::Text(text) => {
+                println!("Received text: {:#?}", text);
+
+                // let res = serde_json::from_str(&text).expect("unable to deserialize");
+                // serde_json::from_value(value)
+                let ser_keyframe = text.iter().filter_map(|v| {
+                    match v {
+                        serde_json::Value::Bool(z) => {
+                            println!("Received bool: {:#?}", z);
+                            None
+                        },
+                        serde_json::Value::Number(n) => {
+                            println!("Received number: {:#?}", n);
+
+                            Some(n.as_u64().unwrap() as u8)
+                        },
+                        serde_json::Value::String(s) => {
+                            println!("Received string: {:#?}", s);
+                            None
+                        },
+                        _ => {
+                            println!("Received unknown: {:#?}", v);
+                            None
+                        },
+                    }
+                }).collect::<Vec<u8>>();
+
+                let keyframe = postcard::from_bytes::<KeyFrame>(ser_keyframe.as_slice()).expect("unable to deserialize");
+
+                println!("processed keyframe for tick: {}", keyframe.global.tick);
+            },
         }
-    }
+
+        socket
+            .emit("test", json!({"this is an ack": true}))
+            .expect("Server unreachable")
+    };
+    
+    // get a socket that is connected to the admin namespace
+    let socket = ClientBuilder::new("http://localhost:3000")
+        .namespace("/client")
+        .on("game_state", move |payload: Payload, socket: RawClient| callback(&payload, &socket, &mut value))
+        .on("error", |err, _| eprintln!("Error: {:#?}", err))
+        .connect()
+        .expect("Connection failed");
 }
 
-pub fn handle_error(
-    mut connect_errors: EventReader<MqttConnectError>,
-    mut client_errors: EventReader<MqttClientError>,
-) {
-    for error in connect_errors.read() {
-        println!("connect Error: {:?}", error);
-    }
+/* fn state_callback<T: Into<Event>, F>(payload: Payload, client: Client, state: &ResMut<State>) -> Self
+where
+    F: for<'a> std::ops::FnMut(Payload, Client) -> BoxFuture<'static, ()>
+        + 'static
+        + Send
+        + Sync, {
+    println!("received keyframe: {:?}", payload);
 
-    for error in client_errors.read() {
-        println!("client Error: {:?}", error);
-    }
-}
-
-pub fn publish_message(mqtt_client: Query<&MqttClient, With<MqttClientConnected>>) {
-    for client in mqtt_client.iter() {
+    async move {
         client
-            .publish(
-                "client".to_string(),
-                QoS::AtMostOnce,
-                false,
-                "mqtt".as_bytes(),
-            )
-            .unwrap();
-        for i in 0..3 {
-            client
-                .publish(format!("{}/mqtt", i), QoS::AtMostOnce, false, b"hello")
-                .unwrap();
-        }
+        .emit("test", json!({"got ack": true}))
+        .await
+        .expect("Server unreachable");
     }
-}
+    .boxed()
+} */
+
+/* fn actions_callback(payload: Payload, client: Client) {
+    println!("received action: {:?}", payload);
+} */
+
+// startup
+// create a receiver
+// when it receives emissions
+
+// update
