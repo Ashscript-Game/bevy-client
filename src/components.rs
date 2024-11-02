@@ -6,6 +6,7 @@ use bevy::{
 };
 use enum_map::EnumMap;
 use hexx::Hex;
+use uuid::Uuid;
 
 use crate::constants::{self, Resource, UnitPart};
 
@@ -59,16 +60,17 @@ pub struct ResourceBlob {
     pub angle: f32,
 }
 
-#[derive(Clone)]
-pub struct Owner {
+#[derive(Component)]
+pub struct Owner(pub Uuid);
+
+#[derive(Component)]
+pub struct Player {
     pub name: String,
-    pub id: u32,
-    // obviously need an ID system at some point
+    pub id: Uuid,
 }
 
 #[derive(Component, Default, Clone)]
 pub struct Unit {
-    pub owner_id: u32,
     pub body: UnitBody,
     pub health: u32,
     pub age: u32,
@@ -214,7 +216,7 @@ pub struct DebugSettings {
 pub struct GameState {
     pub units: Vec<(Unit, Transform, Entity)>,
     pub factories: Vec<(Factory, Transform, Entity)>,
-    pub players: Vec<Owner>,
+    pub players: Vec<Player>,
     pub walls: HashSet<Hex>,
 }
 
@@ -222,13 +224,13 @@ impl GameState {
     pub fn new() -> Self {
         Self {
             players: vec![
-                Owner {
+                Player {
                     name: "Player".to_string(),
-                    id: 0,
+                    id: Uuid::default(),
                 },
-                Owner {
+                Player {
                     name: "AI".to_string(),
-                    id: 1,
+                    id: Uuid::default(),
                 },
             ],
             ..default()

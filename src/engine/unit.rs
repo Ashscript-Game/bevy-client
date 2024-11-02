@@ -3,12 +3,23 @@ use bevy::prelude::*;
 use hexx::Hex;
 
 use crate::{
-    components::{intents, MappedUnits, Moving, PlayerState, Unit},
-    constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS},
-    utils::find_angle_coords,
+    components::{intents, MappedUnits, Moving, PlayerState, State, Unit}, constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS}, unit::plugin::create_unit, utils::find_angle_coords
 };
 
 use super::terrain::HEX_LAYOUT;
+
+pub fn generate_units_from_keyframe(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut unit_map: MappedUnits,
+    state: Res<State>,
+) {
+    for (_, chunk) in state.map.chunks.iter() {
+        for (hex, unit) in chunk.units.iter() {
+            create_unit(*hex, &mut commands, &asset_server, &mut unit_map, unit.owner_id);
+        }
+    }
+}
 
 pub fn kill_units(
     units: Query<(&Unit, &Transform, Entity)>,

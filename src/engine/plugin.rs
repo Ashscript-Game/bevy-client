@@ -13,11 +13,6 @@ use crate::{
 
 use super::{
     benchmarks::factory_combat_benchmark,
-    factory::progress_factories,
-    player::{
-        run_factory_spawn_intents, run_move_intents,
-        run_unit_attack_intents,
-    },
     terrain::generate_tiles,
     unit::{kill_units},
 };
@@ -46,12 +41,7 @@ impl Plugin for EnginePlugin {
                 (
                     tick_event,
                     /* units_stop_move, */
-                    (kill_units, progress_factories),
-                    (
-                        run_move_intents,
-                        run_factory_spawn_intents,
-                        run_unit_attack_intents,
-                    ),
+                    (kill_units),
                 )
                     .run_if(on_timer(Duration::from_secs_f32(
                         constants::SECONDS_PER_TICK,

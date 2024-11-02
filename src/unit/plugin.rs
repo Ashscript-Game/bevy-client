@@ -3,8 +3,9 @@ use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use enum_map::enum_map;
 use hexx::Hex;
 use rand;
+use uuid::Uuid;
 
-use crate::{components::{OccupiesTile, Unit, MappedUnits}, constants::{unit, UnitPart}, engine::terrain::HEX_LAYOUT};
+use crate::{components::{MappedUnits, OccupiesTile, Owner, Unit}, constants::{unit, UnitPart}, engine::terrain::HEX_LAYOUT};
 
 pub struct UnitPlugin;
 
@@ -19,12 +20,12 @@ pub fn spawn_test_unit() {
 
 }
 
-pub fn spawn_unit(
+pub fn create_unit(
     hex: Hex,
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
     mapped_units: &mut MappedUnits,
-    owner_id: u32,
+    owner_id: Uuid,
 ) {
 
     /* let mesh = Mesh2dHandle(meshes.add(Circle::new(30.)));
@@ -73,9 +74,9 @@ pub fn spawn_unit(
                 },
                 _ => 1,
             },
-            owner_id,
             ..default()
         },
+        Owner(owner_id),
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     )).id();
 

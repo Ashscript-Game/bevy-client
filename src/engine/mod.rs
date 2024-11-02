@@ -6,5 +6,3 @@ pub mod terrain;
 pub mod resources;
 pub mod benchmarks;
 pub mod turret;
-pub mod player;
-pub mod factory;
