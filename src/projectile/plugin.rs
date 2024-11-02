@@ -1,15 +1,14 @@
-
 use bevy::{
     app::{App, Plugin, Update},
     prelude::*,
 };
 
-use crate::{components::ProjectileMoveEndEvent, player_script::unit::units_stop_move};
+use crate::components::ProjectileMoveEndEvent;
 
 use super::{
     laser::update_lasers,
     resource_blob::update_resource_blobs,
-    unit::update_units,
+    unit::{units_stop_move, update_units},
 };
 
 pub struct ProjectilePlugin;

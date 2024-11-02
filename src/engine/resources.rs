@@ -127,8 +127,7 @@ fn generate_terrain(
 
     match terrain {
         Terrain::Wall => {
-            commands
-            .spawn((
+            commands.spawn((
                 ColorMesh2dBundle {
                     transform: Transform::from_xyz(
                         world_pos.x,
@@ -148,8 +147,7 @@ fn generate_terrain(
             ));
         }
         Terrain::Lava => {
-            commands
-            .spawn((
+            commands.spawn((
                 ColorMesh2dBundle {
                     transform: Transform::from_xyz(
                         world_pos.x,
@@ -167,9 +165,7 @@ fn generate_terrain(
 
             resource_node_light(world_pos, commands, constants::lava::COLOR);
         }
-        _ => {
-
-        }
+        _ => {}
     }
 }
 

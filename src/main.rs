@@ -22,7 +22,6 @@ pub mod engine;
 pub mod game;
 pub mod lighting;
 pub mod networker;
-pub mod player_script;
 pub mod prelude;
 pub mod projectile;
 pub mod structure;

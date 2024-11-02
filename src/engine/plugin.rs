@@ -11,11 +11,7 @@ use crate::{
     constants::{self, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK},
 };
 
-use super::{
-    benchmarks::factory_combat_benchmark,
-    terrain::generate_tiles,
-    unit::{kill_units},
-};
+use super::{benchmarks::factory_combat_benchmark, terrain::generate_tiles, unit::kill_units};
 
 pub struct EnginePlugin;
 
@@ -38,14 +34,9 @@ impl Plugin for EnginePlugin {
             Update,
             (
                 projectile_move_end_event,
-                (
-                    tick_event,
-                    /* units_stop_move, */
-                    (kill_units),
-                )
-                    .run_if(on_timer(Duration::from_secs_f32(
-                        constants::SECONDS_PER_TICK,
-                    ))),
+                (tick_event, /* units_stop_move, */ (kill_units)).run_if(on_timer(
+                    Duration::from_secs_f32(constants::SECONDS_PER_TICK),
+                )),
             ),
         );
     }
