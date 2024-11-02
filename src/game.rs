@@ -7,7 +7,7 @@ use bevy_magic_light_2d::{
 };
 
 use crate::{
-    components::{OccupyStructuresMap, UnitMap}, constants::{self}, controls::plugin::ControlsPlugin, debug::plugin::DebugPlugin, engine::plugin::EnginePlugin, lighting::plugin::LightingPlugin, projectile::plugin::ProjectilePlugin, networker::setup_receiver, structure::plugin::StructuresPlugin, unit::plugin::UnitPlugin};
+    components::{OccupyStructuresMap, UnitMap}, constants::{self}, controls::plugin::ControlsPlugin, debug::plugin::DebugPlugin, engine::plugin::EnginePlugin, lighting::plugin::LightingPlugin, networker::{/* connection_handler,  */handle_network_events, setup_receiver/* , hello_world */ /* setup_receiver */}, projectile::plugin::ProjectilePlugin, structure::plugin::StructuresPlugin, unit::plugin::UnitPlugin};
 
 pub struct GamePlugin;
 
@@ -23,7 +23,8 @@ impl Plugin for GamePlugin {
             UnitPlugin,
             StructuresPlugin,
         ))
-        .add_systems(Startup, (game_init, spawn_unit_map, spawn_structures_map, setup_receiver));
+        .add_systems(Startup, (game_init, spawn_unit_map, spawn_structures_map, setup_receiver/*, setup_receiver *//* , hello_world */))
+        .add_systems(Update, (/* connection_handler,  */handle_network_events));
     }
 }
 

@@ -1,15 +1,20 @@
-
 use std::net::{SocketAddr, UdpSocket};
 
 use ashscript_types::{actions::ActionsByKind, global::Global, map::Map};
 use bevy::{
-    app::App, diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, utils::hashbrown::HashMap, DefaultPlugins
+    app::App, diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, tasks::TaskPoolBuilder, utils::hashbrown::HashMap, DefaultPlugins
 };
+use bevy_eventwork::EventworkRuntime;
+use bevy_eventwork_mod_websockets::{NetworkSettings, WebSocketProvider};
 use bevy_magic_light_2d::{gi::BevyMagicLight2DPlugin, prelude::*};
-use components::{Actions, DebugSettings, GameSettings, GameState, PlayerStates, ProjectileMoveEndTimer, State};
+use bevy_simple_networking::{ClientPlugin, SocketAddrResource, UdpSocketResource};
+use components::{
+    Actions, DebugSettings, GameSettings, GameState, PlayerStates, ProjectileMoveEndTimer, State,
+};
 use constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK};
 use game::GamePlugin;
 
+pub mod ai_scripts;
 pub mod components;
 pub mod constants;
 pub mod controls;
@@ -17,17 +22,24 @@ pub mod debug;
 pub mod engine;
 pub mod game;
 pub mod lighting;
+pub mod networker;
 pub mod player_script;
 pub mod prelude;
 pub mod projectile;
 pub mod structure;
+pub mod types;
 pub mod unit;
 pub mod utils;
-pub mod ai_scripts;
-pub mod types;
-pub mod networker;
 
 fn main() {
+    let remote_addr: SocketAddr = "0.0.0.0:3000".parse().expect("could not parse addr");
+    let socket = UdpSocket::bind("[::]:0").expect("could not bind socket");
+    socket
+        .connect(remote_addr)
+        .expect("could not connect to server");
+    socket
+        .set_nonblocking(true)
+        .expect("could not set socket to be nonblocking");
 
     App::new()
         .insert_resource(ClearColor(Color::srgba(0., 0., 0., 0.)))
@@ -44,6 +56,7 @@ fn main() {
                     }),
                     ..default()
                 }),
+            ClientPlugin,
             GamePlugin,
             BevyMagicLight2DPlugin,
             bevy_egui::EguiPlugin,
@@ -54,9 +67,11 @@ fn main() {
                 filter: None,
             }, */
         ))
+        .insert_resource(SocketAddrResource::new(remote_addr))
+        .insert_resource(UdpSocketResource::new(socket))
         .insert_resource(BevyMagicLight2DSettings {
             light_pass_params: LightPassParams {
-                reservoir_size: 1/* 16 */,
+                reservoir_size: 1, /* 16 */
                 smooth_kernel_size: (3, 3),
                 direct_light_contrib: 0.2,
                 indirect_light_contrib: 0.8,
@@ -68,9 +83,7 @@ fn main() {
             SECONDS_PER_TICK * PROJECTILE_MOVE_END_TICK_PORTION,
             TimerMode::Once,
         )))
-        .insert_resource(GameSettings {
-            lights: true,
-        })
+        .insert_resource(GameSettings { lights: true })
         .insert_resource(DebugSettings {
             hightlight_chunks: false,
         })
@@ -87,5 +100,13 @@ fn main() {
         .register_type::<SkylightLight2D>()
         .register_type::<BevyMagicLight2DSettings>()
         .register_type::<LightPassParams>()
+        .add_plugins(bevy_eventwork::EventworkPlugin::<
+            WebSocketProvider,
+            bevy::tasks::TaskPool,
+        >::default())
+        .insert_resource(NetworkSettings::default())
+        .insert_resource(EventworkRuntime(
+            TaskPoolBuilder::new().num_threads(2).build(),
+        ))
         .run();
 }

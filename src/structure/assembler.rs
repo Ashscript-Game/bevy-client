@@ -73,3 +73,7 @@ pub fn assembler_produce(assembler: &mut Assembler) {
 
     *assembler.store.resources.entry(output_resource).or_insert(0) += 1;
 }
+
+fn delete_assembler_if_not_in_keyframe() {
+    // 
+}

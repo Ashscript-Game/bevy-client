@@ -24,6 +24,7 @@ fn control_camera_zoom(
 
     for event in scroll_event_reader.read() {
         projection_delta += event.y * 3.;
+        /* projection_delta = event.y.signum() * projection_delta * 1.05 */
     }
 
     if projection_delta == 0. {

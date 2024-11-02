@@ -1,69 +1,76 @@
-use ashscript_types::{keyframe::KeyFrame, map::Map};
-use bevy::{prelude::*, utils::hashbrown::HashMap};
+use ashscript_types::keyframe::KeyFrame;
+use bevy::{prelude::*, render::settings, tasks::TaskPool, utils::hashbrown::HashMap};
+use bevy_eventwork::{EventworkRuntime, Network};
+use bevy_eventwork_mod_websockets::{NetworkSettings, WebSocketProvider};
+use bevy_simple_networking::{NetworkEvent, SocketAddrResource, Transport};
 use rust_socketio::{ClientBuilder, Payload, RawClient};
 use serde_json::json;
-use std::{hash::Hash, time::Duration};
 
 use crate::components::{Actions, State};
 
-pub fn setup_receiver(mut state: ResMut<State>, mut actions: ResMut<Actions>) {
-
+/* pub fn setup_receiver(mut state: ResMut<State> /* , mut actions: ResMut<Actions> */) {
     let mut value: HashMap<String, String> = HashMap::new();
 
-    let callback = move |payload: &Payload, socket: &RawClient, value: &mut HashMap<String, String>/* , state: &mut  State*/| {
-        match payload {
-            Payload::String(str) => {
-                println!("Received string: {}", str);
-                value.insert("key".to_string(), "value".to_string());
-                /* state.map = serde_json::from_str(&str).unwrap(); */
-            },
-            Payload::Binary(bin_data) => println!("Received bytes: {:#?}", bin_data),
-            Payload::Text(text) => {
-                println!("Received text: {:#?}", text);
+    let callback =
+        afunc(move |payload: Payload,
+              socket: RawClient
+              /* value: &mut HashMap<String, String> */| {
+            let mut state = state;
+            match payload {
+                Payload::String(str) => {
+                    println!("Received string: {}", str);
+                    value.insert("key".to_string(), "value".to_string());
+                }
+                Payload::Binary(bin_data) => println!("Received bytes: {:#?}", bin_data),
+                Payload::Text(text) => {
+                    println!("Received text: {:#?}", text);
 
-                // let res = serde_json::from_str(&text).expect("unable to deserialize");
-                // serde_json::from_value(value)
-                let ser_keyframe = text.iter().filter_map(|v| {
-                    match v {
-                        serde_json::Value::Bool(z) => {
-                            println!("Received bool: {:#?}", z);
-                            None
-                        },
-                        serde_json::Value::Number(n) => {
-                            println!("Received number: {:#?}", n);
+                    // let res = serde_json::from_str(&text).expect("unable to deserialize");
+                    // serde_json::from_value(value)
+                    let ser_keyframe = text
+                        .iter()
+                        .filter_map(|v| match v {
+                            serde_json::Value::Bool(z) => {
+                                println!("Received bool: {:#?}", z);
+                                None
+                            }
+                            serde_json::Value::Number(n) => {
+                                println!("Received number: {:#?}", n);
 
-                            Some(n.as_u64().unwrap() as u8)
-                        },
-                        serde_json::Value::String(s) => {
-                            println!("Received string: {:#?}", s);
-                            None
-                        },
-                        _ => {
-                            println!("Received unknown: {:#?}", v);
-                            None
-                        },
-                    }
-                }).collect::<Vec<u8>>();
+                                Some(n.as_u64().unwrap() as u8)
+                            }
+                            serde_json::Value::String(s) => {
+                                println!("Received string: {:#?}", s);
+                                None
+                            }
+                            _ => {
+                                println!("Received unknown: {:#?}", v);
+                                None
+                            }
+                        })
+                        .collect::<Vec<u8>>();
 
-                let keyframe = postcard::from_bytes::<KeyFrame>(ser_keyframe.as_slice()).expect("unable to deserialize");
+                    let keyframe = postcard::from_bytes::<KeyFrame>(ser_keyframe.as_slice())
+                        .expect("unable to deserialize");
+                    // state.map = keyframe.map;
 
-                println!("processed keyframe for tick: {}", keyframe.global.tick);
-            },
-        }
+                    println!("processed keyframe for tick: {}", keyframe.global.tick);
+                }
+            }
 
-        socket
-            .emit("test", json!({"this is an ack": true}))
-            .expect("Server unreachable")
-    };
-    
+            socket
+                .emit("test", json!({"this is an ack": true}))
+                .expect("Server unreachable")
+        });
+
     // get a socket that is connected to the admin namespace
     let socket = ClientBuilder::new("http://localhost:3000")
         .namespace("/client")
-        .on("game_state", move |payload: Payload, socket: RawClient| callback(&payload, &socket, &mut value))
+        .on("game_state", callback)
         .on("error", |err, _| eprintln!("Error: {:#?}", err))
         .connect()
         .expect("Connection failed");
-}
+} */
 
 /* fn state_callback<T: Into<Event>, F>(payload: Payload, client: Client, state: &ResMut<State>) -> Self
 where
@@ -91,3 +98,66 @@ where
 // when it receives emissions
 
 // update
+
+/* pub fn connection_handler(mut events: EventReader<NetworkEvent>) {
+    for event in events.read() {
+        match event {
+            NetworkEvent::Message(_, msg) => {
+                info!("{}", String::from_utf8_lossy(msg));
+            }
+            NetworkEvent::SendError(err, msg) => {
+                error!(
+                    "NetworkEvent::SendError (payload [{:?}]): {:?}",
+                    msg.payload, err
+                );
+            }
+            NetworkEvent::RecvError(err) => {
+                error!("NetworkEvent::RecvError: {:?}", err);
+            }
+            // discard irrelevant events
+            _ => {}
+        }
+    }
+}
+
+pub fn hello_world(remote_addr: Res<SocketAddrResource>, mut transport: ResMut<Transport>) {
+    transport.send(**remote_addr, b"Hello world!");
+} */
+
+pub fn setup_receiver(
+    net: ResMut<Network<WebSocketProvider>>,
+    task_pool: Res<EventworkRuntime<TaskPool>>,
+    settings: Res<NetworkSettings>,
+) {
+    net.connect(
+        url::Url::parse("ws://0.0.0.0:3000").unwrap(),
+        &task_pool.0,
+        &settings,
+    );
+}
+
+pub fn handle_network_events(mut new_network_events: EventReader<NetworkEvent>) {
+    for event in new_network_events.read() {
+        info!("Received event");
+        match event {
+            NetworkEvent::Connected(_) => {
+                println!("connected");
+            }
+
+            NetworkEvent::Disconnected(_) => {
+                println!("disconnected");
+            }
+
+            NetworkEvent::Message(_, msg) => {
+                println!("received message {}", String::from_utf8_lossy(msg));
+            }
+            NetworkEvent::RecvError(err) => {
+                println!("recv error: {:?}", err);
+            }
+
+            NetworkEvent::SendError(err, msg) => {
+                println!("send error: {:?} {:?}", err, msg.payload);
+            }
+        }
+    }
+}
