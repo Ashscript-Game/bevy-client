@@ -10,18 +10,6 @@ use crate::{
 
 use super::terrain::HEX_LAYOUT;
 
-pub fn age_units(mut units: Query<&mut Unit>) {
-    for mut unit in units.iter_mut() {
-        unit.age += 1;
-    }
-}
-
-pub fn energize_units(mut units: Query<&mut Unit>) {
-    for mut unit in units.iter_mut() {
-        unit.energy += unit.body[UnitPart::Generate];
-    }
-}
-
 pub fn kill_units(
     units: Query<(&Unit, &Transform, Entity)>,
     mut commands: Commands,

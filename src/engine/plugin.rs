@@ -20,7 +20,7 @@ use super::{
     },
     resources::generate_resources,
     terrain::generate_tiles,
-    unit::{age_units, energize_units, kill_units},
+    unit::{kill_units},
 };
 
 pub struct EnginePlugin;
@@ -48,7 +48,7 @@ impl Plugin for EnginePlugin {
                 (
                     tick_event,
                     /* units_stop_move, */
-                    (age_units, kill_units, energize_units, progress_factories),
+                    (kill_units, progress_factories),
                     (
                         run_move_intents,
                         run_factory_spawn_intents,
