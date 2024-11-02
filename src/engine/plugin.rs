@@ -18,7 +18,6 @@ use super::{
         run_factory_spawn_intents, run_move_intents,
         run_unit_attack_intents,
     },
-    resources::generate_resources,
     terrain::generate_tiles,
     unit::{kill_units},
 };
@@ -31,7 +30,6 @@ impl Plugin for EnginePlugin {
             Startup,
             (
                 generate_tiles,
-                generate_resources,
                 /* assembler_distributor_benchmark, */
                 /* unit_benchmark, */
                 factory_combat_benchmark,

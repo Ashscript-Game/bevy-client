@@ -330,6 +330,9 @@ pub struct Factory {
 #[derive(Component)]
 pub struct Wall;
 
+#[derive(Component)]
+pub struct Lava;
+
 #[derive(Resource)]
 pub struct State {
     pub map: Map,
