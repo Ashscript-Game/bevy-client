@@ -13,7 +13,7 @@ use crate::{
     structure::{assembler::spawn_assembler, distributor::spawn_distributor, factory::spawn_factory, turret::spawn_turret},
     unit::plugin::create_unit,
 };
-
+/* 
 pub fn assembler_distributor_benchmark(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -106,4 +106,4 @@ pub fn factory_combat_benchmark(
 
     spawn_factory(hex(8, 6), &mut commands, &asset_server, 0);
     spawn_factory(hex(-8, -3), &mut commands, &asset_server, 1);
-}
+} */

@@ -5,9 +5,10 @@ use bevy::{
     utils::{hashbrown::HashMap, HashSet},
 };
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
+use uuid::Uuid;
 
 use crate::{
-    components::{Factory, OccupiesTile, Store},
+    components::{Factory, OccupiesTile, Owner, Store},
     constants::{factory, Resource},
     engine::terrain::HEX_LAYOUT,
 };
@@ -16,7 +17,7 @@ pub fn spawn_factory(
     hex: hexx::Hex,
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
-    owner_id: u32,
+    owner_id: Uuid,
 ) {
     let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
 
@@ -42,7 +43,6 @@ pub fn spawn_factory(
                 allowed_inputs: Some(HashSet::from([Resource::Metal])),
                 capacity: 1000,
             },
-            owner_id,
             energy: 100,
             energy_capacity: 1000
         },
@@ -52,6 +52,7 @@ pub fn spawn_factory(
             falloff: Vec3::new(4., 4., 0.005),
             ..default()
         },
+        Owner(owner_id),
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
 }

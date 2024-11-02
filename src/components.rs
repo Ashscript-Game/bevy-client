@@ -104,7 +104,6 @@ pub struct Moving {
 #[derive(Component, Default)]
 pub struct Turret {
     pub energy: u32,
-    pub energy_gen: u32,
     pub damage: u32,
     pub range: u32,
     pub store: Store,
@@ -322,7 +321,6 @@ pub enum Structure {
 #[derive(Component, Default, Clone)]
 pub struct Factory {
     pub store: Store,
-    pub owner_id: u32,
     pub energy: u32,
     pub energy_capacity: u32,
     // 100(%)+ = completed

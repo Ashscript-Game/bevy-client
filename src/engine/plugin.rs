@@ -11,7 +11,7 @@ use crate::{
     constants::{self, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK},
 };
 
-use super::{benchmarks::factory_combat_benchmark, terrain::generate_tiles, unit::kill_units};
+use super::{terrain::generate_tiles, unit::kill_units};
 
 pub struct EnginePlugin;
 
@@ -21,10 +21,6 @@ impl Plugin for EnginePlugin {
             Startup,
             (
                 generate_tiles,
-                /* assembler_distributor_benchmark, */
-                /* unit_benchmark, */
-                factory_combat_benchmark,
-                /* turret_benchmark, */
             )
                 .chain(),
         )

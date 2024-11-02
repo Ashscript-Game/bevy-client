@@ -15,11 +15,6 @@ impl Plugin for UnitPlugin {
     }
 }
 
-pub fn spawn_test_unit() {
-
-
-}
-
 pub fn create_unit(
     hex: Hex,
     commands: &mut Commands,

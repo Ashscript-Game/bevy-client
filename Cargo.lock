@@ -318,8 +318,8 @@ dependencies = [
 
 [[package]]
 name = "ashscript-types"
-version = "0.9.2"
-source = "git+https://github.com/Ashscript-Game/ashscript-types?branch=main#0e23aacd6c561dd379389fc651e11102f5525211"
+version = "0.9.5"
+source = "git+https://github.com/Ashscript-Game/ashscript-types?branch=main#cb2aec49cc82c62e66ba7c5b7d04b5ad730dc2f2"
 dependencies = [
  "enum-iterator",
  "enum-map",

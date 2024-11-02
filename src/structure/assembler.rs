@@ -2,9 +2,10 @@ use bevy::{
     app::{App, Plugin}, prelude::*, render::view::RenderLayers, utils::hashbrown::HashMap
 };
 use bevy_magic_light_2d::prelude::CAMERA_LAYER_OBJECTS;
+use uuid::Uuid;
 
 use crate::{
-    components::{Assembler, OccupiesTile, Store},
+    components::{Assembler, OccupiesTile, Owner, Store},
     constants::{self, assembler, Resource, RESOURCE_INPUTS},
     engine::terrain::HEX_LAYOUT,
 };
@@ -21,6 +22,7 @@ pub fn spawn_assembler(
     hex: hexx::Hex,
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
+    owner_id: Uuid,
 ) {
 
     let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
@@ -45,6 +47,7 @@ pub fn spawn_assembler(
             },
             transferring: None
         },
+        Owner(owner_id),
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS)
     ));
 }

@@ -5,9 +5,10 @@ use bevy::{
     render::view::RenderLayers,
 };
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
+use uuid::Uuid;
 
 use crate::{
-    components::{OccupiesTile, Turret},
+    components::{OccupiesTile, Owner, Turret},
     constants::{self, turret},
     engine::terrain::HEX_LAYOUT,
 };
@@ -25,6 +26,7 @@ pub fn spawn_turret(
     hex: hexx::Hex,
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
+    owner_id: Uuid,
 ) {
     let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
 
@@ -42,7 +44,6 @@ pub fn spawn_turret(
         Turret {
             range: 6,
             damage: 2,
-            energy_gen: 60,
             ..default()
         },
         OmniLightSource2D {
@@ -51,6 +52,7 @@ pub fn spawn_turret(
             falloff: Vec3::new(4., 4., 0.005),
             ..default()
         },
+        Owner(owner_id),
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
 }

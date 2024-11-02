@@ -45,7 +45,7 @@ pub fn generate_tiles(
         materials.add(ColorMaterial::from(COLORS[2])),
     ];
 
-    for hex in shapes::hexagon(hex(0, 0), state.map.radius) {
+    for hex in shapes::hexagon(hex(0, 0), state.map.data.radius) {
         let pos = HEX_LAYOUT.hex_to_world_pos(hex);
         let hex_mod = hex.to_lower_res(CHUNK_SIZE);
         let color_index = (hex_mod.x - hex_mod.y).rem_euclid(3);
