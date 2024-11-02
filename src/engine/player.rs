@@ -1,5 +1,4 @@
 use crate::{
-    ai_scripts,
     components::{Factory, GameState, MappedUnits, PlayerState, PlayerStates, Unit, Wall},
     constants::GeneralResult,
     projectile::laser::create_laser,
@@ -14,70 +13,6 @@ use super::{
     terrain::HEX_LAYOUT,
     unit::{unit_at_hex, unit_attack, unit_damage, unit_move_hex},
 };
-
-pub fn populate_game_state(
-    mut game_state: ResMut<GameState>,
-    units: Query<(&Unit, &Transform, Entity)>,
-    factories: Query<(&Factory, &Transform, Entity)>,
-    walls: Query<&Transform, With<Wall>>,
-) {
-    // Units
-
-    let cloned_units = units
-        .iter()
-        .map(|(u, t, e)| (u.clone(), *t, e))
-        .collect::<Vec<(Unit, Transform, Entity)>>();
-    game_state.units = cloned_units;
-
-    // Factories
-
-    let cloned_factories = factories
-        .iter()
-        .map(|(f, t, e)| (f.clone(), *t, e))
-        .collect::<Vec<(Factory, Transform, Entity)>>();
-    game_state.factories = cloned_factories;
-
-    // Occupied Tiles
-
-    let occupied_tiles: HashSet<Hex> = HashSet::from_iter(
-        walls
-            .iter()
-            .map(|transform| HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()))
-            .collect::<Vec<Hex>>(),
-    );
-    game_state.walls = occupied_tiles;
-}
-
-pub fn run_player_scripts(game_state: Res<GameState>, mut player_states: ResMut<PlayerStates>) {
-    let mut player_scripts: HashMap<String, PlayerScript> = HashMap::new(); /*  vec![ai_scripts::basic_economy::main]; */
-    player_scripts.insert(
-        game_state.players[0].name.clone(),
-        ai_scripts::basic_combat::main,
-    );
-    player_scripts.insert(
-        game_state.players[1].name.clone(),
-        ai_scripts::basic_combat::main,
-    );
-
-    player_states
-        .0
-        .insert(game_state.players[0].name.clone(), PlayerState::new(0));
-    player_states
-        .0
-        .insert(game_state.players[1].name.clone(), PlayerState::new(1));
-
-    // run player scripts
-
-    let player_names = player_scripts.keys().cloned();
-    for player_name in player_names {
-        let player_state = player_states.0.get_mut(&player_name).unwrap();
-        let player_script = player_scripts
-            .get(&player_name)
-            .expect("player script not found");
-
-        player_script(&game_state, player_state);
-    }
-}
 
 pub fn run_move_intents(
     player_states: ResMut<PlayerStates>,

@@ -15,7 +15,7 @@ use super::{
     benchmarks::factory_combat_benchmark,
     factory::progress_factories,
     player::{
-        populate_game_state, run_factory_spawn_intents, run_move_intents, run_player_scripts,
+        run_factory_spawn_intents, run_move_intents,
         run_unit_attack_intents,
     },
     resources::generate_resources,
@@ -50,8 +50,6 @@ impl Plugin for EnginePlugin {
                     /* units_stop_move, */
                     (age_units, kill_units, energize_units, progress_factories),
                     (
-                        populate_game_state,
-                        run_player_scripts,
                         run_move_intents,
                         run_factory_spawn_intents,
                         run_unit_attack_intents,

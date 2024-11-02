@@ -14,7 +14,6 @@ use components::{
 use constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK};
 use game::GamePlugin;
 
-pub mod ai_scripts;
 pub mod components;
 pub mod constants;
 pub mod controls;
