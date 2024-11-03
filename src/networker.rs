@@ -1,8 +1,7 @@
 use ashscript_types::keyframe::KeyFrame;
 use bevy::{prelude::*, render::settings, tasks::TaskPool, utils::hashbrown::HashMap};
-use bevy_eventwork::{EventworkRuntime, Network};
+use bevy_eventwork::{EventworkRuntime, Network, NetworkData, NetworkEvent};
 use bevy_eventwork_mod_websockets::{NetworkSettings, WebSocketProvider};
-use bevy_simple_networking::{NetworkEvent, SocketAddrResource, Transport};
 use rust_socketio::{ClientBuilder, Payload, RawClient};
 use serde_json::json;
 
@@ -130,7 +129,7 @@ pub fn setup_receiver(
     settings: Res<NetworkSettings>,
 ) {
     net.connect(
-        url::Url::parse("ws://0.0.0.0:3000").unwrap(),
+        url::Url::parse("ws://localhost:3000/game-state").unwrap(),
         &task_pool.0,
         &settings,
     );
@@ -148,15 +147,8 @@ pub fn handle_network_events(mut new_network_events: EventReader<NetworkEvent>) 
                 println!("disconnected");
             }
 
-            NetworkEvent::Message(_, msg) => {
-                println!("received message {}", String::from_utf8_lossy(msg));
-            }
-            NetworkEvent::RecvError(err) => {
-                println!("recv error: {:?}", err);
-            }
-
-            NetworkEvent::SendError(err, msg) => {
-                println!("send error: {:?} {:?}", err, msg.payload);
+            NetworkEvent::Error(err) => {
+                println!("error: {}", err);
             }
         }
     }

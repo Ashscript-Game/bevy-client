@@ -1,4 +1,4 @@
-use ashscript_types::{global::Global, map::Map};
+use ashscript_types::{global::Global, keyframe::KeyFrame, map::Map};
 use bevy::{
     ecs::system::SystemParam,
     prelude::*,
@@ -352,3 +352,6 @@ pub struct AltState<'w, 's> {
 
 #[derive(Resource)]
 pub struct Actions(pub ashscript_types::actions::ActionsByKind);
+
+#[derive(Event)]
+pub struct KeyframeEvent(KeyFrame);
