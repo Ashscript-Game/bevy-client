@@ -1,4 +1,4 @@
-use ashscript_types::{global::Global, keyframe::KeyFrame, map::Map};
+use ashscript_types::{global::Global, keyframe::KeyFrame, map::Map, objects::{Attackable, GameObjectKind}};
 use bevy::{
     ecs::system::SystemParam,
     prelude::*,
@@ -68,6 +68,18 @@ pub struct Player {
     pub name: String,
     pub id: Uuid,
 }
+
+#[derive(Component)]
+pub struct GameObjectKindComp(pub GameObjectKind);
+
+#[derive(Component)]
+pub struct Health {
+    pub current: u32,
+    pub max: u32,
+}
+
+#[derive(Component)]
+pub struct Energy(pub u32);
 
 #[derive(Component, Default, Clone)]
 pub struct Unit {
