@@ -5,14 +5,15 @@ use bevy::{
 };
 use hexx::{hex, shapes, Hex};
 use rand::Rng;
+use uuid::Uuid;
 
 use crate::{
     components::{MappedUnits, OccupiesTile},
     engine::terrain::HEX_LAYOUT,
     structure::{assembler::spawn_assembler, distributor::spawn_distributor, factory::spawn_factory, turret::spawn_turret},
-    unit::plugin::spawn_unit,
+    unit::plugin::create_unit,
 };
-
+/* 
 pub fn assembler_distributor_benchmark(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -65,7 +66,7 @@ pub fn unit_benchmark(
         }
 
         if rng.gen_range(0..=5) == 0 {
-            spawn_unit(hex, &mut commands, &asset_server, &mut units, 0);
+            create_unit(hex, &mut commands, &asset_server, &mut units, Uuid::default());
         }
     }
 }
@@ -105,4 +106,4 @@ pub fn factory_combat_benchmark(
 
     spawn_factory(hex(8, 6), &mut commands, &asset_server, 0);
     spawn_factory(hex(-8, -3), &mut commands, &asset_server, 1);
-}
+} */

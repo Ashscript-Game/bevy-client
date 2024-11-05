@@ -1,10 +1,22 @@
 use std::f32::consts::PI;
 
-use bevy::{math::Quat, prelude::Transform};
+use bevy::{math::Quat, prelude::*};
 
-use crate::{components::{Turret, Unit}, constants::GeneralResult, utils::find_angle};
+use crate::{components::{State, Turret, Unit}, constants::GeneralResult, structure::turret::spawn_turret, utils::find_angle};
 
 use super::terrain::HEX_LAYOUT;
+
+pub fn generate_turrets_from_keyframe(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    state: Res<State>,
+) {
+    for (_, chunk) in state.map.chunks.iter() {
+        for (hex, turret) in chunk.turrets.iter() {
+            spawn_turret(*hex, &mut commands, &asset_server, turret.owner_id);
+        }
+    }
+}
 
 pub fn turret_attack_cost(turret: &Turret) -> u32 {
     turret.range + turret.damage

@@ -6,9 +6,10 @@ use bevy::{
     utils::{hashbrown::HashMap, HashSet},
 };
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
+use uuid::Uuid;
 
 use crate::{
-    components::{Distributor, OccupiesTile, Store},
+    components::{Distributor, OccupiesTile, Owner, Store},
     constants::{self, distributor, Resource},
     engine::terrain::HEX_LAYOUT,
     utils::{self},
@@ -27,6 +28,7 @@ pub fn spawn_distributor(
     hex: hexx::Hex,
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
+    owner_id: Uuid,
 ) {
     let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
 
@@ -62,6 +64,7 @@ pub fn spawn_distributor(
             falloff: Vec3::new(4., 4., 0.005),
             ..default()
         },
+        Owner(owner_id),
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
 }

@@ -13,14 +13,13 @@ use bevy::{
 use bevy_eventwork::EventworkRuntime;
 use bevy_eventwork_mod_websockets::{NetworkSettings, WebSocketProvider};
 use bevy_magic_light_2d::{gi::BevyMagicLight2DPlugin, prelude::*};
-use bevy_simple_networking::{ClientPlugin, SocketAddrResource, UdpSocketResource};
 use components::{
     Actions, DebugSettings, GameSettings, GameState, PlayerStates, ProjectileMoveEndTimer, State,
 };
 use constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK};
 use game::GamePlugin;
+use serde::{Deserialize, Serialize};
 
-pub mod ai_scripts;
 pub mod components;
 pub mod constants;
 pub mod controls;
@@ -29,7 +28,6 @@ pub mod engine;
 pub mod game;
 pub mod lighting;
 pub mod networker;
-pub mod player_script;
 pub mod prelude;
 pub mod projectile;
 pub mod structure;

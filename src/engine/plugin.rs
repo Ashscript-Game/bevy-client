@@ -11,17 +11,7 @@ use crate::{
     constants::{self, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK},
 };
 
-use super::{
-    benchmarks::factory_combat_benchmark,
-    factory::progress_factories,
-    player::{
-        populate_game_state, run_factory_spawn_intents, run_move_intents, run_player_scripts,
-        run_unit_attack_intents,
-    },
-    resources::generate_resources,
-    terrain::generate_tiles,
-    unit::{age_units, energize_units, kill_units},
-};
+use super::{terrain::generate_tiles, unit::kill_units};
 
 pub struct EnginePlugin;
 
@@ -31,11 +21,6 @@ impl Plugin for EnginePlugin {
             Startup,
             (
                 generate_tiles,
-                generate_resources,
-                /* assembler_distributor_benchmark, */
-                /* unit_benchmark, */
-                factory_combat_benchmark,
-                /* turret_benchmark, */
             )
                 .chain(),
         )
@@ -45,21 +30,9 @@ impl Plugin for EnginePlugin {
             Update,
             (
                 projectile_move_end_event,
-                (
-                    tick_event,
-                    /* units_stop_move, */
-                    (age_units, kill_units, energize_units, progress_factories),
-                    (
-                        populate_game_state,
-                        run_player_scripts,
-                        run_move_intents,
-                        run_factory_spawn_intents,
-                        run_unit_attack_intents,
-                    ),
-                )
-                    .run_if(on_timer(Duration::from_secs_f32(
-                        constants::SECONDS_PER_TICK,
-                    ))),
+                (tick_event, /* units_stop_move, */ (kill_units)).run_if(on_timer(
+                    Duration::from_secs_f32(constants::SECONDS_PER_TICK),
+                )),
             ),
         );
     }

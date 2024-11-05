@@ -123,6 +123,12 @@ pub mod wall {
     pub const COLOR: Color = Color::srgba(0. / 255., 0. / 255., 0. / 255., 1.);
 }
 
+pub mod lava {
+    use bevy::prelude::*;
+
+    pub const COLOR: Color = Color::srgba(250. / 255., 0. / 255., 0. / 255., 1.);
+}
+
 pub mod metal {
     use bevy::prelude::*;
 

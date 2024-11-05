@@ -9,7 +9,6 @@ use bevy::{
 use bevy::{prelude::*, render::settings, tasks::TaskPool};
 use bevy_eventwork::{EventworkRuntime, Network};
 use bevy_eventwork_mod_websockets::{NetworkSettings, WebSocketProvider};
-use bevy_simple_networking::{NetworkEvent, SocketAddrResource, Transport};
 use rust_socketio::{ClientBuilder, Payload, RawClient};
 use serde_json::json;
 use std::{net::TcpStream, sync::mpsc::Receiver};
@@ -176,7 +175,6 @@ pub fn handle_network_events(network_info: ResMut<NetworkInfo>) {
             ewebsock::WsEvent::Closed => {
                 println!("disconnected");
             }
-
             ewebsock::WsEvent::Message(ewebsock::WsMessage::Binary(data)) => {
                 let keyframe: KeyFrame =
                     postcard::from_bytes(&data).expect("failed to deserialize keyframe");
