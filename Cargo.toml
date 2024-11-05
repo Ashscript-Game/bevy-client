@@ -36,8 +36,8 @@ postcard = "1.0.10"
 bevy_eventwork = "0.9.0"
 bevy_eventwork_mod_websockets = "0.2.0"
 url = "2.5.2"
-uuid = "1.11.0"
-base64 = "0.22.1"
+uuid = { version = "1.11.0", features=["serde"] }
+ewebsock = "0.7.0"
 
 [features]
 # cargo run --features dev

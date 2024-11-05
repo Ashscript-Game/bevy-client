@@ -1,19 +1,25 @@
+use crate::components::{Actions, State};
 use ashscript_types::keyframe::KeyFrame;
-use bevy::{prelude::*, render::settings, tasks::TaskPool, utils::hashbrown::HashMap};
-use bevy_eventwork::{EventworkRuntime, Network, NetworkData, NetworkEvent};
+use bevy::{
+    app::{App, Plugin, Startup},
+    prelude::*,
+    render::{camera::RenderTarget, view::RenderLayers},
+    utils::hashbrown::HashMap,
+};
+use bevy::{prelude::*, render::settings, tasks::TaskPool};
+use bevy_eventwork::{EventworkRuntime, Network};
 use bevy_eventwork_mod_websockets::{NetworkSettings, WebSocketProvider};
 use rust_socketio::{ClientBuilder, Payload, RawClient};
 use serde_json::json;
+use std::{net::TcpStream, sync::mpsc::Receiver};
 
-use crate::components::{Actions, State};
-
-/* pub fn setup_receiver(mut state: ResMut<State> /* , mut actions: ResMut<Actions> */) {
+/*
+pub fn setup_receiver(mut state: ResMut<State> /* , mut actions: ResMut<Actions> */) {
     let mut value: HashMap<String, String> = HashMap::new();
 
-    let callback =
-        afunc(move |payload: Payload,
-              socket: RawClient
-              /* value: &mut HashMap<String, String> */| {
+    let callback = afunc(
+        move |payload: Payload,
+              socket: RawClient /* value: &mut HashMap<String, String> */| {
             let mut state = state;
             match payload {
                 Payload::String(str) => {
@@ -60,7 +66,8 @@ use crate::components::{Actions, State};
             socket
                 .emit("test", json!({"this is an ack": true}))
                 .expect("Server unreachable")
-        });
+        },
+    );
 
     // get a socket that is connected to the admin namespace
     let socket = ClientBuilder::new("http://localhost:3000")
@@ -69,7 +76,8 @@ use crate::components::{Actions, State};
         .on("error", |err, _| eprintln!("Error: {:#?}", err))
         .connect()
         .expect("Connection failed");
-} */
+}
+*/
 
 /* fn state_callback<T: Into<Event>, F>(payload: Payload, client: Client, state: &ResMut<State>) -> Self
 where
@@ -123,6 +131,27 @@ pub fn hello_world(remote_addr: Res<SocketAddrResource>, mut transport: ResMut<T
     transport.send(**remote_addr, b"Hello world!");
 } */
 
+#[derive(Resource)]
+pub struct NetworkInfo {
+    // This isn't used right now but seems to be used internally by `ewebsock`
+    // to track whether or not to keep the connection open, so let's just keep
+    // it here.
+    pub sender: std::sync::Mutex<ewebsock::WsSender>,
+    pub receiver: std::sync::Mutex<ewebsock::WsReceiver>,
+}
+
+pub fn create_network_resource() -> NetworkInfo {
+    let options = ewebsock::Options::default();
+    let (sender, receiver) = ewebsock::connect("ws://localhost:3000/game-state", options).unwrap();
+
+    let _ = sender;
+
+    return NetworkInfo {
+        sender: std::sync::Mutex::new(sender),
+        receiver: std::sync::Mutex::new(receiver),
+    };
+}
+
 pub fn setup_receiver(
     net: ResMut<Network<WebSocketProvider>>,
     task_pool: Res<EventworkRuntime<TaskPool>>,
@@ -135,20 +164,28 @@ pub fn setup_receiver(
     );
 }
 
-pub fn handle_network_events(mut new_network_events: EventReader<NetworkEvent>) {
-    for event in new_network_events.read() {
+pub fn handle_network_events(network_info: ResMut<NetworkInfo>) {
+    if let Some(message) = network_info.receiver.lock().unwrap().try_recv() {
         info!("Received event");
-        match event {
-            NetworkEvent::Connected(_) => {
+        match message {
+            ewebsock::WsEvent::Opened => {
                 println!("connected");
             }
 
-            NetworkEvent::Disconnected(_) => {
+            ewebsock::WsEvent::Closed => {
                 println!("disconnected");
             }
+            ewebsock::WsEvent::Message(ewebsock::WsMessage::Binary(data)) => {
+                let keyframe: KeyFrame =
+                    postcard::from_bytes(&data).expect("failed to deserialize keyframe");
+                println!("{:?}", keyframe);
+            }
+            ewebsock::WsEvent::Message(msg) => {
+                println!("received message {:?}", msg);
+            }
 
-            NetworkEvent::Error(err) => {
-                println!("error: {}", err);
+            ewebsock::WsEvent::Error(err) => {
+                println!("recv error: {:?}", err);
             }
         }
     }

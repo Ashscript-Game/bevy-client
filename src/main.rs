@@ -1,3 +1,8 @@
+// TODO: remove these eventually, once there's less warnings in between the actual
+// error messages.
+#![allow(unused_imports)]
+#![allow(unused_parens)]
+
 use std::net::{SocketAddr, UdpSocket};
 
 use ashscript_types::{actions::ActionsByKind, global::Global, map::Map};
@@ -31,6 +36,8 @@ pub mod unit;
 pub mod utils;
 
 fn main() {
+    let network_info = networker::create_network_resource();
+
     App::new()
         .insert_resource(ClearColor(Color::srgba(0., 0., 0., 0.)))
         .add_plugins((
@@ -81,19 +88,13 @@ fn main() {
         .insert_resource(Actions(ActionsByKind::new()))
         .insert_resource(GameState::new())
         .insert_resource(PlayerStates(HashMap::new()))
+        .insert_resource(network_info)
         .register_type::<LightOccluder2D>()
         .register_type::<OmniLightSource2D>()
         .register_type::<SkylightMask2D>()
         .register_type::<SkylightLight2D>()
         .register_type::<BevyMagicLight2DSettings>()
         .register_type::<LightPassParams>()
-        .add_plugins(bevy_eventwork::EventworkPlugin::<
-            WebSocketProvider,
-            bevy::tasks::TaskPool,
-        >::default())
         .insert_resource(NetworkSettings::default())
-        .insert_resource(EventworkRuntime(
-            TaskPoolBuilder::new().num_threads(2).build(),
-        ))
         .run();
 }
