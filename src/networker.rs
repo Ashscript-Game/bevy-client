@@ -134,6 +134,10 @@ pub fn hello_world(remote_addr: Res<SocketAddrResource>, mut transport: ResMut<T
 
 #[derive(Resource)]
 pub struct NetworkInfo {
+    // This isn't used right now but seems to be used internally by `ewebsock`
+    // to track whether or not to keep the connection open, so let's just keep
+    // it here.
+    pub sender: std::sync::Mutex<ewebsock::WsSender>,
     pub receiver: std::sync::Mutex<ewebsock::WsReceiver>,
 }
 
@@ -144,6 +148,7 @@ pub fn create_network_resource() -> NetworkInfo {
     let _ = sender;
 
     return NetworkInfo {
+        sender: std::sync::Mutex::new(sender),
         receiver: std::sync::Mutex::new(receiver),
     };
 }
