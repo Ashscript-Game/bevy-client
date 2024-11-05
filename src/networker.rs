@@ -1,20 +1,26 @@
+use crate::components::{Actions, State};
 use ashscript_types::keyframe::KeyFrame;
-use bevy::{prelude::*, render::settings, tasks::TaskPool, utils::hashbrown::HashMap};
+use bevy::{
+    app::{App, Plugin, Startup},
+    prelude::*,
+    render::{camera::RenderTarget, view::RenderLayers},
+    utils::hashbrown::HashMap,
+};
+use bevy::{prelude::*, render::settings, tasks::TaskPool};
 use bevy_eventwork::{EventworkRuntime, Network};
 use bevy_eventwork_mod_websockets::{NetworkSettings, WebSocketProvider};
 use bevy_simple_networking::{NetworkEvent, SocketAddrResource, Transport};
 use rust_socketio::{ClientBuilder, Payload, RawClient};
 use serde_json::json;
+use std::{net::TcpStream, sync::mpsc::Receiver};
 
-use crate::components::{Actions, State};
-
-/* pub fn setup_receiver(mut state: ResMut<State> /* , mut actions: ResMut<Actions> */) {
+/*
+pub fn setup_receiver(mut state: ResMut<State> /* , mut actions: ResMut<Actions> */) {
     let mut value: HashMap<String, String> = HashMap::new();
 
-    let callback =
-        afunc(move |payload: Payload,
-              socket: RawClient
-              /* value: &mut HashMap<String, String> */| {
+    let callback = afunc(
+        move |payload: Payload,
+              socket: RawClient /* value: &mut HashMap<String, String> */| {
             let mut state = state;
             match payload {
                 Payload::String(str) => {
@@ -61,7 +67,8 @@ use crate::components::{Actions, State};
             socket
                 .emit("test", json!({"this is an ack": true}))
                 .expect("Server unreachable")
-        });
+        },
+    );
 
     // get a socket that is connected to the admin namespace
     let socket = ClientBuilder::new("http://localhost:3000")
@@ -70,7 +77,8 @@ use crate::components::{Actions, State};
         .on("error", |err, _| eprintln!("Error: {:#?}", err))
         .connect()
         .expect("Connection failed");
-} */
+}
+*/
 
 /* fn state_callback<T: Into<Event>, F>(payload: Payload, client: Client, state: &ResMut<State>) -> Self
 where
@@ -124,39 +132,51 @@ pub fn hello_world(remote_addr: Res<SocketAddrResource>, mut transport: ResMut<T
     transport.send(**remote_addr, b"Hello world!");
 } */
 
+#[derive(Resource)]
+pub struct NetworkInfo {
+    pub receiver: std::sync::Mutex<ewebsock::WsReceiver>,
+}
+
+pub fn create_network_resource() -> NetworkInfo {
+    let options = ewebsock::Options::default();
+    let (sender, receiver) = ewebsock::connect("ws://localhost:3000/game-state", options).unwrap();
+
+    let _ = sender;
+
+    return NetworkInfo {
+        receiver: std::sync::Mutex::new(receiver),
+    };
+}
+
 pub fn setup_receiver(
     net: ResMut<Network<WebSocketProvider>>,
     task_pool: Res<EventworkRuntime<TaskPool>>,
     settings: Res<NetworkSettings>,
 ) {
     net.connect(
-        url::Url::parse("ws://0.0.0.0:3000").unwrap(),
+        url::Url::parse("ws://localhost:3000/game-state").unwrap(),
         &task_pool.0,
         &settings,
     );
 }
 
-pub fn handle_network_events(mut new_network_events: EventReader<NetworkEvent>) {
-    for event in new_network_events.read() {
+pub fn handle_network_events(network_info: ResMut<NetworkInfo>) {
+    if let Some(message) = network_info.receiver.lock().unwrap().try_recv() {
         info!("Received event");
-        match event {
-            NetworkEvent::Connected(_) => {
+        match message {
+            ewebsock::WsEvent::Opened => {
                 println!("connected");
             }
 
-            NetworkEvent::Disconnected(_) => {
+            ewebsock::WsEvent::Closed => {
                 println!("disconnected");
             }
 
-            NetworkEvent::Message(_, msg) => {
-                println!("received message {}", String::from_utf8_lossy(msg));
+            ewebsock::WsEvent::Message(msg) => {
+                println!("received message {:?}", msg);
             }
-            NetworkEvent::RecvError(err) => {
+            ewebsock::WsEvent::Error(err) => {
                 println!("recv error: {:?}", err);
-            }
-
-            NetworkEvent::SendError(err, msg) => {
-                println!("send error: {:?} {:?}", err, msg.payload);
             }
         }
     }

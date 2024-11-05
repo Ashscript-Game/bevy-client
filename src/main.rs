@@ -1,8 +1,14 @@
+// TODO: remove these eventually, once there's less warnings in between the actual
+// error messages.
+#![allow(unused_imports)]
+#![allow(unused_parens)]
+
 use std::net::{SocketAddr, UdpSocket};
 
 use ashscript_types::{actions::ActionsByKind, global::Global, map::Map};
 use bevy::{
-    app::App, diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, tasks::TaskPoolBuilder, utils::hashbrown::HashMap, DefaultPlugins
+    app::App, diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, tasks::TaskPoolBuilder,
+    utils::hashbrown::HashMap, DefaultPlugins,
 };
 use bevy_eventwork::EventworkRuntime;
 use bevy_eventwork_mod_websockets::{NetworkSettings, WebSocketProvider};
@@ -32,14 +38,7 @@ pub mod unit;
 pub mod utils;
 
 fn main() {
-    let remote_addr: SocketAddr = "0.0.0.0:3000".parse().expect("could not parse addr");
-    let socket = UdpSocket::bind("[::]:0").expect("could not bind socket");
-    socket
-        .connect(remote_addr)
-        .expect("could not connect to server");
-    socket
-        .set_nonblocking(true)
-        .expect("could not set socket to be nonblocking");
+    let network_info = networker::create_network_resource();
 
     App::new()
         .insert_resource(ClearColor(Color::srgba(0., 0., 0., 0.)))
@@ -56,7 +55,6 @@ fn main() {
                     }),
                     ..default()
                 }),
-            ClientPlugin,
             GamePlugin,
             BevyMagicLight2DPlugin,
             bevy_egui::EguiPlugin,
@@ -67,8 +65,6 @@ fn main() {
                 filter: None,
             }, */
         ))
-        .insert_resource(SocketAddrResource::new(remote_addr))
-        .insert_resource(UdpSocketResource::new(socket))
         .insert_resource(BevyMagicLight2DSettings {
             light_pass_params: LightPassParams {
                 reservoir_size: 1, /* 16 */
@@ -94,19 +90,13 @@ fn main() {
         .insert_resource(Actions(ActionsByKind::new()))
         .insert_resource(GameState::new())
         .insert_resource(PlayerStates(HashMap::new()))
+        .insert_resource(network_info)
         .register_type::<LightOccluder2D>()
         .register_type::<OmniLightSource2D>()
         .register_type::<SkylightMask2D>()
         .register_type::<SkylightLight2D>()
         .register_type::<BevyMagicLight2DSettings>()
         .register_type::<LightPassParams>()
-        .add_plugins(bevy_eventwork::EventworkPlugin::<
-            WebSocketProvider,
-            bevy::tasks::TaskPool,
-        >::default())
         .insert_resource(NetworkSettings::default())
-        .insert_resource(EventworkRuntime(
-            TaskPoolBuilder::new().num_threads(2).build(),
-        ))
         .run();
 }
