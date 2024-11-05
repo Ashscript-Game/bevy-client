@@ -177,9 +177,15 @@ pub fn handle_network_events(network_info: ResMut<NetworkInfo>) {
                 println!("disconnected");
             }
 
+            ewebsock::WsEvent::Message(ewebsock::WsMessage::Binary(data)) => {
+                let keyframe: KeyFrame =
+                    postcard::from_bytes(&data).expect("failed to deserialize keyframe");
+                println!("{:?}", keyframe);
+            }
             ewebsock::WsEvent::Message(msg) => {
                 println!("received message {:?}", msg);
             }
+
             ewebsock::WsEvent::Error(err) => {
                 println!("recv error: {:?}", err);
             }
