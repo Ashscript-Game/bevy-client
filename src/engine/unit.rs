@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use hexx::Hex;
 
 use crate::{
-    components::{intents, MappedUnits, Moving, PlayerState, State, Unit}, constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS}, unit::plugin::create_unit, utils::find_angle_coords
+    components::{intents, Actions, MappedUnits, Moving, PlayerState, State, Unit}, constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS}, unit::plugin::create_unit, utils::find_angle_coords
 };
 
 use super::terrain::HEX_LAYOUT;
@@ -18,6 +18,19 @@ pub fn generate_units_from_keyframe(
         for (hex, unit) in chunk.units.iter() {
             create_unit(*hex, &mut commands, &asset_server, &mut unit_map, unit.owner_id);
         }
+    }
+}
+
+pub fn move_units_from_actions(
+    mut query: Query<(&mut Unit, &mut Transform, Entity)>,
+    mut unit_map: MappedUnits,
+    actions: Res<Actions>,
+) {
+    for action in actions.0.unit_move.iter() {
+        let Some(entity) = unit_map.entity(&action.from) else { continue };
+        let Ok((mut unit, mut transform, _)) = query.get_mut(*entity) else { continue };
+
+        unit_move_hex(&mut unit, &mut transform, action.to);
     }
 }
 
