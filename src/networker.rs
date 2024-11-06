@@ -146,10 +146,10 @@ pub fn create_network_resource() -> NetworkInfo {
 
     let _ = sender;
 
-    return NetworkInfo {
+    NetworkInfo {
         sender: std::sync::Mutex::new(sender),
         receiver: std::sync::Mutex::new(receiver),
-    };
+    }
 }
 
 pub fn setup_receiver(
