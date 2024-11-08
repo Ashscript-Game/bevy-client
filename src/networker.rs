@@ -1,5 +1,5 @@
 use crate::components::{Actions, State};
-use ashscript_types::keyframe::KeyFrame;
+use ashscript_types::{keyframe::KeyFrame, world::deserialize_world_data};
 use bevy::{
     app::{App, Plugin, Startup},
     prelude::*,
@@ -164,7 +164,7 @@ pub fn setup_receiver(
     );
 }
 
-pub fn handle_network_events(network_info: ResMut<NetworkInfo>) {
+pub fn handle_network_events(network_info: ResMut<NetworkInfo>, mut state: ResMut<State>, mut actions: ResMut<Actions>) {
     if let Some(message) = network_info.receiver.lock().unwrap().try_recv() {
         info!("Received event");
         match message {
@@ -178,7 +178,16 @@ pub fn handle_network_events(network_info: ResMut<NetworkInfo>) {
             ewebsock::WsEvent::Message(ewebsock::WsMessage::Binary(data)) => {
                 let keyframe: KeyFrame =
                     postcard::from_bytes(&data).expect("failed to deserialize keyframe");
-                println!("{:?}", keyframe);
+
+                let Some(world) = deserialize_world_data(keyframe.world_data) else { return };
+
+                // println!("{:?}", keyframe);
+
+                state.map = keyframe.map;
+                state.global = keyframe.global;
+                state.world = world;
+
+                actions.0 = keyframe.actions;
             }
             ewebsock::WsEvent::Message(msg) => {
                 println!("received message {:?}", msg);

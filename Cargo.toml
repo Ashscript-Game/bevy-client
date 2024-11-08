@@ -38,6 +38,7 @@ bevy_eventwork_mod_websockets = "0.2.0"
 url = "2.5.2"
 uuid = { version = "1.11.0", features=["serde"] }
 ewebsock = "0.7.0"
+hecs = "0.10.5"
 
 [features]
 # cargo run --features dev

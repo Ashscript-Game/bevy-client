@@ -3,7 +3,7 @@ use crate::{
     constants::{self, resource_noise_tresholds, SIMPLEX_GENERATOR},
     engine::terrain::{hexagonal_plane, HEX_LAYOUT, HEX_SIZE},
 };
-use ashscript_types::terrain::Terrain;
+use ashscript_types::components::{resource::{CoalNode, MineralNode}, terrain::{Terrain, TerrainKind}, tile::Tile};
 use bevy::{ecs::world, math::Vec3, prelude::*, render::view::RenderLayers};
 use bevy_magic_light_2d::{
     gi::render_layer::ALL_LAYERS,
@@ -30,53 +30,39 @@ pub fn generate_resources_from_keyframe(
         materials.add(ColorMaterial::from(constants::lava::COLOR)),
     ];
 
-    for (_, chunk) in state.map.chunks.iter() {
-        for (hex, node) in chunk.coal_nodes.iter() {
-            generate_resource(
-                &mut commands,
-                &_asset_server,
-                &mesh_handle,
-                &material_handles[0],
-                *hex,
-                node.amount,
-                constants::coal_node::COLOR,
-            );
-        }
+    for (entity, (terrain, tile)) in state.world.query::<(&Terrain, &Tile)>().iter() {
+        generate_terrain(
+            &mut commands,
+            &_asset_server,
+            &mesh_handle,
+            &material_handles,
+            tile.hex,
+            terrain,
+        );
+    }
 
-        for (hex, node) in chunk.mineral_nodes.iter() {
-            generate_resource(
-                &mut commands,
-                &_asset_server,
-                &mesh_handle,
-                &material_handles[1],
-                *hex,
-                node.amount,
-                constants::mineral_node::COLOR,
-            );
-        }
+    for (entity, (node, specific_node, tile)) in state.world.query::<(&ashscript_types::components::resource::ResourceNode, &CoalNode, &Tile)>().iter() {
+        generate_resource(
+            &mut commands,
+            &_asset_server,
+            &mesh_handle,
+            &material_handles[0],
+            tile.hex,
+            node.amount,
+            constants::coal_node::COLOR,
+        );
+    }
 
-        for (hex, node) in chunk.scrap.iter() {
-            generate_resource(
-                &mut commands,
-                &_asset_server,
-                &mesh_handle,
-                &material_handles[2],
-                *hex,
-                node.amount,
-                constants::scrap::COLOR,
-            );
-        }
-
-        for (hex, terrain) in chunk.terrain.iter() {
-            generate_terrain(
-                &mut commands,
-                &_asset_server,
-                &mesh_handle,
-                &material_handles,
-                *hex,
-                terrain,
-            );
-        }
+    for (entity, (node, specific_node, tile)) in state.world.query::<(&ashscript_types::components::resource::ResourceNode, &MineralNode, &Tile)>().iter() {
+        generate_resource(
+            &mut commands,
+            &_asset_server,
+            &mesh_handle,
+            &material_handles[1],
+            tile.hex,
+            node.amount,
+            constants::mineral_node::COLOR,
+        );
     }
 }
 
@@ -125,8 +111,8 @@ fn generate_terrain(
 ) {
     let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
 
-    match terrain {
-        Terrain::Wall => {
+    match terrain.kind {
+        TerrainKind::Wall => {
             commands.spawn((
                 ColorMesh2dBundle {
                     transform: Transform::from_xyz(
@@ -146,7 +132,7 @@ fn generate_terrain(
                 },
             ));
         }
-        Terrain::Lava => {
+        TerrainKind::Lava => {
             commands.spawn((
                 ColorMesh2dBundle {
                     transform: Transform::from_xyz(

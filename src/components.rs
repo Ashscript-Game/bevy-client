@@ -1,4 +1,4 @@
-use ashscript_types::{global::Global, keyframe::KeyFrame, map::Map, objects::{Attackable, GameObjectKind}};
+use ashscript_types::{global::Global, keyframe::KeyFrame, map::Map, objects::{GameObjectKind}};
 use bevy::{
     ecs::system::SystemParam,
     prelude::*,
@@ -7,6 +7,7 @@ use bevy::{
 use enum_map::EnumMap;
 use hexx::Hex;
 use uuid::Uuid;
+use hecs;
 
 use crate::constants::{self, Resource, UnitPart};
 
@@ -349,6 +350,7 @@ pub struct Lava;
 pub struct State {
     pub map: Map,
     pub global: Global,
+    pub world: hecs::World,
 }
 
 #[derive(Component)]

@@ -84,6 +84,7 @@ fn main() {
         .insert_resource(State {
             map: Map::new(),
             global: Global::new(),
+            world: hecs::World::new(),
         })
         .insert_resource(Actions(ActionsByKind::new()))
         .insert_resource(GameState::new())

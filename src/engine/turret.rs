@@ -1,8 +1,14 @@
 use std::f32::consts::PI;
 
+use ashscript_types::components::{owner::Owner, tile::Tile};
 use bevy::{math::Quat, prelude::*};
 
-use crate::{components::{State, Turret, Unit}, constants::GeneralResult, structure::turret::spawn_turret, utils::find_angle};
+use crate::{
+    components::{State, Turret, Unit},
+    constants::GeneralResult,
+    structure::turret::spawn_turret,
+    utils::find_angle,
+};
 
 use super::terrain::HEX_LAYOUT;
 
@@ -11,10 +17,12 @@ pub fn generate_turrets_from_keyframe(
     asset_server: Res<AssetServer>,
     state: Res<State>,
 ) {
-    for (_, chunk) in state.map.chunks.iter() {
-        for (hex, turret) in chunk.turrets.iter() {
-            spawn_turret(*hex, &mut commands, &asset_server, turret.owner_id);
-        }
+    for (entity, (_, tile, owner)) in state
+        .world
+        .query::<((&ashscript_types::structures::turret::Turret, &Tile, &Owner))>()
+        .iter()
+    {
+        spawn_turret(tile.hex, &mut commands, &asset_server, owner.0);
     }
 }
 
@@ -28,9 +36,8 @@ pub fn turret_attack(
     unit: &mut Unit,
     unit_transform: &Transform,
 ) -> GeneralResult {
-
     if turret.energy < turret_attack_cost(turret) {
-        return GeneralResult::Fail
+        return GeneralResult::Fail;
     }
 
     let turret_hex = HEX_LAYOUT.world_pos_to_hex(turret_transform.translation.truncate());
