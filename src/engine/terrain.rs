@@ -9,7 +9,7 @@ use bevy::{
 use bevy_magic_light_2d::prelude::CAMERA_LAYER_FLOOR;
 use hexx::{hex, shapes, HexLayout, HexOrientation, PlaneMeshBuilder};
 
-use crate::components::State;
+use crate::components::{State, TickEvent};
 
 pub const HEX_SIZE: Vec2 = Vec2::splat(64.0);
 pub const CHUNK_SIZE: u32 = 5;
@@ -29,6 +29,7 @@ pub const HEX_LAYOUT: HexLayout = HexLayout {
 };
 
 pub fn generate_tiles(
+    trigger: Trigger<TickEvent>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -44,6 +45,8 @@ pub fn generate_tiles(
         materials.add(ColorMaterial::from(COLORS[1])),
         materials.add(ColorMaterial::from(COLORS[2])),
     ];
+
+    println!("generated tiles {}", state.map.data.radius);
 
     for hex in shapes::hexagon(hex(0, 0), state.map.data.radius) {
         let pos = HEX_LAYOUT.hex_to_world_pos(hex);

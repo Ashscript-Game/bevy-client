@@ -1,4 +1,4 @@
-use crate::components::{Actions, State};
+use crate::components::{Actions, State, TickEvent};
 use ashscript_types::{keyframe::KeyFrame, world::deserialize_world_data};
 use bevy::{
     app::{App, Plugin, Startup},
@@ -164,7 +164,7 @@ pub fn setup_receiver(
     );
 }
 
-pub fn handle_network_events(network_info: ResMut<NetworkInfo>, mut state: ResMut<State>, mut actions: ResMut<Actions>) {
+pub fn handle_network_events(network_info: ResMut<NetworkInfo>, mut state: ResMut<State>, mut actions: ResMut<Actions>, mut commands: Commands) {
     if let Some(message) = network_info.receiver.lock().unwrap().try_recv() {
         info!("Received event");
         match message {
@@ -176,10 +176,15 @@ pub fn handle_network_events(network_info: ResMut<NetworkInfo>, mut state: ResMu
                 println!("disconnected");
             }
             ewebsock::WsEvent::Message(ewebsock::WsMessage::Binary(data)) => {
+                println!("received binary message of len {:?}", data.len());
+
                 let keyframe: KeyFrame =
                     postcard::from_bytes(&data).expect("failed to deserialize keyframe");
 
-                let Some(world) = deserialize_world_data(keyframe.world_data) else { return };
+                let Some(world) = deserialize_world_data(keyframe.world_data) else {
+                    
+                    return
+                 };
 
                 // println!("{:?}", keyframe);
 
@@ -188,6 +193,8 @@ pub fn handle_network_events(network_info: ResMut<NetworkInfo>, mut state: ResMu
                 state.world = world;
 
                 actions.0 = keyframe.actions;
+                
+                commands.trigger(TickEvent);
             }
             ewebsock::WsEvent::Message(msg) => {
                 println!("received message {:?}", msg);

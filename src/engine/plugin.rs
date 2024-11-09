@@ -17,37 +17,11 @@ pub struct EnginePlugin;
 
 impl Plugin for EnginePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            Startup,
-            (
-                generate_tiles,
-            )
-                .chain(),
-        )
-        .add_event::<TickEvent>()
-        .add_event::<ProjectileMoveEndEvent>()
-        .add_systems(
-            Update,
-            (
-                projectile_move_end_event,
-                (tick_event, /* units_stop_move, */ (kill_units)).run_if(on_timer(
-                    Duration::from_secs_f32(constants::SECONDS_PER_TICK),
-                )),
-            ),
-        );
+        app.add_event::<TickEvent>()
+            .add_event::<ProjectileMoveEndEvent>()
+            .add_systems(Update, (projectile_move_end_event,))
+            .observe(generate_tiles);
     }
-}
-
-fn tick_event(
-    mut event_writer: EventWriter<TickEvent>,
-    mut projectile_timer: ResMut<ProjectileMoveEndTimer>,
-) {
-    event_writer.send(TickEvent);
-
-    projectile_timer.0 = Timer::from_seconds(
-        SECONDS_PER_TICK * PROJECTILE_MOVE_END_TICK_PORTION,
-        TimerMode::Once,
-    );
 }
 
 fn projectile_move_end_event(
