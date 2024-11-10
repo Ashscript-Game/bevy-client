@@ -20,16 +20,9 @@ pub fn generate_turrets_from_keyframe(
 ) {
     let new_chunks = &trigger.event().0;
 
-    println!("turret query");
-
-    println!("turret len {}", state
-    .world
-    .query::<((&ashscript_types::structures::turret::Turret))>()
-    .iter().len());
-
     for (_, (_, tile, owner)) in state
         .world
-        .query::<((&ashscript_types::structures::turret::Turret, &Tile, &Owner))>()
+        .query::<((&ashscript_types::components::turret::Turret, &Tile, &Owner))>()
         .iter()
     {
         println!("turret");

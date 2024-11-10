@@ -22,7 +22,7 @@ pub fn generate_units_from_keyframe(
 
     for (entity, (_, tile, owner)) in state
         .world
-        .query::<((&ashscript_types::unit::Unit, &Tile, &Owner))>()
+        .query::<((&ashscript_types::components::unit::Unit, &Tile, &Owner))>()
         .iter()
     {
         if !new_chunks.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
