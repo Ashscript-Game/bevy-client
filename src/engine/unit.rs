@@ -1,9 +1,9 @@
-use ashscript_types::components::{owner::Owner, tile::Tile};
+use ashscript_types::{components::{owner::Owner, tile::Tile}, constants::map::CHUNK_SIZE};
 use bevy::prelude::*;
 use hexx::Hex;
 
 use crate::{
-    components::{intents, Actions, MappedUnits, Moving, PlayerState, State, Unit},
+    components::{intents, Actions, LoadChunks, MappedUnits, Moving, PlayerState, State, TickEvent, Unit},
     constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS},
     unit::plugin::create_unit,
     utils::find_angle_coords,
@@ -12,16 +12,23 @@ use crate::{
 use super::terrain::HEX_LAYOUT;
 
 pub fn generate_units_from_keyframe(
+    trigger: Trigger<LoadChunks>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut unit_map: MappedUnits,
     state: Res<State>,
 ) {
+    let new_chunks = &trigger.event().0;
+
     for (entity, (_, tile, owner)) in state
         .world
         .query::<((&ashscript_types::unit::Unit, &Tile, &Owner))>()
         .iter()
     {
+        if !new_chunks.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+            continue;
+        }
+
         create_unit(
             tile.hex,
             &mut commands,

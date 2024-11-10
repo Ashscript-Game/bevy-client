@@ -1,9 +1,18 @@
 use crate::{
-    components::{Lava, OccupiesTile, ResourceNode, Scrap, State, Wall},
-    constants::{self, resource_noise_tresholds, SIMPLEX_GENERATOR},
+    components::{
+        Lava, LoadChunks, LoadedChunks, OccupiesTile, ResourceNode, Scrap, State, TickEvent, Wall,
+    },
+    constants::{self, lava, resource_noise_tresholds, SIMPLEX_GENERATOR},
     engine::terrain::{hexagonal_plane, HEX_LAYOUT, HEX_SIZE},
 };
-use ashscript_types::components::{resource::{CoalNode, MineralNode}, terrain::{Terrain, TerrainKind}, tile::Tile};
+use ashscript_types::{
+    components::{
+        resource::{CoalNode, MineralNode},
+        terrain::{Terrain, TerrainKind},
+        tile::Tile,
+    },
+    constants::map::CHUNK_SIZE,
+};
 use bevy::{ecs::world, math::Vec3, prelude::*, render::view::RenderLayers};
 use bevy_magic_light_2d::{
     gi::render_layer::ALL_LAYERS,
@@ -13,12 +22,15 @@ use hexx::{hex, shapes, Hex};
 use libnoise::Generator;
 
 pub fn generate_resources_from_keyframe(
+    trigger: Trigger<LoadChunks>,
     mut commands: Commands,
     _asset_server: Res<AssetServer>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     state: Res<State>,
 ) {
+    println!("generating resources");
+
     let mesh = hexagonal_plane(&HEX_LAYOUT);
     let mesh_handle = meshes.add(mesh);
 
@@ -30,7 +42,13 @@ pub fn generate_resources_from_keyframe(
         materials.add(ColorMaterial::from(constants::lava::COLOR)),
     ];
 
-    for (entity, (terrain, tile)) in state.world.query::<(&Terrain, &Tile)>().iter() {
+    let new_chunks = &trigger.event().0;
+
+    for (entity, (terrain, _, tile)) in state.world.query::<(&Terrain, &ashscript_types::components::terrain::Wall, &Tile)>().iter() {
+        if !new_chunks.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+            continue;
+        };
+
         generate_terrain(
             &mut commands,
             &_asset_server,
@@ -41,7 +59,34 @@ pub fn generate_resources_from_keyframe(
         );
     }
 
-    for (entity, (node, specific_node, tile)) in state.world.query::<(&ashscript_types::components::resource::ResourceNode, &CoalNode, &Tile)>().iter() {
+    for (entity, (terrain, _, tile)) in state.world.query::<(&Terrain, &ashscript_types::components::terrain::Lava, &Tile)>().iter() {
+        if !new_chunks.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+            continue;
+        };
+
+        generate_terrain(
+            &mut commands,
+            &_asset_server,
+            &mesh_handle,
+            &material_handles,
+            tile.hex,
+            terrain,
+        );
+    }
+
+    for (entity, (node, specific_node, tile)) in state
+        .world
+        .query::<(
+            &ashscript_types::components::resource::ResourceNode,
+            &CoalNode,
+            &Tile,
+        )>()
+        .iter()
+    {
+        if !new_chunks.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+            continue;
+        };
+
         generate_resource(
             &mut commands,
             &_asset_server,
@@ -53,7 +98,19 @@ pub fn generate_resources_from_keyframe(
         );
     }
 
-    for (entity, (node, specific_node, tile)) in state.world.query::<(&ashscript_types::components::resource::ResourceNode, &MineralNode, &Tile)>().iter() {
+    for (entity, (node, specific_node, tile)) in state
+        .world
+        .query::<(
+            &ashscript_types::components::resource::ResourceNode,
+            &MineralNode,
+            &Tile,
+        )>()
+        .iter()
+    {
+        if !new_chunks.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+            continue;
+        };
+
         generate_resource(
             &mut commands,
             &_asset_server,
@@ -141,7 +198,7 @@ fn generate_terrain(
                         constants::resource_node::Z_POS,
                     ),
                     mesh: mesh.clone().into(),
-                    material: materials[3].clone(),
+                    material: materials[4].clone(),
                     ..default()
                 },
                 Lava,
@@ -149,7 +206,22 @@ fn generate_terrain(
                 RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
             ));
 
-            resource_node_light(world_pos, commands, constants::lava::COLOR);
+            commands
+            .spawn(OmniLightSource2D {
+                intensity: 0.1,
+                color: lava::COLOR,
+                falloff: Vec3::new(20., 20., 0.005),
+                jitter_intensity: 0.01,
+                jitter_translation: 0.1,
+            })
+            .insert(SpatialBundle {
+                transform: Transform {
+                    translation: Vec3::new(world_pos.x, world_pos.y, 0.0),
+                    ..default()
+                },
+                ..default()
+            })
+            .insert(RenderLayers::from_layers(ALL_LAYERS));
         }
         _ => {}
     }

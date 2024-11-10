@@ -7,9 +7,9 @@ use bevy::{
     },
 };
 use bevy_magic_light_2d::prelude::CAMERA_LAYER_FLOOR;
-use hexx::{hex, shapes, HexLayout, HexOrientation, PlaneMeshBuilder};
+use hexx::{hex, shapes, Hex, HexLayout, HexOrientation, PlaneMeshBuilder};
 
-use crate::components::{State, TickEvent};
+use crate::components::{LoadChunks, State, TickEvent};
 
 pub const HEX_SIZE: Vec2 = Vec2::splat(64.0);
 pub const CHUNK_SIZE: u32 = 5;
@@ -22,14 +22,14 @@ const COLORS: [Color; 3] = [
 
 pub const HEX_LAYOUT: HexLayout = HexLayout {
     hex_size: HEX_SIZE,
-    orientation: HexOrientation::Pointy,
+    orientation: HexOrientation::Flat,
     origin: Vec2::new(0., 0.),
     invert_x: false,
     invert_y: false,
 };
 
 pub fn generate_tiles(
-    trigger: Trigger<TickEvent>,
+    trigger: Trigger<LoadChunks>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -40,30 +40,41 @@ pub fn generate_tiles(
     let mesh = hexagonal_plane(&HEX_LAYOUT);
     let mesh_handle = meshes.add(mesh);
 
-    let handles = [
+    let material_handles = [
         materials.add(ColorMaterial::from(COLORS[0])),
         materials.add(ColorMaterial::from(COLORS[1])),
         materials.add(ColorMaterial::from(COLORS[2])),
     ];
 
-    println!("generated tiles {}", state.map.data.radius);
+    let new_chunks = &trigger.event().0;
 
-    for hex in shapes::hexagon(hex(0, 0), state.map.data.radius) {
-        let pos = HEX_LAYOUT.hex_to_world_pos(hex);
-        let hex_mod = hex.to_lower_res(CHUNK_SIZE);
-        let color_index = (hex_mod.x - hex_mod.y).rem_euclid(3);
-        let material_handle = handles[color_index as usize].clone();
-
-        // let handle = materials.add(ColorMaterial::from(COLORS[0]));
-
-        commands
-            .spawn((ColorMesh2dBundle {
-                transform: Transform::from_xyz(pos.x, pos.y, 0.0),
-                mesh: mesh_handle.clone().into(),
-                material: material_handle,
-                ..default()
-            }, RenderLayers::from_layers(CAMERA_LAYER_FLOOR)));
+    for chunk_hex in new_chunks.iter() {
+        for hex in shapes::hexagon(chunk_hex.to_higher_res(CHUNK_SIZE), CHUNK_SIZE) {
+            generate_chunk(chunk_hex, hex, &mut commands, &material_handles, &mesh_handle);
+        }
     }
+}
+
+fn generate_chunk(
+    chunk_hex: &Hex,
+    hex: Hex,
+    commands: &mut Commands,
+    material_handles: &[Handle<ColorMaterial>],
+    mesh_handle: &Handle<Mesh>,
+) {
+    let pos = HEX_LAYOUT.hex_to_world_pos(hex);
+    let color_index = (chunk_hex.x - chunk_hex.y).rem_euclid(3);
+    let material_handle = material_handles[color_index as usize].clone();
+
+    // let handle = materials.add(ColorMaterial::from(COLORS[0]));
+
+    commands
+        .spawn((ColorMesh2dBundle {
+            transform: Transform::from_xyz(pos.x, pos.y, 0.0),
+            mesh: mesh_handle.clone().into(),
+            material: material_handle,
+            ..default()
+        }, RenderLayers::from_layers(CAMERA_LAYER_FLOOR)));
 }
 
 pub fn hexagonal_plane(hex_layout: &HexLayout) -> Mesh {

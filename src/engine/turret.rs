@@ -1,10 +1,10 @@
 use std::f32::consts::PI;
 
-use ashscript_types::components::{owner::Owner, tile::Tile};
+use ashscript_types::{components::{owner::Owner, tile::Tile}, constants::map::CHUNK_SIZE};
 use bevy::{math::Quat, prelude::*};
 
 use crate::{
-    components::{State, Turret, Unit},
+    components::{LoadChunks, State, Turret, Unit},
     constants::GeneralResult,
     structure::turret::spawn_turret,
     utils::find_angle,
@@ -13,15 +13,31 @@ use crate::{
 use super::terrain::HEX_LAYOUT;
 
 pub fn generate_turrets_from_keyframe(
+    trigger: Trigger<LoadChunks>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     state: Res<State>,
 ) {
-    for (entity, (_, tile, owner)) in state
+    let new_chunks = &trigger.event().0;
+
+    println!("turret query");
+
+    println!("turret len {}", state
+    .world
+    .query::<((&ashscript_types::structures::turret::Turret))>()
+    .iter().len());
+
+    for (_, (_, tile, owner)) in state
         .world
         .query::<((&ashscript_types::structures::turret::Turret, &Tile, &Owner))>()
         .iter()
     {
+        println!("turret");
+
+        if !new_chunks.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+            continue;
+        }
+
         spawn_turret(tile.hex, &mut commands, &asset_server, owner.0);
     }
 }
