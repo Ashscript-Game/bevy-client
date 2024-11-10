@@ -7,3 +7,4 @@ pub mod resources;
 pub mod turret;
 pub mod factory;
 pub mod actions;
+pub mod projectile;

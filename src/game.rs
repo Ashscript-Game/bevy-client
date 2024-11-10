@@ -8,9 +8,10 @@ use bevy_magic_light_2d::{
     prelude::{CameraTargets, CAMERA_LAYER_FLOOR, CAMERA_LAYER_OBJECTS, CAMERA_LAYER_WALLS},
     FloorCamera, ObjectsCamera, SpriteCamera, WallsCamera,
 };
+use enum_map::enum_map;
 
 use crate::{
-    components::{OccupyStructuresMap, UnitMap},
+    components::GameObjectMap,
     constants::{self},
     controls::plugin::ControlsPlugin,
     debug::plugin::DebugPlugin,
@@ -36,7 +37,7 @@ impl Plugin for GamePlugin {
             UnitPlugin,
             StructuresPlugin,
         ))
-        .add_systems(Startup, (game_init, spawn_unit_map, spawn_structures_map))
+        .add_systems(Startup, (game_init, spawn_game_object_map))
         .add_systems(Update, (/* connection_handler,  */handle_network_events));
     }
 }
@@ -103,10 +104,8 @@ fn game_init(mut commands: Commands, camera_targets: Res<CameraTargets>) {
     ));
 }
 
-fn spawn_unit_map(mut commands: Commands) {
-    commands.spawn(UnitMap(HashMap::new()));
-}
-
-fn spawn_structures_map(mut commands: Commands) {
-    commands.spawn(OccupyStructuresMap(HashMap::new()));
+fn spawn_game_object_map(mut commands: Commands) {
+    commands.spawn(GameObjectMap(enum_map! {
+        _ => HashMap::new(),
+    }));
 }

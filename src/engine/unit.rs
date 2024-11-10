@@ -8,7 +8,8 @@ use hexx::Hex;
 
 use crate::{
     components::{
-        intents, Actions, LoadChunks, MappedUnits, Moving, PlayerState, State, TickEvent, Unit,
+        intents, Actions, LoadChunks, MappedGameObjects, Moving, PlayerState, State, TickEvent,
+        Unit,
     },
     constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS},
     unit::plugin::create_unit,
@@ -19,7 +20,7 @@ pub fn generate_units_on_chunkload(
     trigger: Trigger<LoadChunks>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut unit_map: MappedUnits,
+    mut game_object_map: MappedGameObjects,
     state: Res<State>,
 ) {
     let new_chunks = &trigger.event().0;
@@ -37,7 +38,7 @@ pub fn generate_units_on_chunkload(
             tile.hex,
             &mut commands,
             &asset_server,
-            &mut unit_map,
+            &mut game_object_map,
             owner.0,
         );
     }
@@ -47,7 +48,7 @@ pub fn generate_units_from_factory(
     trigger: Trigger<TickEvent>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut unit_map: MappedUnits,
+    mut game_object_map: MappedGameObjects,
     actions: Res<Actions>,
 ) {
     for action in actions.0.factory_spawn_unit.iter() {
@@ -55,7 +56,7 @@ pub fn generate_units_from_factory(
             action.out,
             &mut commands,
             &asset_server,
-            &mut unit_map,
+            &mut game_object_map,
             action.owner,
         );
     }
@@ -64,11 +65,11 @@ pub fn generate_units_from_factory(
 pub fn move_units_from_actions(
     trigger: Trigger<TickEvent>,
     mut query: Query<(&mut Unit, &mut Transform, Entity)>,
-    mut unit_map: MappedUnits,
+    mut game_object_map: MappedGameObjects,
     actions: Res<Actions>,
 ) {
     for action in actions.0.unit_move.iter() {
-        let Some(entity) = unit_map.entity(&action.from) else {
+        let Some(entity) = game_object_map.entity(&action.from, GameObjectKind::Unit) else {
             continue;
         };
         let Ok((mut unit, mut transform, _)) = query.get_mut(*entity) else {
@@ -79,7 +80,12 @@ pub fn move_units_from_actions(
             transform.translation = moving.target_pos;
             unit.moving = None;
 
-            unit_map.move_to(&action.from, &action.to);
+            game_object_map.move_to(
+                &action.from,
+                GameObjectKind::Unit,
+                action.to,
+                GameObjectKind::Unit,
+            );
         }
 
         unit_move_hex(&mut unit, &mut transform, action.to);
@@ -89,18 +95,24 @@ pub fn move_units_from_actions(
 pub fn kill_units(
     units: Query<(&Unit, &Transform, Entity)>,
     mut commands: Commands,
-    mut unit_maps: MappedUnits,
+    mut game_object_map: MappedGameObjects,
 ) {
     for (unit, transform, entity) in units.iter() {
         if unit.age > constants::unit::MAX_AGE {
-            unit_maps.remove(&HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()));
+            game_object_map.remove(
+                &HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()),
+                GameObjectKind::Unit,
+            );
 
             commands.entity(entity).despawn();
             continue;
         }
 
         if unit.health == 0 {
-            unit_maps.remove(&HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()));
+            game_object_map.remove(
+                &HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()),
+                GameObjectKind::Unit,
+            );
 
             commands.entity(entity).despawn();
             continue;

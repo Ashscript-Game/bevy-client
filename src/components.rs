@@ -136,89 +136,33 @@ pub struct ProjectileMoveEndTimer(pub Timer);
 
 #[derive(Component)]
 /// can use element in queries to get components. query.get(element).unwrap()
-pub struct UnitMap(pub HashMap<Hex, Entity>);
-
-// impl UnitMap {
-//     pub fn insert(&mut self, hex: Hex, entity: Entity) -> Option<Entity> {
-//         self.0.insert(utils::hex::pack(hex), entity)
-//     }
-
-//     pub fn get(&self, hex: Hex) -> Option<&Entity> {
-//         self.0.get(&utils::hex::pack(hex))
-//     }
-// }
+pub struct GameObjectMap(pub EnumMap<GameObjectKind, HashMap<Hex, Entity>>);
 
 #[derive(SystemParam)]
-pub struct MappedUnits<'w, 's> {
-    pub entities: Query<'w, 's, &'static mut UnitMap>,
-    /* pub components: Query<'w, 's, (&'static mut Unit, &'static mut Transform)>, */
+pub struct MappedGameObjects<'w, 's> {
+    pub entities: Query<'w, 's, &'static mut GameObjectMap>,
 }
 
-impl<'w, 's> MappedUnits<'w, 's> {
-    pub fn remove(&mut self, hex: &Hex) -> Option<Entity> {
-        self.entities.single_mut().0.remove(hex)
+impl<'w, 's> MappedGameObjects<'w, 's> {
+    pub fn remove(&mut self, hex: &Hex, kind: GameObjectKind) -> Option<Entity> {
+        self.entities.single_mut().0[kind].remove(hex)
     }
 
-    pub fn insert(&mut self, hex: &Hex, entity: &Entity) {
-        self.entities.single_mut().0.insert(*hex, *entity);
+    pub fn insert(&mut self, hex: Hex, kind: GameObjectKind, entity: Entity) {
+        self.entities.single_mut().0[kind].insert(hex, entity);
     }
 
-    pub fn entity(&self, hex: &Hex) -> Option<&Entity> {
-        self.entities.single().0.get(hex)
+    pub fn entity(&self, hex: &Hex, kind: GameObjectKind) -> Option<&Entity> {
+        self.entities.single().0[kind].get(hex)
     }
 
-    pub fn entity_unchecked(&self, hex: &Hex) -> &Entity {
-        self.entity(hex).expect("Entity not found")
+    pub fn entity_unchecked(&self, hex: &Hex, kind: GameObjectKind) -> &Entity {
+        self.entity(hex, kind).expect("Entity not found")
     }
 
-    pub fn move_to(&mut self, from: &Hex, to: &Hex) {
-        let entity = self.remove(from).unwrap();
-        self.insert(to, &entity)
-    }
-
-    /* pub fn unit(&self, entity: Entity) -> Option<(&Unit, &Transform)> {
-        match self.components.get(entity) {
-            Ok(tuple) => Some(tuple),
-            Err(_) => None,
-        }
-    } */
-
-    /* pub fn unit_mut(&mut self, entity: Entity) -> Option<(&Mut<'w, Unit>, &Mut<'w, Transform>/* &Mut<'w, Unit>, &Mut<'w, Transform> */)> {
-        match self.components.get_mut(entity) {
-            Ok((unit, transform)) => Some((& unit, &transform)),
-            Err(_) => None,
-        }
-    } */
-
-    /* pub fn unit_unchecked(&self, entity: Entity) -> (&Unit, &Transform) {
-        self.unit(entity).expect("Unit not found")
-    } */
-}
-
-#[derive(SystemParam)]
-pub struct MappedTerrain;
-
-#[derive(Component)]
-pub struct OccupyStructuresMap(pub HashMap<Hex, HashSet<Entity>>);
-
-#[derive(SystemParam)]
-pub struct MappedOccupyStructures<'w, 's>(pub Query<'w, 's, &'static mut OccupyStructuresMap>);
-
-impl <'w, 's> MappedOccupyStructures<'w, 's> {
-    pub fn insert(&mut self, hex: &Hex, entity: &Entity) {
-        self.0.single_mut().0.get_mut(hex).unwrap().insert(*entity);
-    }
-
-    pub fn remove(&mut self, hex: &Hex, entity: &Entity) {
-        self.0.single_mut().0.get_mut(hex).unwrap().remove(entity);
-    }
-
-    pub fn get(&self, hex: &Hex) -> Option<&HashSet<Entity>> {
-        self.0.single().0.get(hex)
-    }
-
-    pub fn get_unchecked(&self, hex: &Hex) -> &HashSet<Entity> {
-        self.get(hex).unwrap()
+    pub fn move_to(&mut self, from: &Hex, from_kind: GameObjectKind, to: Hex, to_kind: GameObjectKind) {
+        let entity = self.remove(from, from_kind).unwrap();
+        self.insert(to, to_kind, entity)
     }
 }
 

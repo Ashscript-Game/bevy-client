@@ -1,4 +1,4 @@
-use ashscript_types::constants::map::HEX_LAYOUT;
+use ashscript_types::{constants::map::HEX_LAYOUT, objects::GameObjectKind};
 use bevy::{app::{App, Plugin}, prelude::*, render::view::RenderLayers};
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use enum_map::enum_map;
@@ -6,7 +6,7 @@ use hexx::Hex;
 use rand;
 use uuid::Uuid;
 
-use crate::{components::{MappedUnits, OccupiesTile, Owner, Unit}, constants::{unit, UnitPart}};
+use crate::{components::{MappedGameObjects, OccupiesTile, Owner, Unit}, constants::{unit, UnitPart}};
 
 pub struct UnitPlugin;
 
@@ -20,7 +20,7 @@ pub fn create_unit(
     hex: Hex,
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
-    mapped_units: &mut MappedUnits,
+    game_object_map: &mut MappedGameObjects,
     owner_id: Uuid,
 ) {
 
@@ -76,5 +76,5 @@ pub fn create_unit(
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     )).id();
 
-    mapped_units.insert(&hex, &entity);
+    game_object_map.insert(hex, GameObjectKind::Unit, entity);
 }

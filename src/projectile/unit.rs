@@ -2,7 +2,7 @@ use ashscript_types::constants::map::HEX_LAYOUT;
 use bevy::prelude::*;
 
 use crate::{
-    components::{MappedUnits, Unit},
+    components::Unit,
     constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK},
 };
 
