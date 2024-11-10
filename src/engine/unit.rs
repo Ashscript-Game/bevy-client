@@ -1,4 +1,4 @@
-use ashscript_types::{components::{owner::Owner, tile::Tile}, constants::map::{CHUNK_SIZE, HEX_LAYOUT}};
+use ashscript_types::{components::{owner::Owner, tile::Tile}, constants::map::{CHUNK_SIZE, HEX_LAYOUT}, objects::GameObjectKind};
 use bevy::prelude::*;
 use hexx::Hex;
 
@@ -9,7 +9,7 @@ use crate::{
     utils::find_angle_coords,
 };
 
-pub fn generate_units_from_keyframe(
+pub fn generate_units_on_chunkload(
     trigger: Trigger<LoadChunks>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -37,7 +37,27 @@ pub fn generate_units_from_keyframe(
     }
 }
 
+pub fn generate_units_from_factory(
+    trigger: Trigger<TickEvent>,
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut unit_map: MappedUnits,
+    actions: Res<Actions>,
+) {
+    for action in actions.0.factory_spawn_unit.iter() {
+
+        create_unit(
+            action.out,
+            &mut commands,
+            &asset_server,
+            &mut unit_map,
+            action.owner,
+        );
+    }
+}
+
 pub fn move_units_from_actions(
+    trigger: Trigger<TickEvent>,
     mut query: Query<(&mut Unit, &mut Transform, Entity)>,
     mut unit_map: MappedUnits,
     actions: Res<Actions>,

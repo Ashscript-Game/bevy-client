@@ -22,7 +22,7 @@ use super::{
     resources::generate_resources_from_keyframe,
     terrain::generate_tiles,
     turret::generate_turrets_from_keyframe,
-    unit::{generate_units_from_keyframe, kill_units},
+    unit::{generate_units_on_chunkload, generate_units_from_factory, move_units_from_actions},
 };
 
 pub struct EnginePlugin;
@@ -34,13 +34,15 @@ impl Plugin for EnginePlugin {
             .add_event::<LoadChunks>()
             .add_systems(Update, (projectile_move_end_event,))
             .observe(generate_tiles)
-            .observe(generate_units_from_keyframe)
+            .observe(generate_units_on_chunkload)
             .observe(generate_resources_from_keyframe)
             .observe(chunk_load_update_events)
             .observe(generate_factories_from_keyframe)
             .observe(generate_assemblers_from_keyframe)
             .observe(generate_turrets_from_keyframe)
-            .observe(generate_distributors_from_keyframe);
+            .observe(generate_distributors_from_keyframe)
+            .observe(generate_units_from_factory)
+            .observe(move_units_from_actions);
     }
 }
 
