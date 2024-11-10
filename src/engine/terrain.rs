@@ -9,6 +9,7 @@ use bevy::{
 };
 use bevy_magic_light_2d::prelude::CAMERA_LAYER_FLOOR;
 use hexx::{hex, shapes, Hex, HexLayout, HexOrientation, PlaneMeshBuilder};
+use rand::random;
 
 use crate::components::{LoadChunks, State, TickEvent};
 
@@ -42,7 +43,14 @@ pub fn generate_tiles(
 
     for chunk_hex in new_chunks.iter() {
         for hex in shapes::hexagon(chunk_hex.to_higher_res(CHUNK_SIZE), CHUNK_SIZE) {
-            generate_chunk(chunk_hex, hex, &mut commands, &material_handles, &mesh_handle);
+            generate_chunk(
+                chunk_hex,
+                hex,
+                &mut commands,
+                /* &material_handles, */
+                &mesh_handle,
+                &mut materials,
+            );
         }
     }
 }
@@ -51,28 +59,35 @@ fn generate_chunk(
     chunk_hex: &Hex,
     hex: Hex,
     commands: &mut Commands,
-    material_handles: &[Handle<ColorMaterial>],
+    /* material_handles: &[Handle<ColorMaterial>], */
     mesh_handle: &Handle<Mesh>,
+    materials: &mut ResMut<Assets<ColorMaterial>>,
 ) {
     let pos = HEX_LAYOUT.hex_to_world_pos(hex);
-    let color_index = (chunk_hex.x - chunk_hex.y).rem_euclid(3);
-    let material_handle = material_handles[color_index as usize].clone();
+    /*     let color_index = (chunk_hex.x - chunk_hex.y).rem_euclid(3);
+    let material_handle = material_handles[color_index as usize].clone(); */
+    let offset = /* (50. + random::<f32>() * 3.) */55. / 255.;
+    let material_handle = materials.add(ColorMaterial::from(Color::srgba(
+        offset, offset, offset, 1.,
+    )));
 
     // let handle = materials.add(ColorMaterial::from(COLORS[0]));
 
-    commands
-        .spawn((ColorMesh2dBundle {
+    commands.spawn((
+        ColorMesh2dBundle {
             transform: Transform::from_xyz(pos.x, pos.y, 0.0),
             mesh: mesh_handle.clone().into(),
             material: material_handle,
             ..default()
-        }, RenderLayers::from_layers(CAMERA_LAYER_FLOOR)));
+        },
+        RenderLayers::from_layers(CAMERA_LAYER_FLOOR),
+    ));
 }
 
 pub fn hexagonal_plane(hex_layout: &HexLayout) -> Mesh {
     let mesh_info = PlaneMeshBuilder::new(hex_layout)
         // < 1 creates borders around hexes
-        .with_scale(Vec3::splat(1./* 0.95 */))
+        .with_scale(Vec3::splat(1. /* 0.95 */))
         .facing(Vec3::Z)
         .center_aligned()
         .build();
