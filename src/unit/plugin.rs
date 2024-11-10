@@ -1,3 +1,4 @@
+use ashscript_types::constants::map::HEX_LAYOUT;
 use bevy::{app::{App, Plugin}, prelude::*, render::view::RenderLayers};
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use enum_map::enum_map;
@@ -5,7 +6,7 @@ use hexx::Hex;
 use rand;
 use uuid::Uuid;
 
-use crate::{components::{MappedUnits, OccupiesTile, Owner, Unit}, constants::{unit, UnitPart}, engine::terrain::HEX_LAYOUT};
+use crate::{components::{MappedUnits, OccupiesTile, Owner, Unit}, constants::{unit, UnitPart}};
 
 pub struct UnitPlugin;
 

@@ -1,4 +1,5 @@
 
+use ashscript_types::constants::map::HEX_LAYOUT;
 use bevy::{
     app::{App, Plugin},
     prelude::*,
@@ -11,7 +12,6 @@ use uuid::Uuid;
 use crate::{
     components::{Distributor, OccupiesTile, Owner, Store},
     constants::{self, distributor, Resource},
-    engine::terrain::HEX_LAYOUT,
     utils::{self},
 };
 

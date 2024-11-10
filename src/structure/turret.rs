@@ -1,4 +1,5 @@
 
+use ashscript_types::constants::map::HEX_LAYOUT;
 use bevy::{
     app::{App, Plugin},
     prelude::*,
@@ -10,7 +11,6 @@ use uuid::Uuid;
 use crate::{
     components::{OccupiesTile, Owner, Turret},
     constants::{self, turret},
-    engine::terrain::HEX_LAYOUT,
 };
 
 

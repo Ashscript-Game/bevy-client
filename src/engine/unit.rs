@@ -1,4 +1,4 @@
-use ashscript_types::{components::{owner::Owner, tile::Tile}, constants::map::CHUNK_SIZE};
+use ashscript_types::{components::{owner::Owner, tile::Tile}, constants::map::{CHUNK_SIZE, HEX_LAYOUT}};
 use bevy::prelude::*;
 use hexx::Hex;
 
@@ -8,8 +8,6 @@ use crate::{
     unit::plugin::create_unit,
     utils::find_angle_coords,
 };
-
-use super::terrain::HEX_LAYOUT;
 
 pub fn generate_units_from_keyframe(
     trigger: Trigger<LoadChunks>,

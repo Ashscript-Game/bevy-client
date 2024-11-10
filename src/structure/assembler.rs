@@ -1,3 +1,4 @@
+use ashscript_types::constants::map::HEX_LAYOUT;
 use bevy::{
     app::{App, Plugin}, prelude::*, render::view::RenderLayers, utils::hashbrown::HashMap
 };
@@ -7,7 +8,6 @@ use uuid::Uuid;
 use crate::{
     components::{Assembler, OccupiesTile, Owner, Store},
     constants::{self, assembler, Resource, RESOURCE_INPUTS},
-    engine::terrain::HEX_LAYOUT,
 };
 
 pub struct AssemblerPlugin;

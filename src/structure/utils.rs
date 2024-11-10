@@ -1,8 +1,9 @@
 
+use ashscript_types::constants::map::HEX_LAYOUT;
 use bevy::math::Vec3;
 
 use crate::{
-    components::Store, constants::{self, GeneralResult, Resource}, engine::terrain::HEX_LAYOUT
+    components::Store, constants::{self, GeneralResult, Resource}
 };
 
 pub fn transfer(

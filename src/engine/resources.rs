@@ -3,7 +3,7 @@ use crate::{
         Lava, LoadChunks, LoadedChunks, OccupiesTile, ResourceNode, Scrap, State, TickEvent, Wall,
     },
     constants::{self, lava, resource_noise_tresholds, SIMPLEX_GENERATOR},
-    engine::terrain::{hexagonal_plane, HEX_LAYOUT, HEX_SIZE},
+    engine::terrain::{hexagonal_plane, HEX_SIZE},
 };
 use ashscript_types::{
     components::{
@@ -11,7 +11,7 @@ use ashscript_types::{
         terrain::{Terrain, TerrainKind},
         tile::Tile,
     },
-    constants::map::CHUNK_SIZE,
+    constants::map::{CHUNK_SIZE, HEX_LAYOUT},
 };
 use bevy::{ecs::world, math::Vec3, prelude::*, render::view::RenderLayers};
 use bevy_magic_light_2d::{

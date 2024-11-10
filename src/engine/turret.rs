@@ -1,6 +1,6 @@
 use std::f32::consts::PI;
 
-use ashscript_types::{components::{owner::Owner, tile::Tile}, constants::map::CHUNK_SIZE};
+use ashscript_types::{components::{owner::Owner, tile::Tile}, constants::map::{CHUNK_SIZE, HEX_LAYOUT}};
 use bevy::{math::Quat, prelude::*};
 
 use crate::{
@@ -9,8 +9,6 @@ use crate::{
     structure::turret::spawn_turret,
     utils::find_angle,
 };
-
-use super::terrain::HEX_LAYOUT;
 
 pub fn generate_turrets_from_keyframe(
     trigger: Trigger<LoadChunks>,

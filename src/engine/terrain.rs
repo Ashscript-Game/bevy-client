@@ -1,3 +1,4 @@
+use ashscript_types::constants::map::{CHUNK_SIZE, HEX_LAYOUT};
 use bevy::{
     prelude::*,
     render::{
@@ -12,21 +13,12 @@ use hexx::{hex, shapes, Hex, HexLayout, HexOrientation, PlaneMeshBuilder};
 use crate::components::{LoadChunks, State, TickEvent};
 
 pub const HEX_SIZE: Vec2 = Vec2::splat(64.0);
-pub const CHUNK_SIZE: u32 = 5;
 const COLORS: [Color; 3] = [
     /* Color::BLUE, Color::WHITE, Color::RED, */
     Color::srgba(60. / 255., 60. / 255., 60. / 255., 1.),
     Color::srgba(65. / 255., 65. / 255., 65. / 255., 1.),
     Color::srgba(55. / 255., 55. / 255., 55. / 255., 1.),
 ];
-
-pub const HEX_LAYOUT: HexLayout = HexLayout {
-    hex_size: HEX_SIZE,
-    orientation: HexOrientation::Flat,
-    origin: Vec2::new(0., 0.),
-    invert_x: false,
-    invert_y: false,
-};
 
 pub fn generate_tiles(
     trigger: Trigger<LoadChunks>,

@@ -1,4 +1,5 @@
 
+use ashscript_types::constants::map::HEX_LAYOUT;
 use bevy::{
     prelude::*,
     render::view::RenderLayers,
@@ -10,7 +11,6 @@ use uuid::Uuid;
 use crate::{
     components::{Factory, OccupiesTile, Owner, Store},
     constants::{factory, Resource},
-    engine::terrain::HEX_LAYOUT,
 };
 
 pub fn spawn_factory(
