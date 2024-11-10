@@ -155,8 +155,8 @@ pub struct MappedUnits<'w, 's> {
 }
 
 impl<'w, 's> MappedUnits<'w, 's> {
-    pub fn remove(&mut self, hex: &Hex) {
-        self.entities.single_mut().0.remove(hex);
+    pub fn remove(&mut self, hex: &Hex) -> Option<Entity> {
+        self.entities.single_mut().0.remove(hex)
     }
 
     pub fn insert(&mut self, hex: &Hex, entity: &Entity) {
@@ -169,6 +169,11 @@ impl<'w, 's> MappedUnits<'w, 's> {
 
     pub fn entity_unchecked(&self, hex: &Hex) -> &Entity {
         self.entity(hex).expect("Entity not found")
+    }
+
+    pub fn move_to(&mut self, from: &Hex, to: &Hex) {
+        let entity = self.remove(from).unwrap();
+        self.insert(to, &entity)
     }
 
     /* pub fn unit(&self, entity: Entity) -> Option<(&Unit, &Transform)> {

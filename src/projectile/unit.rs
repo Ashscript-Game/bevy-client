@@ -1,7 +1,8 @@
+use ashscript_types::constants::map::HEX_LAYOUT;
 use bevy::prelude::*;
 
 use crate::{
-    components::Unit,
+    components::{MappedUnits, Unit},
     constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK},
 };
 
@@ -29,8 +30,10 @@ pub fn update_units(mut units: Query<(&mut Transform, &Unit)>, time: Res<Time>) 
 pub fn units_stop_move(mut units: Query<(&mut Unit, &mut Transform)>) {
     for (mut unit, mut unit_transform) in units.iter_mut() {
         if let Some(moving) = &unit.moving {
-            unit_transform.translation.x = moving.target_pos.x;
-            unit_transform.translation.y = moving.target_pos.y;
+            let starting_hex = HEX_LAYOUT.world_pos_to_hex(moving.start_pos.truncate());
+            let target_hex = HEX_LAYOUT.world_pos_to_hex(moving.target_pos.truncate());
+
+            unit_transform.translation = moving.target_pos;
             unit.moving = None;
         };
     }

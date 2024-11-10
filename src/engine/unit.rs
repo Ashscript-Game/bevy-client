@@ -1,9 +1,15 @@
-use ashscript_types::{components::{owner::Owner, tile::Tile}, constants::map::{CHUNK_SIZE, HEX_LAYOUT}, objects::GameObjectKind};
+use ashscript_types::{
+    components::{owner::Owner, tile::Tile},
+    constants::map::{CHUNK_SIZE, HEX_LAYOUT},
+    objects::GameObjectKind,
+};
 use bevy::prelude::*;
 use hexx::Hex;
 
 use crate::{
-    components::{intents, Actions, LoadChunks, MappedUnits, Moving, PlayerState, State, TickEvent, Unit},
+    components::{
+        intents, Actions, LoadChunks, MappedUnits, Moving, PlayerState, State, TickEvent, Unit,
+    },
     constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS},
     unit::plugin::create_unit,
     utils::find_angle_coords,
@@ -45,7 +51,6 @@ pub fn generate_units_from_factory(
     actions: Res<Actions>,
 ) {
     for action in actions.0.factory_spawn_unit.iter() {
-
         create_unit(
             action.out,
             &mut commands,
@@ -69,6 +74,13 @@ pub fn move_units_from_actions(
         let Ok((mut unit, mut transform, _)) = query.get_mut(*entity) else {
             continue;
         };
+
+        if let Some(moving) = &unit.moving {
+            transform.translation = moving.target_pos;
+            unit.moving = None;
+
+            unit_map.move_to(&action.from, &action.to);
+        }
 
         unit_move_hex(&mut unit, &mut transform, action.to);
     }
