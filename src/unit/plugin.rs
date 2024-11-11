@@ -6,7 +6,7 @@ use hexx::Hex;
 use rand;
 use uuid::Uuid;
 
-use crate::{components::{MappedGameObjects, OccupiesTile, Owner, Unit}, constants::{unit, UnitPart}};
+use crate::{components::{Health, MappedGameObjects, OccupiesTile, Owner, Unit}, constants::{unit, UnitPart}};
 
 pub struct UnitPlugin;
 
@@ -21,6 +21,7 @@ pub fn create_unit(
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
     game_object_map: &mut MappedGameObjects,
+    health: &ashscript_types::components::health::Health,
     owner_id: Uuid,
 ) {
 
@@ -61,6 +62,10 @@ pub fn create_unit(
             ..Default::default()
         },
         OccupiesTile,
+        Health {
+            current: health.0,
+            max: health.0, // initialize using max hax health
+        },
         Unit {
             health: 100,
             body: enum_map! {

@@ -23,9 +23,14 @@ pub fn generate_units_on_chunkload(
     mut game_object_map: MappedGameObjects,
     state: Res<State>,
 ) {
-    for (entity, (_, tile, owner)) in state
+    for (entity, (_, tile, owner, health)) in state
         .world
-        .query::<((&ashscript_types::components::unit::Unit, &Tile, &Owner))>()
+        .query::<((
+            &ashscript_types::components::unit::Unit,
+            &Tile,
+            &Owner,
+            &ashscript_types::components::health::Health,
+        ))>()
         .iter()
     {
         if !unloaded_chunks
@@ -40,6 +45,7 @@ pub fn generate_units_on_chunkload(
             &mut commands,
             &asset_server,
             &mut game_object_map,
+            health,
             owner.0,
         );
     }
@@ -59,6 +65,7 @@ pub fn generate_units_from_factory(
             &mut commands,
             &asset_server,
             &mut game_object_map,
+            &ashscript_types::components::health::Health::for_unit(&action.body),
             action.owner,
         );
     }
@@ -81,11 +88,7 @@ pub fn force_units_move(
         transform.translation = moving.target_pos;
         unit.moving = None;
 
-        game_object_map.move_to(
-            &from_hex,
-            target_hex,
-            GameObjectKind::Unit,
-        );
+        game_object_map.move_to(&from_hex, target_hex, GameObjectKind::Unit);
     }
 }
 pub fn move_units_from_actions(
@@ -126,18 +129,18 @@ pub fn units_attack_from_actions(
         if action.damage >= target_health.current {
             commands.entity(*target_entity).despawn();
             game_object_map.remove(&action.attacker_hex, GameObjectKind::Unit);
-        } 
+        }
 
-        target_health.current -= action.damage;
+        target_health.current = target_health.current.saturating_sub(action.damage);
     }
 }
 
 pub fn kill_units(
-    units: Query<(&Unit, &Transform, Entity)>,
+    units: Query<(&Unit, &Transform, &Health, Entity)>,
     mut commands: Commands,
     mut game_object_map: MappedGameObjects,
 ) {
-    for (unit, transform, entity) in units.iter() {
+    for (unit, transform, health, entity) in units.iter() {
         if unit.age > constants::unit::MAX_AGE {
             game_object_map.remove(
                 &HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()),
@@ -148,7 +151,7 @@ pub fn kill_units(
             continue;
         }
 
-        if unit.health == 0 {
+        if health.current == 0 {
             game_object_map.remove(
                 &HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()),
                 GameObjectKind::Unit,
@@ -243,7 +246,6 @@ pub fn unit_move(
     unit_transform: &mut Transform,
     target_translation: &Vec3,
 ) -> GeneralResult {
-
     let hex_pos = HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate());
     let new_hex_pos = HEX_LAYOUT.world_pos_to_hex(target_translation.truncate());
 

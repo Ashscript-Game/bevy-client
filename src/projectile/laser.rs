@@ -54,7 +54,7 @@ pub fn update_lasers(
 
         laser_transform.rotation = Quat::from_rotation_z(target_angle/* laser.angle */);
 
-        let direction = laser_transform.rotation * Vec3::Y;
+        let direction = laser_transform.rotation * Vec3::new(0., 1., 0.);
 
         let delta_seconds = time.delta_seconds();
         let speed = Vec3::new(

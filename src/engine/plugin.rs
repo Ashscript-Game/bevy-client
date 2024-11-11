@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use ashscript_types::components::health::Health;
 use bevy::{
     app::{App, Plugin, Startup, Update},
     prelude::*,
@@ -10,22 +11,14 @@ use hexx::Hex;
 
 use crate::{
     components::{
-        LoadChunks, LoadedChunks, ProjectileMoveEndEvent, ProjectileMoveEndTimer, State, TickEvent,
-        UnloadedChunks,
+        GameObjectKindComp, LoadChunks, LoadedChunks, ProjectileMoveEndEvent, ProjectileMoveEndTimer, State, TickEvent, UnloadedChunks
     },
     constants::{self, PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK},
     networker::handle_network_events,
 };
 
 use super::{
-    assembler::generate_assemblers_from_keyframe,
-    distributor::generate_distributors_from_keyframe,
-    factory::generate_factories_from_keyframe,
-    resources::generate_resources_from_keyframe,
-    terrain::generate_tiles,
-    turret::generate_turrets_from_keyframe,
-    unit::{units_attack_from_actions, force_units_move, generate_units_from_factory, generate_units_on_chunkload, move_units_from_actions},
-    projectile::generate_attack_projectiles_from_keyframe,
+    assembler::generate_assemblers_from_keyframe, distributor::generate_distributors_from_keyframe, factory::generate_factories_from_keyframe, projectile::generate_attack_projectiles_from_keyframe, resources::generate_resources_from_keyframe, terrain::generate_tiles, turret::generate_turrets_from_keyframe, unit::{force_units_move, generate_units_from_factory, generate_units_on_chunkload, kill_units, move_units_from_actions, units_attack_from_actions}
 };
 
 pub struct EnginePlugin;
@@ -39,7 +32,7 @@ impl Plugin for EnginePlugin {
             .add_systems(
                 Update,
                 (
-                    (force_units_move, reset_projectile_move_end_timer),
+                    (force_units_move, reset_projectile_move_end_timer, kill_units),
                     chunk_load_update_events,
                     (
                         generate_tiles,
@@ -114,3 +107,21 @@ pub fn chunk_load_update_events(
 
     event_writer.send(LoadChunks);
 }
+
+/* pub fn kill_0_health(
+    units: Query<(GameObjectKindComp, &Transform, &Health, Entity)>,
+    mut commands: Commands,
+    mut game_object_map: MappedGameObjects,
+) {
+    for (unit, transform, health, entity) in units.iter() {
+        if health.current == 0 {
+            game_object_map.remove(
+                &HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()),
+                GameObjectKind::Unit,
+            );
+
+            commands.entity(entity).despawn();
+            continue;
+        }
+    }
+} */
