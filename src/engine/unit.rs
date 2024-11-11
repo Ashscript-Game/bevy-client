@@ -83,7 +83,6 @@ pub fn force_units_move(
 
         game_object_map.move_to(
             &from_hex,
-            GameObjectKind::Unit,
             target_hex,
             GameObjectKind::Unit,
         );
@@ -124,7 +123,7 @@ pub fn units_attack_from_actions(
             continue;
         };
 
-        if action.damage > target_health.current {
+        if action.damage >= target_health.current {
             commands.entity(*target_entity).despawn();
             game_object_map.remove(&action.attacker_hex, GameObjectKind::Unit);
         } 
@@ -244,16 +243,9 @@ pub fn unit_move(
     unit_transform: &mut Transform,
     target_translation: &Vec3,
 ) -> GeneralResult {
-    if unit.energy < unit_move_cost(unit) {
-        return GeneralResult::Fail;
-    }
 
     let hex_pos = HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate());
     let new_hex_pos = HEX_LAYOUT.world_pos_to_hex(target_translation.truncate());
-
-    if hex_pos.unsigned_distance_to(new_hex_pos) != 1 {
-        return GeneralResult::Fail;
-    }
 
     let angle = find_angle_coords(
         unit_transform.translation.x,

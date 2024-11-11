@@ -160,9 +160,9 @@ impl<'w, 's> MappedGameObjects<'w, 's> {
         self.entity(hex, kind).expect("Entity not found")
     }
 
-    pub fn move_to(&mut self, from: &Hex, from_kind: GameObjectKind, to: Hex, to_kind: GameObjectKind) {
-        let entity = self.remove(from, from_kind).unwrap();
-        self.insert(to, to_kind, entity)
+    pub fn move_to(&mut self, from: &Hex, to: Hex, kind: GameObjectKind) {
+        let entity = self.remove(from, kind).unwrap();
+        self.insert(to, kind, entity)
     }
 }
 
