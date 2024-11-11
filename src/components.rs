@@ -126,7 +126,7 @@ pub struct Turret {
 pub struct TickEvent;
 
 #[derive(Event)]
-pub struct LoadChunks(pub HashSet<Hex>);
+pub struct LoadChunks;
 
 #[derive(Event)]
 pub struct ProjectileMoveEndEvent;
@@ -324,3 +324,6 @@ pub struct KeyframeEvent(KeyFrame);
 
 #[derive(Resource, Default)]
 pub struct LoadedChunks(pub HashSet<Hex>);
+
+#[derive(Resource, Default)]
+pub struct UnloadedChunks(pub HashSet<Hex>);

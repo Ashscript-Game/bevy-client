@@ -4,19 +4,18 @@ use ashscript_types::{components::{owner::Owner, tile::Tile}, constants::map::{C
 use bevy::{math::Quat, prelude::*};
 
 use crate::{
-    components::{LoadChunks, State, Turret, Unit},
+    components::{LoadChunks, State, Turret, Unit, UnloadedChunks},
     constants::GeneralResult,
     structure::turret::spawn_turret,
     utils::find_angle,
 };
 
 pub fn generate_turrets_from_keyframe(
-    trigger: Trigger<LoadChunks>,
+    unloaded_chunks: Res<UnloadedChunks>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     state: Res<State>,
 ) {
-    let new_chunks = &trigger.event().0;
 
     for (_, (_, tile, owner)) in state
         .world
@@ -25,7 +24,7 @@ pub fn generate_turrets_from_keyframe(
     {
         println!("turret");
 
-        if !new_chunks.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+        if !unloaded_chunks.0.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
             continue;
         }
 

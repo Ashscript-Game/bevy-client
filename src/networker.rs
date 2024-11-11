@@ -164,7 +164,7 @@ pub fn setup_receiver(
     );
 }
 
-pub fn handle_network_events(network_info: ResMut<NetworkInfo>, mut state: ResMut<State>, mut actions: ResMut<Actions>, mut commands: Commands) {
+pub fn handle_network_events(network_info: ResMut<NetworkInfo>, mut state: ResMut<State>, mut actions: ResMut<Actions>, mut event_writer: EventWriter<TickEvent>) {
     if let Some(message) = network_info.receiver.lock().unwrap().try_recv() {
         info!("Received event");
         match message {
@@ -194,7 +194,7 @@ pub fn handle_network_events(network_info: ResMut<NetworkInfo>, mut state: ResMu
 
                 actions.0 = keyframe.actions;
                 
-                commands.trigger(TickEvent);
+                event_writer.send(TickEvent);
             }
             ewebsock::WsEvent::Message(msg) => {
                 println!("received message {:?}", msg);

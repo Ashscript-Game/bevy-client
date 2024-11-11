@@ -8,8 +8,8 @@ use hexx::Hex;
 
 use crate::{
     components::{
-        intents, Actions, LoadChunks, MappedGameObjects, Moving, PlayerState, State, TickEvent,
-        Unit,
+        intents, Actions, Health, LoadChunks, MappedGameObjects, Moving, PlayerState, State,
+        TickEvent, Unit, UnloadedChunks,
     },
     constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS},
     unit::plugin::create_unit,
@@ -17,20 +17,21 @@ use crate::{
 };
 
 pub fn generate_units_on_chunkload(
-    trigger: Trigger<LoadChunks>,
+    unloaded_chunks: Res<UnloadedChunks>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut game_object_map: MappedGameObjects,
     state: Res<State>,
 ) {
-    let new_chunks = &trigger.event().0;
-
     for (entity, (_, tile, owner)) in state
         .world
         .query::<((&ashscript_types::components::unit::Unit, &Tile, &Owner))>()
         .iter()
     {
-        if !new_chunks.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+        if !unloaded_chunks
+            .0
+            .contains(&tile.hex.to_lower_res(CHUNK_SIZE))
+        {
             continue;
         }
 
@@ -45,12 +46,13 @@ pub fn generate_units_on_chunkload(
 }
 
 pub fn generate_units_from_factory(
-    trigger: Trigger<TickEvent>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut game_object_map: MappedGameObjects,
     actions: Res<Actions>,
 ) {
+    println!("spawning units from factories");
+
     for action in actions.0.factory_spawn_unit.iter() {
         create_unit(
             action.out,
@@ -62,12 +64,38 @@ pub fn generate_units_from_factory(
     }
 }
 
-pub fn move_units_from_actions(
-    trigger: Trigger<TickEvent>,
-    mut query: Query<(&mut Unit, &mut Transform, Entity)>,
+pub fn force_units_move(
     mut game_object_map: MappedGameObjects,
+    mut query: Query<(&mut Unit, &mut Transform, Entity)>,
+) {
+    println!("force moving units");
+
+    for (mut unit, mut transform, _) in query.iter_mut() {
+        let Some(moving) = &unit.moving else {
+            continue;
+        };
+
+        let from_hex = HEX_LAYOUT.world_pos_to_hex(moving.start_pos.truncate());
+        let target_hex = HEX_LAYOUT.world_pos_to_hex(moving.target_pos.truncate());
+
+        transform.translation = moving.target_pos;
+        unit.moving = None;
+
+        game_object_map.move_to(
+            &from_hex,
+            GameObjectKind::Unit,
+            target_hex,
+            GameObjectKind::Unit,
+        );
+    }
+}
+pub fn move_units_from_actions(
+    mut query: Query<(&mut Unit, &mut Transform, Entity)>,
+    game_object_map: MappedGameObjects,
     actions: Res<Actions>,
 ) {
+    println!("moving units");
+
     for action in actions.0.unit_move.iter() {
         let Some(entity) = game_object_map.entity(&action.from, GameObjectKind::Unit) else {
             continue;
@@ -76,19 +104,32 @@ pub fn move_units_from_actions(
             continue;
         };
 
-        if let Some(moving) = &unit.moving {
-            transform.translation = moving.target_pos;
-            unit.moving = None;
-
-            game_object_map.move_to(
-                &action.from,
-                GameObjectKind::Unit,
-                action.to,
-                GameObjectKind::Unit,
-            );
-        }
-
         unit_move_hex(&mut unit, &mut transform, action.to);
+    }
+}
+
+pub fn units_attack_from_actions(
+    actions: Res<Actions>,
+    mut commands: Commands,
+    mut targets: Query<(&Transform, &mut Health)>,
+    mut game_object_map: MappedGameObjects,
+) {
+    for action in actions.0.unit_attack.iter() {
+        let Some(target_entity) = game_object_map.entity(&action.target_hex, action.target_kind)
+        else {
+            continue;
+        };
+
+        let Ok((_, mut target_health)) = targets.get_mut(*target_entity) else {
+            continue;
+        };
+
+        if action.damage > target_health.current {
+            commands.entity(*target_entity).despawn();
+            game_object_map.remove(&action.attacker_hex, GameObjectKind::Unit);
+        } 
+
+        target_health.current -= action.damage;
     }
 }
 

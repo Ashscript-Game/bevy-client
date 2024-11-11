@@ -14,7 +14,7 @@ use bevy_eventwork::EventworkRuntime;
 use bevy_eventwork_mod_websockets::{NetworkSettings, WebSocketProvider};
 use bevy_magic_light_2d::{gi::BevyMagicLight2DPlugin, prelude::*};
 use components::{
-    Actions, DebugSettings, GameSettings, GameState, LoadedChunks, PlayerStates, ProjectileMoveEndTimer, State
+    Actions, DebugSettings, GameSettings, GameState, LoadedChunks, PlayerStates, ProjectileMoveEndTimer, State, UnloadedChunks
 };
 use constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK};
 use game::GamePlugin;
@@ -98,5 +98,6 @@ fn main() {
         .register_type::<LightPassParams>()
         .insert_resource(NetworkSettings::default())
         .insert_resource(LoadedChunks::default())
+        .insert_resource(UnloadedChunks::default())
         .run();
 }

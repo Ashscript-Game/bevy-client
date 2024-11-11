@@ -11,7 +11,7 @@ use bevy_magic_light_2d::prelude::CAMERA_LAYER_FLOOR;
 use hexx::{hex, shapes, Hex, HexLayout, HexOrientation, PlaneMeshBuilder};
 use rand::random;
 
-use crate::components::{LoadChunks, State, TickEvent};
+use crate::components::{LoadChunks, State, TickEvent, UnloadedChunks};
 
 pub const HEX_SIZE: Vec2 = Vec2::splat(64.0);
 const COLORS: [Color; 3] = [
@@ -22,7 +22,7 @@ const COLORS: [Color; 3] = [
 ];
 
 pub fn generate_tiles(
-    trigger: Trigger<LoadChunks>,
+    unloaded_chunks: Res<UnloadedChunks>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -39,9 +39,7 @@ pub fn generate_tiles(
         materials.add(ColorMaterial::from(COLORS[2])),
     ];
 
-    let new_chunks = &trigger.event().0;
-
-    for chunk_hex in new_chunks.iter() {
+    for chunk_hex in unloaded_chunks.0.iter() {
         for hex in shapes::hexagon(chunk_hex.to_higher_res(CHUNK_SIZE), CHUNK_SIZE) {
             generate_chunk(
                 chunk_hex,

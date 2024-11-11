@@ -4,8 +4,8 @@ use bevy::prelude::*;
 
 pub fn generate_attack_projectiles_from_keyframe(
     actions: Res<Actions>,
-    commands: &mut Commands,
-    asset_server: &Res<AssetServer>,
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
     targets: Query<(&Transform, &Health)>,
     game_object_map: MappedGameObjects,
 ) {
@@ -16,6 +16,6 @@ pub fn generate_attack_projectiles_from_keyframe(
 
         let start_pos = HEX_LAYOUT.hex_to_world_pos(action.attacker_hex).extend(0.);
         let target_pos = HEX_LAYOUT.hex_to_world_pos(action.target_hex).extend(0.);
-        create_laser(&start_pos, &target_pos, *target_entity, 1, commands, asset_server);
+        create_laser(&start_pos, &target_pos, *target_entity, 1, &mut commands, &asset_server);
     }
 }

@@ -1,6 +1,6 @@
 use crate::{
     components::{
-        Lava, LoadChunks, LoadedChunks, OccupiesTile, ResourceNode, Scrap, State, TickEvent, Wall,
+        Lava, LoadChunks, LoadedChunks, OccupiesTile, ResourceNode, Scrap, State, TickEvent, UnloadedChunks, Wall
     },
     constants::{self, lava, resource_noise_tresholds, SIMPLEX_GENERATOR},
     engine::terrain::{hexagonal_plane, HEX_SIZE},
@@ -22,7 +22,7 @@ use hexx::{hex, shapes, Hex};
 use libnoise::Generator;
 
 pub fn generate_resources_from_keyframe(
-    trigger: Trigger<LoadChunks>,
+    unloaded_chunks: Res<UnloadedChunks>,
     mut commands: Commands,
     _asset_server: Res<AssetServer>,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -42,10 +42,8 @@ pub fn generate_resources_from_keyframe(
         materials.add(ColorMaterial::from(constants::lava::COLOR)),
     ];
 
-    let new_chunks = &trigger.event().0;
-
     for (entity, (terrain, _, tile)) in state.world.query::<(&Terrain, &ashscript_types::components::terrain::Wall, &Tile)>().iter() {
-        if !new_chunks.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+        if !unloaded_chunks.0.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
             continue;
         };
 
@@ -60,7 +58,7 @@ pub fn generate_resources_from_keyframe(
     }
 
     for (entity, (terrain, _, tile)) in state.world.query::<(&Terrain, &ashscript_types::components::terrain::Lava, &Tile)>().iter() {
-        if !new_chunks.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+        if !unloaded_chunks.0.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
             continue;
         };
 
@@ -83,7 +81,7 @@ pub fn generate_resources_from_keyframe(
         )>()
         .iter()
     {
-        if !new_chunks.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+        if !unloaded_chunks.0.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
             continue;
         };
 
@@ -107,7 +105,7 @@ pub fn generate_resources_from_keyframe(
         )>()
         .iter()
     {
-        if !new_chunks.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+        if !unloaded_chunks.0.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
             continue;
         };
 
