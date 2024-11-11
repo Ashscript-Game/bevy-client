@@ -318,8 +318,8 @@ dependencies = [
 
 [[package]]
 name = "ashscript-types"
-version = "0.10.24"
-source = "git+https://github.com/Ashscript-Game/ashscript-types?branch=main#729f27f4fa999322c3c4d9f6df1af0cae83ae1a6"
+version = "0.10.28"
+source = "git+https://github.com/Ashscript-Game/ashscript-types?branch=main#faa25aa2b9a84a2cd1999f85c299a858b0c7c311"
 dependencies = [
  "bitcode",
  "enum-iterator",

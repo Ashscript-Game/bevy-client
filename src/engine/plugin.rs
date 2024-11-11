@@ -39,7 +39,7 @@ impl Plugin for EnginePlugin {
             .add_systems(
                 Update,
                 (
-                    (force_units_move,),
+                    (force_units_move, reset_projectile_move_end_timer),
                     chunk_load_update_events,
                     (
                         generate_tiles,
@@ -57,6 +57,14 @@ impl Plugin for EnginePlugin {
                     .run_if(on_event::<TickEvent>()),
             );
     }
+}
+
+fn reset_projectile_move_end_timer(mut projectile_timer: ResMut<ProjectileMoveEndTimer>, state: Res<State>) {
+    projectile_timer.0.reset();
+    Timer::from_seconds(
+        state.global.last_tick_duration.as_secs_f32() * PROJECTILE_MOVE_END_TICK_PORTION,
+        TimerMode::Once,
+    );
 }
 
 fn projectile_move_end_event(

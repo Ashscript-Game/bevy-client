@@ -142,7 +142,7 @@ pub mod z_order {
 pub mod resource_blob {}
 
 pub const SECONDS_PER_TICK: f32 = 0.5;
-pub const PROJECTILE_MOVE_END_TICK_PORTION: f32 = 0.4;
+pub const PROJECTILE_MOVE_END_TICK_PORTION: f32 = 0.8;
 
 #[derive(Eq, PartialEq, Clone, Debug)]
 pub enum GeneralResult {
