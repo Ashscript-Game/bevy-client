@@ -1,8 +1,9 @@
 use crate::{
     components::{
-        Lava, LoadChunks, LoadedChunks, OccupiesTile, ResourceNode, Scrap, State, TickEvent, UnloadedChunks, Wall
+        Lava, LoadChunks, LoadedChunks, OccupiesTile, ResourceNode, Scrap, State, TickEvent,
+        UnloadedChunks, Wall,
     },
-    constants::{self, lava, resource_noise_tresholds, SIMPLEX_GENERATOR},
+    constants::{self, lava, resource_noise_tresholds, unit, SIMPLEX_GENERATOR},
     engine::terrain::{hexagonal_plane, HEX_SIZE},
 };
 use ashscript_types::{
@@ -13,7 +14,7 @@ use ashscript_types::{
     },
     constants::map::{CHUNK_SIZE, HEX_LAYOUT},
 };
-use bevy::{ecs::world, math::Vec3, prelude::*, render::view::RenderLayers};
+use bevy::{ecs::world, math::Vec3, prelude::*, render::view::RenderLayers, utils::hashbrown::HashSet};
 use bevy_magic_light_2d::{
     gi::render_layer::ALL_LAYERS,
     prelude::{LightOccluder2D, OmniLightSource2D, CAMERA_LAYER_OBJECTS, CAMERA_LAYER_WALLS},
@@ -42,8 +43,20 @@ pub fn generate_resources_from_keyframe(
         materials.add(ColorMaterial::from(constants::lava::COLOR)),
     ];
 
-    for (entity, (terrain, _, tile)) in state.world.query::<(&Terrain, &ashscript_types::components::terrain::Wall, &Tile)>().iter() {
-        if !unloaded_chunks.0.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+    let wall_hexes = state.world.query::<(&Terrain, &ashscript_types::components::terrain::Wall, &Tile)>().iter().map(|(_, (_, _, tile))| {
+        tile.hex
+    }).collect::<HashSet<Hex>>();
+    println!("wall hexes: {:#?}", wall_hexes.len());
+
+    for (entity, (terrain, _, tile)) in state
+        .world
+        .query::<(&Terrain, &ashscript_types::components::terrain::Wall, &Tile)>()
+        .iter()
+    {
+        if !unloaded_chunks
+            .0
+            .contains(&tile.hex.to_lower_res(CHUNK_SIZE))
+        {
             continue;
         };
 
@@ -54,11 +67,19 @@ pub fn generate_resources_from_keyframe(
             &material_handles,
             tile.hex,
             terrain,
+            &wall_hexes,
         );
     }
 
-    for (entity, (terrain, _, tile)) in state.world.query::<(&Terrain, &ashscript_types::components::terrain::Lava, &Tile)>().iter() {
-        if !unloaded_chunks.0.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+    for (entity, (terrain, _, tile)) in state
+        .world
+        .query::<(&Terrain, &ashscript_types::components::terrain::Lava, &Tile)>()
+        .iter()
+    {
+        if !unloaded_chunks
+            .0
+            .contains(&tile.hex.to_lower_res(CHUNK_SIZE))
+        {
             continue;
         };
 
@@ -69,6 +90,7 @@ pub fn generate_resources_from_keyframe(
             &material_handles,
             tile.hex,
             terrain,
+            &wall_hexes,
         );
     }
 
@@ -81,11 +103,14 @@ pub fn generate_resources_from_keyframe(
         )>()
         .iter()
     {
-        if !unloaded_chunks.0.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+        if !unloaded_chunks
+            .0
+            .contains(&tile.hex.to_lower_res(CHUNK_SIZE))
+        {
             continue;
         };
 
-        generate_resource(
+        generate_resource_node(
             &mut commands,
             &_asset_server,
             &mesh_handle,
@@ -105,11 +130,14 @@ pub fn generate_resources_from_keyframe(
         )>()
         .iter()
     {
-        if !unloaded_chunks.0.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
+        if !unloaded_chunks
+            .0
+            .contains(&tile.hex.to_lower_res(CHUNK_SIZE))
+        {
             continue;
         };
 
-        generate_resource(
+        generate_resource_node(
             &mut commands,
             &_asset_server,
             &mesh_handle,
@@ -121,7 +149,7 @@ pub fn generate_resources_from_keyframe(
     }
 }
 
-fn generate_resource(
+fn generate_resource_node(
     commands: &mut Commands,
     _asset_server: &Res<AssetServer>,
     mesh: &Handle<Mesh>,
@@ -158,16 +186,41 @@ fn generate_resource(
 
 fn generate_terrain(
     commands: &mut Commands,
-    _asset_server: &Res<AssetServer>,
+    asset_server: &Res<AssetServer>,
     mesh: &Handle<Mesh>,
     materials: &[Handle<ColorMaterial>],
     hex: Hex,
     terrain: &Terrain,
+    wall_hexes: &HashSet<Hex>,
 ) {
     let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
 
     match terrain.kind {
         TerrainKind::Wall => {
+
+            let surrounding_walls = hex.all_neighbors().iter().filter(|h| wall_hexes.contains(*h)).count();
+
+            if surrounding_walls == 0 {
+                commands.spawn((
+                    SpriteBundle {
+                        texture: asset_server.load("terrain/wall_single.png"),
+                        transform: Transform {
+                            translation: Vec3::new(world_pos.x, world_pos.y, 1.0),
+                            scale: Vec3::new(0.2, 0.2, 1.0),
+                            ..default()
+                        },
+                        ..default()
+                    },
+                    Wall,
+                    OccupiesTile,
+                    RenderLayers::from_layers(CAMERA_LAYER_WALLS),
+                    LightOccluder2D {
+                        h_size: Vec2::new(HEX_SIZE.x, HEX_SIZE.x * 0.5),
+                    },
+                ));
+                return;
+            }
+
             commands.spawn((
                 ColorMesh2dBundle {
                     transform: Transform::from_xyz(
@@ -205,21 +258,21 @@ fn generate_terrain(
             ));
 
             commands
-            .spawn(OmniLightSource2D {
-                intensity: 0.1,
-                color: lava::COLOR,
-                falloff: Vec3::new(20., 20., 0.005),
-                jitter_intensity: 0.01,
-                jitter_translation: 0.1,
-            })
-            .insert(SpatialBundle {
-                transform: Transform {
-                    translation: Vec3::new(world_pos.x, world_pos.y, 0.0),
+                .spawn(OmniLightSource2D {
+                    intensity: 0.1,
+                    color: lava::COLOR,
+                    falloff: Vec3::new(20., 20., 0.005),
+                    jitter_intensity: 0.01,
+                    jitter_translation: 0.1,
+                })
+                .insert(SpatialBundle {
+                    transform: Transform {
+                        translation: Vec3::new(world_pos.x, world_pos.y, 0.0),
+                        ..default()
+                    },
                     ..default()
-                },
-                ..default()
-            })
-            .insert(RenderLayers::from_layers(ALL_LAYERS));
+                })
+                .insert(RenderLayers::from_layers(ALL_LAYERS));
         }
         _ => {}
     }
