@@ -122,7 +122,7 @@ pub fn units_attack_from_actions(
         else {
             continue;
         };
-
+        
         let Ok((_, mut target_health)) = targets.get_mut(*target_entity) else {
             continue;
         };
@@ -207,21 +207,6 @@ pub fn unit_move(
     unit_transform.rotation = Quat::from_rotation_z(angle);
 
     GeneralResult::Success
-}
-
-pub fn unit_at_hex(
-    hex: hexx::Hex,
-    units: &[(Unit, Transform, Entity)],
-) -> Option<(&Unit, &Transform, &Entity)> {
-    for (unit, unit_transform, entity) in units.iter() {
-        if hex != HEX_LAYOUT.world_pos_to_hex(unit_transform.translation.truncate()) {
-            continue;
-        }
-
-        return Some((unit, unit_transform, entity));
-    }
-
-    None
 }
 
 pub fn unit_attack_intent(entity: &Entity, target: &Entity, player_state: &mut PlayerState) {

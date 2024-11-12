@@ -71,8 +71,8 @@ pub fn create_unit(
             },
             OccupiesTile,
             Health {
-                current: health.0,
-                max: health.0, // initialize using max hax health
+                current: health.current,
+                max: health.current, // initialize using max hax health
             },
             Unit {
                 body: enum_map! {

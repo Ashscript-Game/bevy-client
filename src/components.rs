@@ -115,8 +115,6 @@ pub struct Moving {
 #[derive(Component, Default)]
 pub struct Turret {
     pub energy: u32,
-    pub damage: u32,
-    pub range: u32,
     pub store: Store,
 }
 

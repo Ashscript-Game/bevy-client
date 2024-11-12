@@ -42,8 +42,6 @@ pub fn spawn_turret(
         },
         OccupiesTile,
         Turret {
-            range: 6,
-            damage: 2,
             ..default()
         },
         OmniLightSource2D {
