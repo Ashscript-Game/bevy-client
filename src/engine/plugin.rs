@@ -32,7 +32,7 @@ impl Plugin for EnginePlugin {
             .add_systems(
                 Update,
                 (
-                    (force_units_move, reset_projectile_move_end_timer, kill_units),
+                    (force_units_move, reset_projectile_move_end_timer),
                     chunk_load_update_events,
                     (
                         generate_tiles,
@@ -44,11 +44,11 @@ impl Plugin for EnginePlugin {
                         generate_distributors_from_keyframe,
                     )
                         .run_if(on_event::<LoadChunks>()),
-                    ((move_units_from_actions), units_attack_from_actions, generate_units_from_factory, generate_attack_projectiles_from_keyframe).chain(),
+                    (units_attack_from_actions, (move_units_from_actions), generate_units_from_factory, generate_attack_projectiles_from_keyframe).chain(),
                 )
                     .chain()
                     .run_if(on_event::<TickEvent>()),
-            );
+            ).add_systems(Update, (kill_units).run_if(on_event::<ProjectileMoveEndEvent>()));
     }
 }
 
@@ -90,14 +90,14 @@ pub fn chunk_load_update_events(
 
     unloaded_chunks.0.clear();
 
-    for (hex, _) in state.map.chunks.iter() {
-        if loaded_chunks.0.contains(hex) {
+    for (chunk_hex, _) in state.map.chunks.iter() {
+        if loaded_chunks.0.contains(chunk_hex) {
             continue;
         };
 
-        unloaded_chunks.0.insert(*hex);
+        unloaded_chunks.0.insert(*chunk_hex);
         // pre-emptively insert, as we can predict the chunk will be loaded when we trigger the event
-        loaded_chunks.0.insert(*hex);
+        loaded_chunks.0.insert(*chunk_hex);
     }
 
     // no chunks to load

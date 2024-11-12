@@ -85,8 +85,6 @@ pub struct Energy(pub u32);
 #[derive(Component, Default, Clone)]
 pub struct Unit {
     pub body: UnitBody,
-    pub health: u32,
-    pub age: u32,
     pub energy: u32,
     pub energy_capacity: u32,
     pub store: Store,
@@ -160,9 +158,11 @@ impl<'w, 's> MappedGameObjects<'w, 's> {
         self.entity(hex, kind).expect("Entity not found")
     }
 
-    pub fn move_to(&mut self, from: &Hex, to: Hex, kind: GameObjectKind) {
-        let entity = self.remove(from, kind).unwrap();
-        self.insert(to, kind, entity)
+    pub fn move_to(&mut self, from: &Hex, to: Hex, kind: GameObjectKind) -> Option<()> {
+        let entity = self.remove(from, kind)?;
+        self.insert(to, kind, entity);
+
+        Some(())
     }
 }
 

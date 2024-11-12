@@ -36,7 +36,7 @@ pub fn turret_attack_cost(turret: &Turret) -> u32 {
     turret.range + turret.damage
 }
 
-pub fn turret_attack(
+/* pub fn turret_attack(
     turret: &mut Turret,
     turret_transform: &mut Transform,
     unit: &mut Unit,
@@ -71,3 +71,4 @@ pub fn turret_attack(
 
     GeneralResult::Success
 }
+ */

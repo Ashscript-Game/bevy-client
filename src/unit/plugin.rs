@@ -1,12 +1,19 @@
 use ashscript_types::{constants::map::HEX_LAYOUT, objects::GameObjectKind};
-use bevy::{app::{App, Plugin}, prelude::*, render::view::RenderLayers};
+use bevy::{
+    app::{App, Plugin},
+    prelude::*,
+    render::view::RenderLayers,
+};
 use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use enum_map::enum_map;
 use hexx::Hex;
 use rand;
 use uuid::Uuid;
 
-use crate::{components::{Health, MappedGameObjects, OccupiesTile, Owner, Unit}, constants::{unit, UnitPart}};
+use crate::{
+    components::{Health, MappedGameObjects, OccupiesTile, Owner, Unit},
+    constants::{unit, UnitPart},
+};
 
 pub struct UnitPlugin;
 
@@ -30,56 +37,57 @@ pub fn create_unit(
 
     let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
 
-    let entity = commands.spawn((
-        /* MaterialMesh2dBundle {
-            mesh,
-            material: materials.add(color),
-            transform: Transform {
-                translation: Vec3::new(
-                    world_pos.x,
-                    world_pos.y,
-                    1.,
-                ),
-                // rotation: Quat::from_rotation_z(angle),
-                scale: Vec3::new(1.0, 1.0, 1.0),
-                ..default()
-            },
-            ..default()
-        }, */
-        SpriteBundle {
-            texture: asset_server.load(unit::ASSET_PATH),
-            transform: Transform {
-                translation: Vec3::new(world_pos.x, world_pos.y, 1.0),
-                scale: Vec3::new(1.2, 1.2, 1.0),
-                ..default()
-            },
-            ..default()
-        },
-        OmniLightSource2D {
-            intensity: 0.1,
-            color: unit::LIGHT_COLOR,
-            falloff: Vec3::new(2., 2., 0.005),
-            ..Default::default()
-        },
-        OccupiesTile,
-        Health {
-            current: health.0,
-            max: health.0, // initialize using max hax health
-        },
-        Unit {
-            health: 100,
-            body: enum_map! {
-                UnitPart::Ranged => 3,
-                UnitPart::Generate => {
-                    rand::random::<u32>() % 10 + 25
+    let entity = commands
+        .spawn((
+            /* MaterialMesh2dBundle {
+                mesh,
+                material: materials.add(color),
+                transform: Transform {
+                    translation: Vec3::new(
+                        world_pos.x,
+                        world_pos.y,
+                        1.,
+                    ),
+                    // rotation: Quat::from_rotation_z(angle),
+                    scale: Vec3::new(1.0, 1.0, 1.0),
+                    ..default()
                 },
-                _ => 1,
+                ..default()
+            }, */
+            SpriteBundle {
+                texture: asset_server.load(unit::ASSET_PATH),
+                transform: Transform {
+                    translation: Vec3::new(world_pos.x, world_pos.y, 1.0),
+                    scale: Vec3::new(1.2, 1.2, 1.0),
+                    ..default()
+                },
+                ..default()
             },
-            ..default()
-        },
-        Owner(owner_id),
-        RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
-    )).id();
+            OmniLightSource2D {
+                intensity: 0.1,
+                color: unit::LIGHT_COLOR,
+                falloff: Vec3::new(2., 2., 0.005),
+                ..Default::default()
+            },
+            OccupiesTile,
+            Health {
+                current: health.0,
+                max: health.0, // initialize using max hax health
+            },
+            Unit {
+                body: enum_map! {
+                    UnitPart::Ranged => 3,
+                    UnitPart::Generate => {
+                        rand::random::<u32>() % 10 + 25
+                    },
+                    _ => 1,
+                },
+                ..default()
+            },
+            Owner(owner_id),
+            RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
+        ))
+        .id();
 
     game_object_map.insert(hex, GameObjectKind::Unit, entity);
 }

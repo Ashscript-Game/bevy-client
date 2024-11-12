@@ -91,6 +91,7 @@ pub fn force_units_move(
         game_object_map.move_to(&from_hex, target_hex, GameObjectKind::Unit);
     }
 }
+
 pub fn move_units_from_actions(
     mut query: Query<(&mut Unit, &mut Transform, Entity)>,
     game_object_map: MappedGameObjects,
@@ -128,7 +129,7 @@ pub fn units_attack_from_actions(
 
         if action.damage >= target_health.current {
             commands.entity(*target_entity).despawn();
-            game_object_map.remove(&action.attacker_hex, GameObjectKind::Unit);
+            game_object_map.remove(&action.target_hex, action.target_kind);
         }
 
         target_health.current = target_health.current.saturating_sub(action.damage);
@@ -141,7 +142,7 @@ pub fn kill_units(
     mut game_object_map: MappedGameObjects,
 ) {
     for (unit, transform, health, entity) in units.iter() {
-        if unit.age > constants::unit::MAX_AGE {
+        /* if unit.age > constants::unit::MAX_AGE {
             game_object_map.remove(
                 &HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()),
                 GameObjectKind::Unit,
@@ -149,7 +150,7 @@ pub fn kill_units(
 
             commands.entity(entity).despawn();
             continue;
-        }
+        } */
 
         if health.current == 0 {
             game_object_map.remove(
@@ -161,66 +162,6 @@ pub fn kill_units(
             continue;
         }
     }
-}
-
-pub fn unit_range(unit: &Unit) -> u32 {
-    unit.body[UnitPart::Ranged]
-}
-
-pub fn unit_damage(unit: &Unit) -> u32 {
-    unit.body[UnitPart::Ranged]
-}
-
-pub fn unit_attack_cost(unit: &Unit) -> u32 {
-    unit.body[UnitPart::Ranged]
-}
-
-pub fn unit_weight(unit: &Unit) -> u32 {
-    let mut weight: u32 = 0;
-
-    for (body_part, part_amount) in unit.body.iter() {
-        weight += UNIT_PART_WEIGHTS[body_part] * part_amount;
-    }
-
-    weight
-}
-
-pub fn unit_move_cost(unit: &Unit) -> u32 {
-    unit.weight / 10
-}
-
-pub fn unit_attack(
-    unit1: &mut Unit,
-    unit1_transform: &Transform,
-    unit2: &mut Unit,
-    unit2_transform: &Transform,
-) -> GeneralResult {
-    if unit1.energy < unit_attack_cost(unit1) {
-        return GeneralResult::Fail;
-    }
-
-    let unit_hex = HEX_LAYOUT.world_pos_to_hex(unit1_transform.translation.truncate());
-    let other_unit_hex = HEX_LAYOUT.world_pos_to_hex(unit2_transform.translation.truncate());
-
-    if unit_hex == other_unit_hex {
-        return GeneralResult::Fail;
-    }
-
-    let distance = unit_hex.unsigned_distance_to(other_unit_hex);
-    if distance > unit_range(unit1) {
-        return GeneralResult::Fail;
-    }
-
-    let damage = unit_damage(unit1);
-    if damage > unit2.health {
-        unit2.health = 0
-    } else {
-        unit2.health -= damage
-    }
-
-    unit1.energy -= unit_attack_cost(unit1);
-
-    GeneralResult::Success
 }
 
 pub fn unit_move_intent(entity: &Entity, to_hex: Hex, player_state: &mut PlayerState) {
@@ -261,7 +202,7 @@ pub fn unit_move(
         target_pos: *target_translation,
         angle,
     });
-    unit.energy -= unit_move_cost(unit);
+    /* unit.energy -= unit_move_cost(unit); */
 
     unit_transform.rotation = Quat::from_rotation_z(angle);
 
