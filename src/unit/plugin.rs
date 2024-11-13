@@ -75,13 +75,6 @@ pub fn create_unit(
                 max: health.current, // initialize using max hax health
             },
             Unit {
-                body: enum_map! {
-                    UnitPart::Ranged => 3,
-                    UnitPart::Generate => {
-                        rand::random::<u32>() % 10 + 25
-                    },
-                    _ => 1,
-                },
                 ..default()
             },
             Owner(owner_id),

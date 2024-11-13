@@ -84,7 +84,6 @@ pub struct Energy(pub u32);
 
 #[derive(Component, Default, Clone)]
 pub struct Unit {
-    pub body: UnitBody,
     pub energy: u32,
     pub energy_capacity: u32,
     pub store: Store,
@@ -93,7 +92,8 @@ pub struct Unit {
     pub moving: Option<Moving>,
 }
 
-pub type UnitBody = EnumMap<UnitPart, u32>;
+#[derive(Component)]
+pub struct UnitPartComp(pub UnitPart);
 
 #[derive(Component)]
 pub struct Laser {
@@ -311,3 +311,15 @@ pub struct LoadedChunks(pub HashSet<Hex>);
 
 #[derive(Resource, Default)]
 pub struct UnloadedChunks(pub HashSet<Hex>);
+
+#[derive(Component)]
+pub struct Selected;
+
+#[derive(Resource, Default)]
+pub struct SelectedGameObjects(pub HashSet<Entity>);
+
+#[derive(Resource, Default)]
+pub struct DebugUI {
+    pub enabled: bool,
+    pub chunk_lines: bool,
+}

@@ -1,19 +1,26 @@
 use bevy::{
     app::{App, Plugin, Update},
     diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin},
+    input::keyboard::KeyboardInput,
     prelude::*,
     render::view::RenderLayers,
 };
 use bevy_egui::{egui, EguiContexts};
 use bevy_magic_light_2d::gi::render_layer::ALL_LAYERS;
 
-use crate::components::{DebugSettings, FpsText};
+use crate::components::{DebugSettings, DebugUI, FpsText};
 
 pub struct DebugPlugin;
 
 impl Plugin for DebugPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, debug_window);
+        app.add_systems(Update, (toggle_debug_ui, debug_window));
+    }
+}
+
+fn toggle_debug_ui(mut debug_ui: ResMut<DebugUI>, input: Res<ButtonInput<KeyCode>>) {
+    if input.pressed(KeyCode::F5) {
+        debug_ui.enabled = !debug_ui.enabled;
     }
 }
 
@@ -21,7 +28,12 @@ fn debug_window(
     mut egui: EguiContexts,
     mut debug_settings: ResMut<DebugSettings>,
     diagnostics: Res<DiagnosticsStore>,
+    debug_ui: Res<DebugUI>,
 ) {
+    if !debug_ui.enabled {
+        return;
+    }
+
     let Some(fps) = diagnostics.get(&FrameTimeDiagnosticsPlugin::FPS) else {
         return;
     };
