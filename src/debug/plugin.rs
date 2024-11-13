@@ -8,7 +8,7 @@ use bevy::{
 use bevy_egui::{egui, EguiContexts};
 use bevy_magic_light_2d::gi::render_layer::ALL_LAYERS;
 
-use crate::components::{DebugSettings, DebugUI, FpsText};
+use crate::components::{DebugUI, FpsText};
 
 pub struct DebugPlugin;
 
@@ -26,9 +26,8 @@ fn toggle_debug_ui(mut debug_ui: ResMut<DebugUI>, input: Res<ButtonInput<KeyCode
 
 fn debug_window(
     mut egui: EguiContexts,
-    mut debug_settings: ResMut<DebugSettings>,
     diagnostics: Res<DiagnosticsStore>,
-    debug_ui: Res<DebugUI>,
+    mut debug_ui: ResMut<DebugUI>,
 ) {
     if !debug_ui.enabled {
         return;
@@ -48,6 +47,6 @@ fn debug_window(
                 ui.label(format!("Avg FPS: {:.1}", value));
             }
 
-            ui.checkbox(&mut debug_settings.hightlight_chunks, "Highlight chunks");
+            ui.checkbox(&mut debug_ui.chunk_lines, "Highlight chunks");
         });
 }
