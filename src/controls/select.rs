@@ -7,7 +7,7 @@ use bevy_egui::{
 
 use crate::{
     components::{
-        Health, MappedGameObjects, Owner, Selected, SelectedGameObjects, Unit, UnitPartComp,
+        Health, MappedGameObjects, Owner, Selected, SelectedGameObjects, Unit, UnitBodyComp,
     },
     ui::{
         constants::{spacing, LATTE},
@@ -70,7 +70,7 @@ pub fn select_ui(
         &Transform,
         Option<&Owner>,
         Option<&Unit>,
-        Option<&UnitPartComp>,
+        Option<&UnitBodyComp>,
         Option<&Health>,
     )>,
 ) {

@@ -93,7 +93,7 @@ pub struct Unit {
 }
 
 #[derive(Component)]
-pub struct UnitPartComp(pub UnitBody);
+pub struct UnitBodyComp(pub UnitBody);
 
 #[derive(Component)]
 pub struct Laser {

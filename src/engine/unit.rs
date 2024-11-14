@@ -23,13 +23,14 @@ pub fn generate_units_on_chunkload(
     mut game_object_map: MappedGameObjects,
     state: Res<State>,
 ) {
-    for (entity, (_, tile, owner, health)) in state
+    for (entity, (_, tile, owner, health, body)) in state
         .world
         .query::<((
             &ashscript_types::components::unit::Unit,
             &Tile,
             &Owner,
             &ashscript_types::components::health::Health,
+            &ashscript_types::components::body::UnitBody,
         ))>()
         .iter()
     {
@@ -47,6 +48,7 @@ pub fn generate_units_on_chunkload(
             &mut game_object_map,
             health,
             owner.0,
+            *body,
         );
     }
 }
@@ -67,6 +69,7 @@ pub fn generate_units_from_factory(
             &mut game_object_map,
             &ashscript_types::components::health::Health::for_unit(&action.body),
             action.owner,
+            action.body,
         );
     }
 }

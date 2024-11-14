@@ -1,4 +1,4 @@
-use ashscript_types::{constants::map::HEX_LAYOUT, objects::GameObjectKind};
+use ashscript_types::{components::body::UnitBody, constants::map::HEX_LAYOUT, objects::GameObjectKind};
 use bevy::{
     app::{App, Plugin},
     prelude::*,
@@ -11,7 +11,7 @@ use rand;
 use uuid::Uuid;
 
 use crate::{
-    components::{Health, MappedGameObjects, OccupiesTile, Owner, Unit},
+    components::{Health, MappedGameObjects, OccupiesTile, Owner, Unit, UnitBodyComp},
     constants::{unit, UnitPart},
 };
 
@@ -30,6 +30,7 @@ pub fn create_unit(
     game_object_map: &mut MappedGameObjects,
     health: &ashscript_types::components::health::Health,
     owner_id: Uuid,
+    body: ashscript_types::components::body::UnitBody,
 ) {
 
     /* let mesh = Mesh2dHandle(meshes.add(Circle::new(30.)));
@@ -77,6 +78,7 @@ pub fn create_unit(
             Unit {
                 ..default()
             },
+            UnitBodyComp(body),
             Owner(owner_id),
             RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
         ))
