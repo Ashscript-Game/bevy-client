@@ -49,6 +49,7 @@ fn game_init(mut commands: Commands, camera_targets: Res<CameraTargets>) {
         Camera2dBundle {
             camera: Camera {
                 hdr: true,
+                order: 1,
                 target: RenderTarget::Image(camera_targets.floor_target.clone()),
                 ..Default::default()
             },
@@ -66,6 +67,7 @@ fn game_init(mut commands: Commands, camera_targets: Res<CameraTargets>) {
         Camera2dBundle {
             camera: Camera {
                 hdr: true,
+                order: 1,
                 target: RenderTarget::Image(camera_targets.walls_target.clone()),
                 ..Default::default()
             },
@@ -83,6 +85,7 @@ fn game_init(mut commands: Commands, camera_targets: Res<CameraTargets>) {
         Camera2dBundle {
             camera: Camera {
                 hdr: true,
+                order: 1,
                 target: RenderTarget::Image(camera_targets.objects_target.clone()),
                 ..Default::default()
             },

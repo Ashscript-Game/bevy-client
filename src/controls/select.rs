@@ -74,7 +74,7 @@ pub fn select_ui(
         Option<&Health>,
     )>,
 ) {
-    let panel = egui::SidePanel::right("select").min_width(200.0);
+    let panel = egui::SidePanel::right("select").min_width(200.0).max_width(200.0);
 
     set_theme(egui.ctx_mut(), LATTE);
 
@@ -122,15 +122,17 @@ pub fn select_ui(
                     header(ui, "Unit body");
                     ui.add_space(spacing::SMALL);
 
-                    for (part, count) in unit_body.0.parts.iter() {
-                        ui.label(format!("{:?}: {}", part, count));
-                        header_with_text(
-                            ui,
-                            format!("{:?}:", part),
-                            format!("{:?}: {}", part, count),
-                        );
-                        ui.add_space(spacing::SMALL);
-                    }
+                    ui.horizontal_wrapped(|ui| {
+                        for (part, count) in unit_body.0.parts.iter() {
+                            ui.label(format!("{:?}: {}", part, count));
+                            header_with_text(
+                                ui,
+                                format!("{:?}:", part),
+                                format!("{:?}: {}", part, count),
+                            );
+                            ui.add_space(spacing::SMALL);
+                        }
+                    });
                 }
 
                 ui.separator();
