@@ -20,7 +20,7 @@ pub fn spawn(
         Camera2dBundle {
             camera: Camera {
                 hdr: true,
-                order: 2,
+                order: 4,
                 target: RenderTarget::Image(camera_targets.objects_target.clone()),
                 viewport: Some(Viewport {
                     physical_position: UVec2::new(0, 0),
