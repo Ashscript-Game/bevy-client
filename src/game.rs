@@ -11,16 +11,7 @@ use bevy_magic_light_2d::{
 use enum_map::enum_map;
 
 use crate::{
-    components::GameObjectMap,
-    constants::{self},
-    controls::plugin::ControlsPlugin,
-    debug::plugin::DebugPlugin,
-    engine::plugin::EnginePlugin,
-    lighting::plugin::LightingPlugin,
-    networker::handle_network_events,
-    projectile::plugin::ProjectilePlugin,
-    structure::plugin::StructuresPlugin,
-    unit::plugin::UnitPlugin,
+    camera::minimap, components::{GameObjectMap, ScrollableCamera}, constants::{self}, controls::plugin::ControlsPlugin, debug::plugin::DebugPlugin, engine::plugin::EnginePlugin, lighting::plugin::LightingPlugin, networker::handle_network_events, projectile::plugin::ProjectilePlugin, structure::plugin::StructuresPlugin, unit::plugin::UnitPlugin
 };
 
 pub struct GamePlugin;
@@ -37,7 +28,7 @@ impl Plugin for GamePlugin {
             UnitPlugin,
             StructuresPlugin,
         ))
-        .add_systems(Startup, (game_init, spawn_game_object_map))
+        .add_systems(Startup, (game_init, spawn_game_object_map, minimap::spawn))
         .add_systems(Update, (/* connection_handler,  */handle_network_events));
     }
 }
@@ -67,6 +58,7 @@ fn game_init(mut commands: Commands, camera_targets: Res<CameraTargets>) {
         Name::new("floor_camera"),
         FloorCamera,
         SpriteCamera,
+        ScrollableCamera,
         RenderLayers::from_layers(CAMERA_LAYER_FLOOR),
     ));
 
@@ -83,6 +75,7 @@ fn game_init(mut commands: Commands, camera_targets: Res<CameraTargets>) {
         Name::new("walls_camera"),
         WallsCamera,
         SpriteCamera,
+        ScrollableCamera,
         RenderLayers::from_layers(CAMERA_LAYER_WALLS),
     ));
 
@@ -100,6 +93,7 @@ fn game_init(mut commands: Commands, camera_targets: Res<CameraTargets>) {
         Name::new("obejects_camera"),
         ObjectsCamera,
         SpriteCamera,
+        ScrollableCamera,
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
 }

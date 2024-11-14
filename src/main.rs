@@ -35,6 +35,8 @@ pub mod types;
 pub mod unit;
 pub mod utils;
 pub mod ui;
+pub mod camera;
+pub mod resources;
 
 fn main() {
     let network_info = networker::create_network_resource();

@@ -5,7 +5,7 @@ use bevy::{
 };
 use bevy_magic_light_2d::SpriteCamera;
 
-use crate::constants::{self};
+use crate::{components::ScrollableCamera, constants::{self}};
 
 pub struct CameraControlsPlugin;
 
@@ -16,7 +16,7 @@ impl Plugin for CameraControlsPlugin {
 }
 
 fn control_camera_zoom(
-    mut cameras: Query<&mut OrthographicProjection, With<SpriteCamera>>,
+    mut cameras: Query<&mut OrthographicProjection, With<ScrollableCamera>>,
     time: Res<Time>,
     mut scroll_event_reader: EventReader<MouseWheel>,
 ) {

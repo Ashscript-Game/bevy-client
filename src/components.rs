@@ -318,3 +318,9 @@ pub struct DebugUI {
     pub enabled: bool,
     pub chunk_lines: bool,
 }
+
+#[derive(Component)]
+pub struct ScrollableCamera;
+
+#[derive(Component)]
+pub struct MinimapCamera;
