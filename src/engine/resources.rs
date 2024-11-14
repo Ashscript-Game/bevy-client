@@ -46,6 +46,11 @@ pub fn generate_resources_from_keyframe(
     let wall_hexes = state.world.query::<(&Terrain, &ashscript_types::components::terrain::Wall, &Tile)>().iter().map(|(_, (_, _, tile))| {
         tile.hex
     }).collect::<HashSet<Hex>>();
+
+    let resource_node_hexes = state.world.query::<(&ashscript_types::components::resource::ResourceNode, &Tile)>().iter().map(|(_, (node, tile))| {
+        tile.hex
+    }).collect::<HashSet<Hex>>();
+
     println!("wall hexes: {:#?}", wall_hexes.len());
 
     for (entity, (terrain, _, tile)) in state
@@ -59,6 +64,10 @@ pub fn generate_resources_from_keyframe(
         {
             continue;
         };
+
+        if resource_node_hexes.contains(&tile.hex) {
+            continue;
+        }
 
         generate_terrain(
             &mut commands,
