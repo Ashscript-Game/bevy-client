@@ -1,4 +1,4 @@
-use ashscript_types::{global::Global, keyframe::KeyFrame, map::Map, objects::{GameObjectKind}};
+use ashscript_types::{components::body::UnitBody, global::Global, keyframe::KeyFrame, map::Map, objects::GameObjectKind};
 use bevy::{
     ecs::system::SystemParam,
     prelude::*,
@@ -93,7 +93,7 @@ pub struct Unit {
 }
 
 #[derive(Component)]
-pub struct UnitPartComp(pub UnitPart);
+pub struct UnitPartComp(pub UnitBody);
 
 #[derive(Component)]
 pub struct Laser {

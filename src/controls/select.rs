@@ -1,8 +1,20 @@
 use ashscript_types::{constants::map::HEX_LAYOUT, objects::GameObjectKind};
 use bevy::{ecs::observer::TriggerTargets, input::mouse::MouseButtonInput, prelude::*};
-use bevy_egui::{egui, EguiContexts};
+use bevy_egui::{
+    egui::{self, Color32, Vec2b},
+    EguiContexts,
+};
 
-use crate::components::{Health, MappedGameObjects, Selected, SelectedGameObjects, Unit, UnitPartComp};
+use crate::{
+    components::{
+        Health, MappedGameObjects, Owner, Selected, SelectedGameObjects, Unit, UnitPartComp,
+    },
+    ui::{
+        constants::{spacing, LATTE},
+        theme::set_theme,
+        widgets::{header, header_with_text},
+    },
+};
 
 pub fn handle_mouse_click(
     mut mouse_reader: EventReader<MouseButtonInput>,
@@ -54,31 +66,75 @@ pub fn handle_mouse_click(
 pub fn select_ui(
     selected: ResMut<SelectedGameObjects>,
     mut egui: EguiContexts,
-    query: Query<(&Transform, Option<&Unit>, Option<&UnitPartComp>, Option<&Health>)>,
+    query: Query<(
+        &Transform,
+        Option<&Owner>,
+        Option<&Unit>,
+        Option<&UnitPartComp>,
+        Option<&Health>,
+    )>,
 ) {
     let panel = egui::SidePanel::right("select").min_width(200.0);
 
+    set_theme(egui.ctx_mut(), LATTE);
+
     panel.show(egui.ctx_mut(), |ui| {
-        for entity in selected.0.iter() {
-            let Ok((transform, unit, unit_body, health)) = query.get(*entity) else {
-                continue;
-            };
+        egui::ScrollArea::vertical().show(ui, |ui| {
+            for entity in selected.0.iter() {
+                let Ok((transform, owner, unit, unit_body, health)) = query.get(*entity) else {
+                    continue;
+                };
 
-            ui.label(format!(
-                "Position: {}, {}",
-                HEX_LAYOUT
-                    .world_pos_to_hex(transform.translation.truncate())
-                    .x,
-                HEX_LAYOUT
-                    .world_pos_to_hex(transform.translation.truncate())
-                    .y
-            ));
+                ui.add_space(spacing::SMALL);
 
-            if let Some(health) = health {
-                ui.label(format!("Health: {} / {}", health.current, health.max));
+                header_with_text(
+                    ui,
+                    "Position:",
+                    format!(
+                        "{}, {}",
+                        HEX_LAYOUT
+                            .world_pos_to_hex(transform.translation.truncate())
+                            .x,
+                        HEX_LAYOUT
+                            .world_pos_to_hex(transform.translation.truncate())
+                            .y
+                    ),
+                );
+
+                ui.add_space(spacing::SMALL);
+
+                if let Some(owner) = owner {
+                    header_with_text(ui, "Owner:", owner.0);
+                    // ui.label(format!("Owner: {}", owner.0)).color(Color32::WHITE);
+                    ui.add_space(spacing::SMALL);
+                }
+
+                if let Some(health) = health {
+                    header_with_text(
+                        ui,
+                        "Health:",
+                        format!("{} / {}", health.current, health.max),
+                    );
+                    ui.add_space(spacing::SMALL);
+                }
+
+                if let Some(unit_body) = unit_body {
+                    header(ui, "Unit body");
+                    ui.add_space(spacing::SMALL);
+
+                    for (part, count) in unit_body.0.parts.iter() {
+                        ui.label(format!("{:?}: {}", part, count));
+                        header_with_text(
+                            ui,
+                            format!("{:?}:", part),
+                            format!("{:?}: {}", part, count),
+                        );
+                        ui.add_space(spacing::SMALL);
+                    }
+                }
+
+                ui.separator();
             }
-
-
-        }
+        });
     });
 }

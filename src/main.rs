@@ -14,7 +14,7 @@ use bevy_eventwork::EventworkRuntime;
 use bevy_eventwork_mod_websockets::{NetworkSettings, WebSocketProvider};
 use bevy_magic_light_2d::{gi::BevyMagicLight2DPlugin, prelude::*};
 use components::{
-    Actions, DebugSettings, DebugUI, GameSettings, GameState, LoadedChunks, PlayerStates, ProjectileMoveEndTimer, SelectedGameObjects, State, UnloadedChunks
+    Actions, DebugUI, GameSettings, GameState, LoadedChunks, PlayerStates, ProjectileMoveEndTimer, SelectedGameObjects, State, UnloadedChunks
 };
 use constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK};
 use game::GamePlugin;
@@ -34,6 +34,7 @@ pub mod structure;
 pub mod types;
 pub mod unit;
 pub mod utils;
+pub mod ui;
 
 fn main() {
     let network_info = networker::create_network_resource();
@@ -78,9 +79,6 @@ fn main() {
             TimerMode::Once,
         )))
         .insert_resource(GameSettings { lights: true })
-        .insert_resource(DebugSettings {
-            hightlight_chunks: false,
-        })
         .insert_resource(State {
             map: Map::new(),
             global: Global::new(),
