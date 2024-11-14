@@ -11,7 +11,7 @@ use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use rand::{thread_rng, Rng};
 
 use crate::{
-    components::{Laser, Unit},
+    components::{Laser, State, Unit},
     constants::{
         laser, projectile, PROJECTILE_MOVE_END_TICK_PORTION,
         SECONDS_PER_TICK,
@@ -24,6 +24,7 @@ pub fn update_lasers(
     units: Query<(&Unit, &Transform), Without<Laser>>,
     mut commands: Commands,
     time: Res<Time>,
+    state: Res<State>,
 ) {
     for (mut laser_transform, mut laser, laser_entity) in lasers.iter_mut() {
         let Ok((_, unit_transform)) = units.get(laser.target_entity) else {
@@ -59,14 +60,14 @@ pub fn update_lasers(
         let delta_seconds = time.delta_seconds();
         let speed = Vec3::new(
             (laser.target_pos.x/* unit_transform.translation.x */ - laser.start_pos.x)
-                / SECONDS_PER_TICK
-                / PROJECTILE_MOVE_END_TICK_PORTION
+                / (state.global.last_tick_duration.as_secs_f32()
+                * PROJECTILE_MOVE_END_TICK_PORTION)
                 * delta_seconds
                 * 2.
                 + projectile::DEFAULT_SPEED * delta_seconds,
             (laser.target_pos.y/* unit_transform.translation.y */ - laser.start_pos.y)
-                / SECONDS_PER_TICK
-                / PROJECTILE_MOVE_END_TICK_PORTION
+                / (state.global.last_tick_duration.as_secs_f32()
+                * PROJECTILE_MOVE_END_TICK_PORTION)
                 * delta_seconds
                 * 2.
                 + projectile::DEFAULT_SPEED * delta_seconds,

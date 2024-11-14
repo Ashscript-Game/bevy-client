@@ -2,11 +2,11 @@ use ashscript_types::{constants::map::HEX_LAYOUT, objects::GameObjectKind};
 use bevy::prelude::*;
 
 use crate::{
-    components::{MappedGameObjects, Unit},
+    components::{MappedGameObjects, State, Unit},
     constants::{PROJECTILE_MOVE_END_TICK_PORTION, SECONDS_PER_TICK},
 };
 
-pub fn update_units(mut units: Query<(&mut Transform, &Unit)>, time: Res<Time>) {
+pub fn update_units(mut units: Query<(&mut Transform, &Unit)>, time: Res<Time>, state: Res<State>) {
     for (mut transform, unit) in units.iter_mut() {
         let Some(moving) = &unit.moving else {
             continue;
@@ -19,8 +19,8 @@ pub fn update_units(mut units: Query<(&mut Transform, &Unit)>, time: Res<Time>) 
 
         transform.translation += translation_delta; */
 
-        let x_delta = (moving.target_pos.x - moving.start_pos.x) / SECONDS_PER_TICK / PROJECTILE_MOVE_END_TICK_PORTION * time.delta_seconds() /* * direction.x */;
-        let y_delta = (moving.target_pos.y - moving.start_pos.y) / SECONDS_PER_TICK / PROJECTILE_MOVE_END_TICK_PORTION * time.delta_seconds() /* * direction.y */;
+        let x_delta = (moving.target_pos.x - moving.start_pos.x) / (state.global.last_tick_duration.as_secs_f32() * PROJECTILE_MOVE_END_TICK_PORTION)  * time.delta_seconds() /* * direction.x */;
+        let y_delta = (moving.target_pos.y - moving.start_pos.y) / (state.global.last_tick_duration.as_secs_f32() * PROJECTILE_MOVE_END_TICK_PORTION)  * time.delta_seconds() /* * direction.y */;
 
         transform.translation.x += x_delta;
         transform.translation.y += y_delta;
