@@ -134,9 +134,13 @@ pub struct ProjectileMoveEndTimer(pub Timer);
 /// can use element in queries to get components. query.get(element).unwrap()
 pub struct GameObjectMap(pub EnumMap<GameObjectKind, HashMap<Hex, Entity>>);
 
+#[derive(Component)]
+pub struct ServerClientEntitiesMap(pub HashMap<hecs::Entity, Entity>);
+
 #[derive(SystemParam)]
 pub struct MappedGameObjects<'w, 's> {
     pub entities: Query<'w, 's, &'static mut GameObjectMap>,
+    pub server_client_entities: Query<'w, 's, &'static ServerClientEntitiesMap>,
 }
 
 impl<'w, 's> MappedGameObjects<'w, 's> {
@@ -162,7 +166,18 @@ impl<'w, 's> MappedGameObjects<'w, 's> {
 
         Some(())
     }
+
+    pub fn entity_from_server(&self, entity: hecs::Entity) -> Option<&Entity> {
+        self.server_client_entities.single().0.get(&entity)
+    }
+
+    pub fn entity_from_server_unchecked(&self, entity: hecs::Entity) -> &Entity {
+        self.entity_from_server(entity).expect("Entity not found")
+    }
 }
+
+#[derive(Component)]
+pub struct ServerEntity(pub hecs::Entity);
 
 #[derive(Resource)]
 pub struct GameSettings {

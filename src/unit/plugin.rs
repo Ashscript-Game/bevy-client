@@ -11,7 +11,7 @@ use rand;
 use uuid::Uuid;
 
 use crate::{
-    components::{Health, MappedGameObjects, OccupiesTile, Owner, Unit, UnitBodyComp},
+    components::{GameObjectKindComp, Health, MappedGameObjects, OccupiesTile, Owner, Unit, UnitBodyComp},
     constants::{unit, UnitPart},
 };
 
@@ -79,6 +79,7 @@ pub fn create_unit(
                 ..default()
             },
             UnitBodyComp(body),
+            GameObjectKindComp(GameObjectKind::Unit),
             Owner(owner_id),
             RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
         ))

@@ -67,7 +67,7 @@ fn projectile_move_end_event(
 ) {
     projectile_timer.0.tick(time.delta());
 
-    if projectile_timer.0.finished() {
+    if projectile_timer.0.just_finished() {
         event_writer.send(ProjectileMoveEndEvent);
     }
 }

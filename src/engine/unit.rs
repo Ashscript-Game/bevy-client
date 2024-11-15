@@ -131,8 +131,8 @@ pub fn units_attack_from_actions(
         };
 
         if action.damage >= target_health.current {
-            commands.entity(*target_entity).despawn();
-            game_object_map.remove(&action.target_hex, action.target_kind);
+            target_health.current = 0;
+            continue;
         }
 
         target_health.current = target_health.current.saturating_sub(action.damage);

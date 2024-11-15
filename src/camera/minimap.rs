@@ -34,10 +34,58 @@ pub fn spawn(
         },
         /* BloomSettings::NATURAL, */
         Name::new("minimap_camera"),
-        ObjectsCamera,
+        /* ObjectsCamera, */
         SpriteCamera,
         MinimapCamera,
-        RenderLayers::from_layers(ALL_LAYERS),
+        RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
+    ));
+
+    commands.spawn((
+        Camera2dBundle {
+            camera: Camera {
+                hdr: true,
+                order: 4,
+                target: RenderTarget::Image(camera_targets.walls_target.clone()),
+                viewport: Some(Viewport {
+                    physical_position: UVec2::new(0, 0),
+                    physical_size: UVec2::new(256, 256),
+                    ..default()
+                }),
+                ..Default::default()
+            },
+            projection: projection.clone(),
+            ..Default::default()
+        },
+        /* BloomSettings::NATURAL, */
+        Name::new("minimap_camera"),
+        /* ObjectsCamera, */
+        SpriteCamera,
+        MinimapCamera,
+        RenderLayers::from_layers(CAMERA_LAYER_WALLS),
+    ));
+
+    commands.spawn((
+        Camera2dBundle {
+            camera: Camera {
+                hdr: true,
+                order: 4,
+                target: RenderTarget::Image(camera_targets.floor_target.clone()),
+                viewport: Some(Viewport {
+                    physical_position: UVec2::new(0, 0),
+                    physical_size: UVec2::new(256, 256),
+                    ..default()
+                }),
+                ..Default::default()
+            },
+            projection: projection.clone(),
+            ..Default::default()
+        },
+        /* BloomSettings::NATURAL, */
+        Name::new("minimap_camera"),
+        /* ObjectsCamera, */
+        SpriteCamera,
+        MinimapCamera,
+        RenderLayers::from_layers(CAMERA_LAYER_FLOOR),
     ));
 }
 

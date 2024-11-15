@@ -1,18 +1,19 @@
 use ashscript_types::{constants::map::HEX_LAYOUT, objects::GameObjectKind};
 use bevy::{ecs::observer::TriggerTargets, input::mouse::MouseButtonInput, prelude::*};
 use bevy_egui::{
-    egui::{self, Color32, Vec2b},
+    egui::{self, Color32, Vec2, Vec2b},
     EguiContexts,
 };
 
 use crate::{
     components::{
-        Health, MappedGameObjects, Owner, Selected, SelectedGameObjects, Unit, UnitBodyComp,
+        GameObjectKindComp, Health, MappedGameObjects, Owner, Selected, SelectedGameObjects, Unit,
+        UnitBodyComp,
     },
     ui::{
-        constants::{spacing, LATTE},
+        constants::{spacing, text_size, LATTE},
         theme::set_theme,
-        widgets::{header, header_with_text},
+        widgets::{custom_header, header, header_with_text},
     },
 };
 
@@ -20,7 +21,7 @@ pub fn handle_mouse_click(
     mut mouse_reader: EventReader<MouseButtonInput>,
     windows: Query<&Window>,
     cameras: Query<(&Camera, &GlobalTransform)>,
-    units: Query<(&Unit, &Transform)>,
+    units: Query<(&GameObjectKindComp, &Transform)>,
     mapped_game_objects: MappedGameObjects,
     mut selected: ResMut<SelectedGameObjects>,
 ) {
@@ -43,7 +44,7 @@ pub fn handle_mouse_click(
                     let hex = HEX_LAYOUT.world_pos_to_hex(mouse_pos);
 
                     if let Some(entity) = mapped_game_objects.entity(&hex, GameObjectKind::Unit) {
-                        let (unit, transform) = units.get(*entity).unwrap();
+                        let (_, transform) = units.get(*entity).unwrap();
 
                         println!("selected unit at: {} {}", hex.x, hex.y);
 
@@ -56,6 +57,8 @@ pub fn handle_mouse_click(
                 }
                 MouseButton::Right => {
                     println!("right mouse button clicked");
+
+                    selected.0.clear();
                 }
                 _ => {}
             }
@@ -68,6 +71,7 @@ pub fn select_ui(
     mut egui: EguiContexts,
     query: Query<(
         &Transform,
+        Option<&GameObjectKindComp>,
         Option<&Owner>,
         Option<&Unit>,
         Option<&UnitBodyComp>,
@@ -83,11 +87,17 @@ pub fn select_ui(
     panel.show(egui.ctx_mut(), |ui| {
         egui::ScrollArea::vertical().show(ui, |ui| {
             for entity in selected.0.iter() {
-                let Ok((transform, owner, unit, unit_body, health)) = query.get(*entity) else {
+                let Ok((transform, kind, owner, unit, unit_body, health)) = query.get(*entity)
+                else {
                     continue;
                 };
 
-                ui.add_space(spacing::SMALL);
+                ui.add_space(spacing::XSMALL);
+
+                if let Some(kind) = kind {
+                    custom_header(ui, format!("{:?}", kind.0), text_size::MEDIUM);
+                    ui.add_space(spacing::XSMALL);
+                }
 
                 header_with_text(
                     ui,
@@ -103,12 +113,11 @@ pub fn select_ui(
                     ),
                 );
 
-                ui.add_space(spacing::SMALL);
+                ui.add_space(spacing::XSMALL);
 
                 if let Some(owner) = owner {
                     header_with_text(ui, "Owner:", owner.0);
-                    // ui.label(format!("Owner: {}", owner.0)).color(Color32::WHITE);
-                    ui.add_space(spacing::SMALL);
+                    ui.add_space(spacing::XSMALL);
                 }
 
                 if let Some(health) = health {
@@ -117,7 +126,7 @@ pub fn select_ui(
                         "Health:",
                         format!("{} / {}", health.current, health.max),
                     );
-                    ui.add_space(spacing::SMALL);
+                    ui.add_space(spacing::XSMALL);
                 }
 
                 if let Some(unit_body) = unit_body {
@@ -126,20 +135,19 @@ pub fn select_ui(
                         "Age",
                         format!("{} / {}", unit_body.0.age, unit_body.0.max_age()),
                     );
-                    ui.add_space(spacing::SMALL);
+                    ui.add_space(spacing::XSMALL);
 
                     header(ui, "Unit body");
-                    ui.add_space(spacing::SMALL);
+                    ui.add_space(spacing::XSMALL);
 
-                    ui.horizontal_wrapped(|ui| {
+                    ui.vertical(|ui| {
                         for (part, count) in unit_body.0.parts.iter() {
-                            ui.label(format!("{:?}: {}", part, count));
-                            header_with_text(
-                                ui,
-                                format!("{:?}:", part),
-                                format!("{:?}: {}", part, count),
-                            );
-                            ui.add_space(spacing::SMALL);
+                            if *count == 0 {
+                                continue;
+                            }
+
+                            header_with_text(ui, format!("{:?}:", part), count.to_string());
+                            ui.add_space(spacing::XSMALL);
                         }
                     });
                 }

@@ -233,7 +233,7 @@ fn generate_terrain(
             if surrounding_walls > 0 {
                 commands.spawn((
                     SpriteBundle {
-                        texture: asset_server.load("terrain/mountain.png"),
+                        texture: asset_server.load("terrain/mountain_trans.png"),
                         transform: Transform {
                             translation: Vec3::new(world_pos.x, world_pos.y, 1.0),
                             scale: Vec3::new(0.3, 0.3, 1.0),
@@ -245,7 +245,7 @@ fn generate_terrain(
                     OccupiesTile,
                     RenderLayers::from_layers(CAMERA_LAYER_WALLS),
                     LightOccluder2D {
-                        h_size: Vec2::new(HEX_SIZE.x, HEX_SIZE.x * 0.5),
+                        h_size: Vec2::new(HEX_SIZE.x * 0.6, HEX_SIZE.x * 0.6),
                     },
                 ));
                 return

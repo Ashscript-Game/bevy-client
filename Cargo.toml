@@ -39,6 +39,7 @@ url = "2.5.2"
 uuid = { version = "1.11.0", features=["serde"] }
 ewebsock = "0.7.0"
 hecs = "0.10.5"
+bevy_hanabi = "0.13.0"
 
 [features]
 # cargo run --features dev
