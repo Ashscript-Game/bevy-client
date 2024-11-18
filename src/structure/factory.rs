@@ -1,5 +1,5 @@
 
-use ashscript_types::constants::map::HEX_LAYOUT;
+use ashscript_types::{components::{energy::Energy, storage::Storage}, constants::map::HEX_LAYOUT};
 use bevy::{
     prelude::*,
     render::view::RenderLayers,
@@ -9,7 +9,7 @@ use bevy_magic_light_2d::prelude::{OmniLightSource2D, CAMERA_LAYER_OBJECTS};
 use uuid::Uuid;
 
 use crate::{
-    components::{Factory, OccupiesTile, Owner, Store},
+    components::{EnergyComp, Factory, OccupiesTile, Owner, StorageComp, Store},
     constants::{factory, Resource},
 };
 
@@ -18,6 +18,7 @@ pub fn spawn_factory(
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
     owner_id: Uuid,
+    storage: Storage,
 ) {
     let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
 
@@ -43,9 +44,8 @@ pub fn spawn_factory(
                 allowed_inputs: Some(HashSet::from([Resource::Metal])),
                 capacity: 1000,
             },
-            energy: 100,
-            energy_capacity: 1000
         },
+        StorageComp(storage),
         OmniLightSource2D {
             intensity: 0.2,
             color: factory::COLOR,

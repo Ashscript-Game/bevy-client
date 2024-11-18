@@ -7,8 +7,7 @@ use bevy_egui::{
 
 use crate::{
     components::{
-        GameObjectKindComp, Health, MappedGameObjects, Owner, Selected, SelectedGameObjects, Unit,
-        UnitBodyComp,
+        GameObjectKindComp, HealthComp, MappedGameObjects, Owner, Selected, SelectedGameObjects, Unit, UnitBodyComp
     },
     ui::{
         constants::{spacing, text_size, LATTE},
@@ -75,7 +74,7 @@ pub fn select_ui(
         Option<&Owner>,
         Option<&Unit>,
         Option<&UnitBodyComp>,
-        Option<&Health>,
+        Option<&HealthComp>,
     )>,
 ) {
     let panel = egui::SidePanel::right("select")
@@ -124,7 +123,7 @@ pub fn select_ui(
                     header_with_text(
                         ui,
                         "Health:",
-                        format!("{} / {}", health.current, health.max),
+                        format!("{} / {}", health.0.current, health.0.max),
                     );
                     ui.add_space(spacing::XSMALL);
                 }

@@ -1,4 +1,4 @@
-use ashscript_types::{components::body::UnitBody, global::Global, keyframe::KeyFrame, map::Map, objects::GameObjectKind};
+use ashscript_types::{components::{body::UnitBody, energy::Energy, health::Health, storage::Storage}, global::Global, keyframe::KeyFrame, map::Map, objects::GameObjectKind};
 use bevy::{
     ecs::system::SystemParam,
     prelude::*,
@@ -74,18 +74,16 @@ pub struct Player {
 pub struct GameObjectKindComp(pub GameObjectKind);
 
 #[derive(Component)]
-pub struct Health {
-    pub current: u32,
-    pub max: u32,
-}
+pub struct HealthComp(pub Health);
 
 #[derive(Component)]
-pub struct Energy(pub u32);
+pub struct EnergyComp(pub Energy);
+
+#[derive(Component)]
+pub struct StorageComp(pub Storage);
 
 #[derive(Component, Default, Clone)]
 pub struct Unit {
-    pub energy: u32,
-    pub energy_capacity: u32,
     pub store: Store,
     pub name: String,
     pub weight: u32,
@@ -114,7 +112,6 @@ pub struct Moving {
 
 #[derive(Component, Default)]
 pub struct Turret {
-    pub energy: u32,
     pub store: Store,
 }
 
@@ -294,8 +291,6 @@ pub enum Structure {
 #[derive(Component, Default, Clone)]
 pub struct Factory {
     pub store: Store,
-    pub energy: u32,
-    pub energy_capacity: u32,
     // 100(%)+ = completed
     pub production_progress: u8,
 }

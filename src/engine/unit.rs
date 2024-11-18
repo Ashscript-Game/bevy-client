@@ -1,5 +1,5 @@
 use ashscript_types::{
-    components::{owner::Owner, tile::Tile},
+    components::{energy::Energy, health::Health, owner::Owner, tile::Tile},
     constants::map::{CHUNK_SIZE, HEX_LAYOUT},
     objects::GameObjectKind,
 };
@@ -8,8 +8,7 @@ use hexx::Hex;
 
 use crate::{
     components::{
-        intents, Actions, Health, LoadChunks, MappedGameObjects, Moving, PlayerState, State,
-        TickEvent, Unit, UnloadedChunks,
+        intents, Actions, HealthComp, LoadChunks, MappedGameObjects, Moving, PlayerState, State, TickEvent, Unit, UnloadedChunks
     },
     constants::{self, GeneralResult, UnitPart, UNIT_PART_WEIGHTS},
     unit::plugin::create_unit,
@@ -23,7 +22,7 @@ pub fn generate_units_on_chunkload(
     mut game_object_map: MappedGameObjects,
     state: Res<State>,
 ) {
-    for (entity, (_, tile, owner, health, body)) in state
+    for (entity, (_, tile, owner, health, body, energy)) in state
         .world
         .query::<((
             &ashscript_types::components::unit::Unit,
@@ -31,6 +30,7 @@ pub fn generate_units_on_chunkload(
             &Owner,
             &ashscript_types::components::health::Health,
             &ashscript_types::components::body::UnitBody,
+            &Energy,
         ))>()
         .iter()
     {
@@ -46,9 +46,10 @@ pub fn generate_units_on_chunkload(
             &mut commands,
             &asset_server,
             &mut game_object_map,
-            health,
+            *health,
             owner.0,
             *body,
+            *energy,
         );
     }
 }
@@ -67,9 +68,10 @@ pub fn generate_units_from_factory(
             &mut commands,
             &asset_server,
             &mut game_object_map,
-            &ashscript_types::components::health::Health::for_unit(&action.body),
+            ashscript_types::components::health::Health::for_unit(&action.body),
             action.owner,
             action.body,
+            Energy::for_unit_body(&action.body),
         );
     }
 }
@@ -117,7 +119,7 @@ pub fn move_units_from_actions(
 pub fn units_attack_from_actions(
     actions: Res<Actions>,
     mut commands: Commands,
-    mut targets: Query<(&Transform, &mut Health)>,
+    mut targets: Query<(&Transform, &mut HealthComp)>,
     mut game_object_map: MappedGameObjects,
 ) {
     for action in actions.0.unit_attack.iter() {
@@ -125,22 +127,22 @@ pub fn units_attack_from_actions(
         else {
             continue;
         };
-        
+
         let Ok((_, mut target_health)) = targets.get_mut(*target_entity) else {
             continue;
         };
 
-        if action.damage >= target_health.current {
-            target_health.current = 0;
+        if action.damage >= target_health.0.current {
+            target_health.0.current = 0;
             continue;
         }
 
-        target_health.current = target_health.current.saturating_sub(action.damage);
+        target_health.0.current = target_health.0.current.saturating_sub(action.damage);
     }
 }
 
 pub fn kill_units(
-    units: Query<(&Unit, &Transform, &Health, Entity)>,
+    units: Query<(&Unit, &Transform, &HealthComp, Entity)>,
     mut commands: Commands,
     mut game_object_map: MappedGameObjects,
 ) {
@@ -155,7 +157,7 @@ pub fn kill_units(
             continue;
         } */
 
-        if health.current == 0 {
+        if health.0.current == 0 {
             game_object_map.remove(
                 &HEX_LAYOUT.world_pos_to_hex(transform.translation.truncate()),
                 GameObjectKind::Unit,

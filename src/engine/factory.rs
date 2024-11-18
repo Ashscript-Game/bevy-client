@@ -1,4 +1,4 @@
-use ashscript_types::{components::{owner::Owner, tile::Tile}, constants::map::CHUNK_SIZE};
+use ashscript_types::{components::{owner::Owner, storage::Storage, tile::Tile}, constants::map::CHUNK_SIZE};
 use bevy::prelude::*;
 use hecs::With;
 
@@ -11,13 +11,13 @@ pub fn generate_factories_from_keyframe(
     state: Res<State>,
 ) {
 
-    for (entity, (_, tile, owner)) in state.world.query::<((&ashscript_types::components::factory::Factory, &Tile, &Owner))>().iter() {
+    for (entity, (_, tile, owner, storage)) in state.world.query::<((&ashscript_types::components::factory::Factory, &Tile, &Owner, &Storage))>().iter() {
         
         println!("new factory");
         if !unloaded_chunks.0.contains(&tile.hex.to_lower_res(CHUNK_SIZE)) {
             continue;
         }
 
-        spawn_factory(tile.hex, &mut commands, &asset_server, owner.0);
+        spawn_factory(tile.hex, &mut commands, &asset_server, owner.0, storage.clone());
     }
 }

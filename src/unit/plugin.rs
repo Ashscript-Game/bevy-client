@@ -1,4 +1,4 @@
-use ashscript_types::{components::body::UnitBody, constants::map::HEX_LAYOUT, objects::GameObjectKind};
+use ashscript_types::{components::{body::UnitBody, energy::Energy, health::Health}, constants::map::HEX_LAYOUT, objects::GameObjectKind};
 use bevy::{
     app::{App, Plugin},
     prelude::*,
@@ -11,7 +11,7 @@ use rand;
 use uuid::Uuid;
 
 use crate::{
-    components::{GameObjectKindComp, Health, MappedGameObjects, OccupiesTile, Owner, Unit, UnitBodyComp},
+    components::{EnergyComp, GameObjectKindComp, HealthComp, MappedGameObjects, OccupiesTile, Owner, Unit, UnitBodyComp},
     constants::{unit, UnitPart},
 };
 
@@ -28,9 +28,10 @@ pub fn create_unit(
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
     game_object_map: &mut MappedGameObjects,
-    health: &ashscript_types::components::health::Health,
+    health: Health,
     owner_id: Uuid,
-    body: ashscript_types::components::body::UnitBody,
+    body: UnitBody,
+    energy: Energy,
 ) {
 
     /* let mesh = Mesh2dHandle(meshes.add(Circle::new(30.)));
@@ -70,11 +71,9 @@ pub fn create_unit(
                 falloff: Vec3::new(2., 2., 0.005),
                 ..Default::default()
             },
+            EnergyComp(energy),
             OccupiesTile,
-            Health {
-                current: health.current,
-                max: health.current, // initialize using max hax health
-            },
+            HealthComp(health),
             Unit {
                 ..default()
             },

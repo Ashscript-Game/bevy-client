@@ -1,4 +1,4 @@
-use crate::{components::{Actions, Health, MappedGameObjects}, projectile::laser::create_laser};
+use crate::{components::{Actions, HealthComp, MappedGameObjects}, projectile::laser::create_laser};
 use ashscript_types::constants::map::HEX_LAYOUT;
 use bevy::prelude::*;
 
@@ -6,7 +6,7 @@ pub fn generate_attack_projectiles_from_keyframe(
     actions: Res<Actions>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    targets: Query<(&Transform, &Health)>,
+    targets: Query<(&Transform, &HealthComp)>,
     game_object_map: MappedGameObjects,
 ) {
     for action in actions.0.unit_attack.iter() {

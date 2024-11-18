@@ -2,7 +2,7 @@ use ashscript_types::actions::{self, UnitAttack};
 use bevy::{prelude::*, utils::hashbrown::HashMap};
 use hexx::Hex;
 
-use crate::components::{Actions, GameObjectKindComp, Health, State, Unit};
+use crate::components::{Actions, GameObjectKindComp, HealthComp, State, Unit};
 
 pub fn unit_attack_actions(units: Query<(&Unit, &Transform, Entity)>, actions: Res<Actions>) {
     for (unit, transform, entity) in units.iter() {
@@ -16,7 +16,7 @@ pub fn charge_unit_attack_actions() {
 }
 
 /// Applies damage to entities attacked by a unit
-pub fn apply_unit_attack_actions(with_health: Query<(&Transform, &mut Health, Entity, &GameObjectKindComp)>, actions: Res<Actions>) {
+pub fn apply_unit_attack_actions(with_health: Query<(&Transform, &mut HealthComp, Entity, &GameObjectKindComp)>, actions: Res<Actions>) {
 
     let entities_by_hex: HashMap<Hex, Vec<Entity>> = HashMap::new();
 
