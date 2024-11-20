@@ -7,7 +7,7 @@ use bevy_egui::{
 
 use crate::{
     components::{
-        GameObjectKindComp, HealthComp, MappedGameObjects, Owner, Selected, SelectedGameObjects, Unit, UnitBodyComp
+        EnergyComp, GameObjectKindComp, HealthComp, MappedGameObjects, Owner, Selected, SelectedGameObjects, StorageComp, Unit, UnitBodyComp
     },
     ui::{
         constants::{spacing, text_size, LATTE},
@@ -75,6 +75,8 @@ pub fn select_ui(
         Option<&Unit>,
         Option<&UnitBodyComp>,
         Option<&HealthComp>,
+        Option<&EnergyComp>,
+        Option<&StorageComp>,
     )>,
 ) {
     let panel = egui::SidePanel::right("select")
@@ -86,7 +88,7 @@ pub fn select_ui(
     panel.show(egui.ctx_mut(), |ui| {
         egui::ScrollArea::vertical().show(ui, |ui| {
             for entity in selected.0.iter() {
-                let Ok((transform, kind, owner, unit, unit_body, health)) = query.get(*entity)
+                let Ok((transform, kind, owner, unit, unit_body, health, energy, storage)) = query.get(*entity)
                 else {
                     continue;
                 };
@@ -128,6 +130,15 @@ pub fn select_ui(
                     ui.add_space(spacing::XSMALL);
                 }
 
+                if let Some(energy) = energy {
+                    header_with_text(
+                        ui,
+                        "Energy:",
+                        format!("{} / {}", energy.0.current, energy.0.capacity),
+                    );
+                    ui.add_space(spacing::XSMALL);
+                }
+
                 if let Some(unit_body) = unit_body {
                     header_with_text(
                         ui,
@@ -146,6 +157,18 @@ pub fn select_ui(
                             }
 
                             header_with_text(ui, format!("{:?}:", part), count.to_string());
+                            ui.add_space(spacing::XSMALL);
+                        }
+                    });
+                }
+
+                if let Some(storage) = storage {
+                    header(ui, "Storage");
+                    ui.add_space(spacing::XSMALL);
+
+                    ui.vertical(|ui| {
+                        for (resource, count) in storage.0.resources.iter() {
+                            header_with_text(ui, format!("{:?}:", resource), count.to_string());
                             ui.add_space(spacing::XSMALL);
                         }
                     });
