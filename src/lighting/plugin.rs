@@ -4,12 +4,15 @@ use bevy::{
 };
 use bevy_magic_light_2d::prelude::*;
 
+use crate::components::State;
+
 
 pub struct LightingPlugin;
 
 impl Plugin for LightingPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, generate_lights.after(setup_post_processing_camera));
+        app.add_systems(Startup, generate_lights.after(setup_post_processing_camera))
+        .add_systems(Update, update_lights);
     }
 }
 
@@ -49,4 +52,15 @@ fn generate_lights(mut commands: Commands) {
         },
         Name::new("global_skylight"),
     )); */
+}
+
+fn update_lights(mut query: Query<&mut SkylightLight2D>, state: Res<State>) {
+    let mut skylight = query.single_mut();
+
+    let intensity = match state.global.is_day() {
+        true => 0.025,
+        false => 0.,
+    };
+
+    skylight.intensity = intensity
 }
