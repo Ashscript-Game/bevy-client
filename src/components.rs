@@ -1,4 +1,4 @@
-use ashscript_types::{components::{body::UnitBody, energy::Energy, health::Health, storage::Storage}, global::Global, keyframe::KeyFrame, map::Map, objects::GameObjectKind};
+use ashscript_types::{components::{body::UnitBody, energy::Energy, health::Health, resource::ResourceNode, solar_panel::SolarPanel, storage::Storage, substation::Substation, turbine::Turbine}, global::Global, keyframe::KeyFrame, map::Map, objects::GameObjectKind};
 use bevy::{
     ecs::system::SystemParam,
     prelude::*,
@@ -12,12 +12,7 @@ use hecs;
 use crate::constants::{self, Resource, UnitPart};
 
 #[derive(Component)]
-pub struct ResourceNode {
-    pub coal_percent: u32,
-    pub mineral_percent: u32,
-    pub ticks_to_regen: u32,
-    pub resource_remaining: u32,
-}
+pub struct ResourceNodeComp(pub ResourceNode);
 
 #[derive(Component)]
 pub struct Scrap {
@@ -92,6 +87,15 @@ pub struct Unit {
 
 #[derive(Component)]
 pub struct UnitBodyComp(pub UnitBody);
+
+#[derive(Component)]
+pub struct SubstationComp(pub Substation);
+
+#[derive(Component)]
+pub struct TurbineComp(pub Turbine);
+
+#[derive(Component)]
+pub struct SolarPanelComp(pub SolarPanel);
 
 #[derive(Component)]
 pub struct Laser {

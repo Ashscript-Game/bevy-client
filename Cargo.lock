@@ -324,8 +324,8 @@ dependencies = [
 
 [[package]]
 name = "ashscript-types"
-version = "0.10.46"
-source = "git+https://github.com/Ashscript-Game/ashscript-types?branch=main#85e9c9263e123aaf2bfe04ddd306e65e84ddc35b"
+version = "0.10.50"
+source = "git+https://github.com/Ashscript-Game/ashscript-types?branch=main#90239ed5df714ecc9372faa3214d46d9efd3ae53"
 dependencies = [
  "bitcode",
  "enum-iterator",
@@ -2274,7 +2274,7 @@ dependencies = [
  "arrayvec",
  "bitcode_derive",
  "bytemuck",
- "glam 0.25.0",
+ "glam 0.27.0",
  "serde",
 ]
 

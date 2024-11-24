@@ -1,14 +1,13 @@
 use crate::{
     components::{
-        Lava, LoadChunks, LoadedChunks, OccupiesTile, ResourceNode, Scrap, State, TickEvent,
-        UnloadedChunks, Wall,
+        Lava, LoadChunks, LoadedChunks, OccupiesTile, ResourceNodeComp, Scrap, State, TickEvent, UnloadedChunks, Wall
     },
     constants::{self, lava, resource_noise_tresholds, unit, SIMPLEX_GENERATOR},
     engine::terrain::{hexagonal_plane, HEX_SIZE},
 };
 use ashscript_types::{
     components::{
-        resource::{CoalNode, MineralNode},
+        resource::{CoalNode, MineralNode, ResourceNode},
         terrain::{Terrain, TerrainKind},
         tile::Tile,
     },
@@ -125,7 +124,7 @@ pub fn generate_resources_from_keyframe(
             &mesh_handle,
             &material_handles[0],
             tile.hex,
-            node.amount,
+            node.clone(),
             constants::coal_node::COLOR,
         );
     }
@@ -152,7 +151,7 @@ pub fn generate_resources_from_keyframe(
             &mesh_handle,
             &material_handles[1],
             tile.hex,
-            node.amount,
+            node.clone(),
             constants::mineral_node::COLOR,
         );
     }
@@ -164,7 +163,7 @@ fn generate_resource_node(
     mesh: &Handle<Mesh>,
     material: &Handle<ColorMaterial>,
     hex: Hex,
-    amount: u32,
+    node: ResourceNode,   
     color: Color,
 ) {
     let world_pos = HEX_LAYOUT.hex_to_world_pos(hex);
@@ -181,12 +180,7 @@ fn generate_resource_node(
             ..default()
         },
         OccupiesTile,
-        ResourceNode {
-            coal_percent: 50,
-            mineral_percent: 50,
-            ticks_to_regen: 0,
-            resource_remaining: amount,
-        },
+        ResourceNodeComp(node),
         RenderLayers::from_layers(CAMERA_LAYER_OBJECTS),
     ));
 
